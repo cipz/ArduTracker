@@ -80,7 +80,7 @@ Arduino IDE
 
 To connect the SD Module I have adapted a simple Arduino example
 
-<p align="center" style="text-align:center;">
+<p align="center">
   <table align="center">
     <tr>
       <td>
@@ -122,7 +122,6 @@ To connect the SD Module I have adapted a simple Arduino example
       </td>
     </tr>
   </table>
-
 </p>
 
 <p align="center">
