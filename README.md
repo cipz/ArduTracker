@@ -45,18 +45,51 @@ MISO | D19
 
 To connect the SD Module I have adapted a simple Arduino example
 
-<p align="center">
-  <img src="./img/microsd-pinout.jpg" height="250px" alt="nRF24L01 Module" align="center">
-</p>
+<p>
+  <table align="center">
+    <tr>
+      <td>
+        <table style="text-align:center">
+          <tr style="font-weight: bold; background-color:#D0D0D0">
+            <td>MicroSD Module</td>
+            <td>ESP32</td>
+          </tr>
+          <tr>
+            <td>GND</td>
+            <td>GND</td>
+          </tr>
+          <tr style="background-color:#DADADA">
+            <td>VCC</td>
+            <td>5V or 3.3V</td>
+          </tr>
+          <tr>
+            <td>CS</td>
+            <td>D22</td>
+          </tr>
+          <tr style="background-color:#DADADA">
+            <td>SCK</td>
+            <td>D18</td>
+          </tr>
+          <tr>
+            <td>MOSI</td>
+            <td>D23</td>
+          </tr>
+          <tr style="background-color:#DADADA">
+            <td>MISO</td>
+            <td>D19</td>
+          </tr>
+        </table>
+      </td>
+      <td width="30px"></td>
+      <td align="center">
+        <p align="center">
+          <img src="./img/microsd-pinout.jpg" height="250px" alt="nRF24L01 Module" align="center">
+        </p>
+      </td>
+    </tr>
+  </table>
 
-MicroSD Module | ESP32
---- | ---
-GND | GND
-VCC | 5V or 3.3V
-CS | D22
-SCK | D18
-MOSI | D23
-MISO | D19
+</p>
 
 <p align="center">
   <img src="./img/microsd_hack.jpg" height="250px" alt="" align="center">
