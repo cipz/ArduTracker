@@ -27,11 +27,6 @@ Arduino IDE
 
 ### Connecting the nRF24L01 with ESP32
 
-
-<table>
-
-</table>
-
 <p align="center">
   <table align="center">
     <tr>
@@ -74,7 +69,7 @@ Arduino IDE
       <td width="30px"></td>
       <td>
         <p align="center">
-          <img src="./img/nRF24L01.png" height="250px" align="center">
+          <img src="./img/nRF24L01.png" height="" align="center">
         </p>
       </td>
     </tr>
