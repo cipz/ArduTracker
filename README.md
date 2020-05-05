@@ -34,39 +34,38 @@ Arduino IDE
         <table style="text-align:center">
           <tr style="font-weight: bold;">
             <td>nRF24L01</td>
-            <td>ESP32<td>
+            <td>ESP32</td>
           </tr>
           <tr>
             <td>GND</td>
-            <td>GND<td>
+            <td>GND</td>
           </tr>
           <tr>
             <td>VCC</td>
-            <td>3.3V<td>
+            <td>3.3V</td>
           </tr>
           <tr>
             <td>CE</td>
-            <td>D4<td>
+            <td>D4</td>
           </tr>
           <tr>
             <td>CSN</td>
-            <td>D5<td>
+            <td>D5</td>
           </tr>
           <tr>
             <td>SCK</td>
-            <td>D18<td>
+            <td>D18</td>
           </tr>
           <tr>
             <td>MOSI</td>
-            <td>D23<td>
+            <td>D23</td>
           </tr>
           <tr>
             <td>MISO</td>
-            <td>D19<td>
+            <td>D19</td>
           </tr>
         </table>
       </td>
-      <td width="30px"></td>
       <td>
         <p align="center">
           <img src="./img/nRF24L01.png" height="" align="center">
@@ -116,7 +115,6 @@ To connect the SD Module I have adapted a simple Arduino example
           </tr>
         </table>
       </td>
-      <td width="30px"></td>
       <td align="center">
         <p align="center">
           <img src="./img/microsd-pinout.jpg" height="250px" alt="nRF24L01 Module" align="center">
