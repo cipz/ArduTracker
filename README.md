@@ -46,7 +46,7 @@ MISO | D19
 To connect the SD Module I have adapted a simple Arduino example
 
 <p align="center">
-  <img src="./img/microsd.jpg" height="250px" alt="nRF24L01 Module" align="center">
+  <img src="./img/microsd-pinout.jpg" height="250px" alt="nRF24L01 Module" align="center">
 </p>
 
 MicroSD Module | ESP32
