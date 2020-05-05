@@ -5,21 +5,31 @@ WHY IT IS
 
 THE ESP32 BOARD
 
+<p align="center">
+  <img src="./essay/img/esp32-pinout.png" height="" alt="nRF24L01 Module" align="center">
+</p>
+
 ## Software
 
 Arduino IDE
 
 ## Circuit
 
-INSERT CIRCUIT IMAGE
+<p align="center">
+  <img src="./essay/img/ardutracker.png" height="" align="center">
+</p>
 
 ### SPI devices
 
-SPI CONNECTION DESCRIPTION
+<p align="center">
+  <img src="./essay/img/spi.png" height="250px" alt="" align="center">
+</p>
 
 ### Connecting the nRF24L01 with ESP32
 
-nRF24L01 image
+<p align="center">
+  <img src="./img/nRF24L01.png" height="250px" align="center">
+</p>
 
 nRF24L01 | ESP32
 --- | ---
@@ -35,6 +45,10 @@ MISO | D19
 
 To connect the SD Module I have adapted a simple Arduino example
 
+<p align="center">
+  <img src="./img/microsd.jpg" height="250px" alt="nRF24L01 Module" align="center">
+</p>
+
 MicroSD Module | ESP32
 --- | ---
 GND | GND
@@ -43,6 +57,10 @@ CS | D22
 SCK | D18
 MOSI | D23
 MISO | D19
+
+<p align="center">
+  <img src="./img/microsd_hack.jpg" height="250px" alt="" align="center">
+</p>
 
 Explain why the sd card adapter does not play well with others
 
