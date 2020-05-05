@@ -27,30 +27,71 @@ Arduino IDE
 
 ### Connecting the nRF24L01 with ESP32
 
+
+<table>
+
+</table>
+
 <p align="center">
-  <img src="./img/nRF24L01.png" height="250px" align="center">
+  <table align="center">
+    <tr>
+      <td>
+        <table style="text-align:center">
+          <tr style="font-weight: bold;">
+            <td>nRF24L01</td>
+            <td>ESP32<td>
+          </tr>
+          <tr>
+            <td>GND</td>
+            <td>GND<td>
+          </tr>
+          <tr>
+            <td>VCC</td>
+            <td>3.3V<td>
+          </tr>
+          <tr>
+            <td>CE</td>
+            <td>D4<td>
+          </tr>
+          <tr>
+            <td>CSN</td>
+            <td>D5<td>
+          </tr>
+          <tr>
+            <td>SCK</td>
+            <td>D18<td>
+          </tr>
+          <tr>
+            <td>MOSI</td>
+            <td>D23<td>
+          </tr>
+          <tr>
+            <td>MISO</td>
+            <td>D19<td>
+          </tr>
+        </table>
+      </td>
+      <td width="30px"></td>
+      <td>
+        <p align="center">
+          <img src="./img/nRF24L01.png" height="250px" align="center">
+        </p>
+      </td>
+    </tr>
+  </table>
 </p>
 
-nRF24L01 | ESP32
---- | ---
-GND | GND
-VCC | 3.3V
-CE | D4
-CSN | D5
-SCK | D18
-MOSI | D23
-MISO | D19
 
 ### Connecting the MicroSD Module with ESP32
 
 To connect the SD Module I have adapted a simple Arduino example
 
-<p>
+<p align="center">
   <table align="center">
     <tr>
       <td>
         <table style="text-align:center">
-          <tr style="font-weight: bold; background-color:#D0D0D0">
+          <tr style="font-weight: bold;">
             <td>MicroSD Module</td>
             <td>ESP32</td>
           </tr>
@@ -58,7 +99,7 @@ To connect the SD Module I have adapted a simple Arduino example
             <td>GND</td>
             <td>GND</td>
           </tr>
-          <tr style="background-color:#DADADA">
+          <tr>
             <td>VCC</td>
             <td>5V or 3.3V</td>
           </tr>
@@ -66,7 +107,7 @@ To connect the SD Module I have adapted a simple Arduino example
             <td>CS</td>
             <td>D22</td>
           </tr>
-          <tr style="background-color:#DADADA">
+          <tr>
             <td>SCK</td>
             <td>D18</td>
           </tr>
@@ -74,7 +115,7 @@ To connect the SD Module I have adapted a simple Arduino example
             <td>MOSI</td>
             <td>D23</td>
           </tr>
-          <tr style="background-color:#DADADA">
+          <tr>
             <td>MISO</td>
             <td>D19</td>
           </tr>
