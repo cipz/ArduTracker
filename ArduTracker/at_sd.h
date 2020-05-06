@@ -5,9 +5,6 @@
 File cache_log_file;
 File perm_log_file;
 
-char myID[10] = "Message 1"; // the two values to be sent to the master
-char dataReceived[10]; // must match dataToSend in master
-
 bool init_sd();
 bool load_sd_params(Params);
 void init_log_files();
@@ -17,7 +14,7 @@ void listFiles();
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-bool init_sd() {    
+bool init_sd() {
   return SD.begin(CS_PIN);
 }
 
@@ -25,28 +22,20 @@ bool init_sd() {
 
 bool load_sd_params(Params params) {
 
-    Serial.println("1");
-    
   if (!SD.exists("/params.json")) return false;
-
-    Serial.println("2");
 
   File params_file;
   StaticJsonDocument<512> params_json;
 
   params_file = SD.open("/params.json");
 
-    Serial.println("3");
-
   DeserializationError error = deserializeJson(params_json, params_file);
   // Test if parsing succeeds.
   if (error) {
     Serial.print("deserializeJson() failed: ");
-    // Serial.println(error.c_str());
+    Serial.println(error.c_str());
     return false;
   }
-    
-    Serial.println("4");
 
   params_file.close();
 
@@ -59,20 +48,16 @@ bool load_sd_params(Params params) {
   params.in_topic = params_json["in_topic"];
   params.out_topic = params_json["out_topic"];
 
-    Serial.println("5");
+  //  Serial.println();
+  //
+  //  for (int i = 0; i < 6; i++) {
+  //    Serial.print(params.broadcast_io_addr[i]);
+  //    Serial.print(" ");
+  //    Serial.println(byte(params_json["broadcast_io_addr"][i]));
+  //    params.broadcastAddress[i] = byte(params.broadcast_io_addr[i]);
+  //  }
+  //  Serial.println();
 
-    Serial.println();
-
-  for (int i = 0; i < 5; i++){
-    Serial.print(params.broadcast_io_addr[i]);
-    params.broadcastAddress[i] = byte(params.broadcast_io_addr[i]);
-    Serial.print(" ");
-    Serial.println(byte(params_json["broadcast_io_addr"][i]));
-  }
-  Serial.println();
-
-    Serial.println("6");
-    
   return true;
 
 }
