@@ -13,6 +13,9 @@ THE ESP32 BOARD
 
 Arduino IDE
 
+### Additional libraries
+- [ArduinoJSON v6](https://arduinojson.org/v6/)
+
 ## Circuit
 
 <p align="center">
