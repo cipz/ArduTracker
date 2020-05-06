@@ -9,80 +9,101 @@ char myID[10] = "Message 1"; // the two values to be sent to the master
 char dataReceived[10]; // must match dataToSend in master
 
 bool init_sd();
-bool load_sd_params(Params*);
+bool load_sd_params(Params);
 void init_log_files();
 
 void printDirectory(File, int);
 void listFiles();
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-bool init_sd() {
-    return SD.begin(CS_PIN);
+bool init_sd() {    
+  return SD.begin(CS_PIN);
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-bool load_sd_params(Params * params){
+bool load_sd_params(Params params) {
 
-    if (!SD.exists("params.json"))
-        return false;
-
-    File params_file;
-    StaticJsonDocument<512> params_json;
-
-    params_file = SD.open("params.json");
+    Serial.println("1");
     
-    DeserializationError error = deserializeJson(params_json, params_file);
-    // Test if parsing succeeds.
-    if (error) {
-        Serial.print("deserializeJson() failed: ");
-        Serial.println(error.c_str());
-        return false;
-    }
-    
-    params_file.close();
+  if (!SD.exists("/params.json")) return false;
 
-    params->ssid = params_json["ssid"];
-    params->password = params_json["password"];
+    Serial.println("2");
 
-    params->my_id = params_json["my_id"];
-    params->broadcast_io_addr = params_json["broadcast_io_addr"];
-    
-    params->in_topic = params_json["in_topic"];
-    params->out_topic = params_json["out_topic"];
+  File params_file;
+  StaticJsonDocument<512> params_json;
 
-    return true;    
+  params_file = SD.open("/params.json");
+
+    Serial.println("3");
+
+  DeserializationError error = deserializeJson(params_json, params_file);
+  // Test if parsing succeeds.
+  if (error) {
+    Serial.print("deserializeJson() failed: ");
+    // Serial.println(error.c_str());
+    return false;
+  }
     
+    Serial.println("4");
+
+  params_file.close();
+
+  params.ssid = params_json["ssid"];
+  params.password = params_json["password"];
+
+  params.my_id = params_json["my_id"];
+  params.broadcast_io_addr = params_json["broadcast_io_addr"];
+
+  params.in_topic = params_json["in_topic"];
+  params.out_topic = params_json["out_topic"];
+
+    Serial.println("5");
+
+    Serial.println();
+
+  for (int i = 0; i < 5; i++){
+    Serial.print(params.broadcast_io_addr[i]);
+    params.broadcastAddress[i] = byte(params.broadcast_io_addr[i]);
+    Serial.print(" ");
+    Serial.println(byte(params_json["broadcast_io_addr"][i]));
+  }
+  Serial.println();
+
+    Serial.println("6");
+    
+  return true;
+
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-void init_log_files(){
+void init_log_files() {
 
-    // Remove the cache_log file to crete it from scratch
-    if (SD.exists("cache_log.txt"))
-        SD.remove("cache_log.txt");
+  // Remove the cache_log file to crete it from scratch
+  if (SD.exists("/cache_log.txt"))
+    SD.remove("/cache_log.txt");
 
-    // Creating files
-    cache_log_file = SD.open("cache_log.txt", FILE_WRITE);
-    perm_log_file = SD.open("perm_log.txt", FILE_WRITE);
+  // Creating files
+  cache_log_file = SD.open("/cache_log.txt", FILE_WRITE);
+  perm_log_file = SD.open("/perm_log.txt", FILE_WRITE);
 
-    cache_log_file.close();
-    perm_log_file.close();
+  cache_log_file.close();
+  perm_log_file.close();
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void listFiles() {
 
-    File root = SD.open("/");
-    printDirectory(root, 0);
-    Serial.println("done! ----------");
-    Serial.println();
+  File root = SD.open("/");
+  printDirectory(root, 0);
+  Serial.println("done! ----------");
+  Serial.println();
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void printDirectory(File dir, int numTabs) {
   while (true) {
