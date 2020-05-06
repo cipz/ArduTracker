@@ -1,0 +1,9 @@
+{
+    "ssid" : "ssid",
+    "password" : "password",
+    "my_id" : "my_id",
+    "broadcast_io_addr" : "broadcast_io_addr",
+    "in_topic" : "in_topic",
+    "out_topic" : "out_topic",
+    "endpoint" : "endpoint"
+}
