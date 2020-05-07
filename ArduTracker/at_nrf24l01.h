@@ -4,38 +4,45 @@
 #define CE_PIN  4// for nRF24
 #define CSN_PIN 5 // for nRF24
 
-const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
-
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-int tx_data(int random_tx_time) {
+int tx_data(int tx_time) {
 
   int start_tx_time = millis();
-  int count = 0;
-  while (millis() - start_tx_time < random_tx_time) {
-    radio.write(&myID, sizeof(myID));
-    count++;
+  int msg_count = 0;
+  while (millis() - start_tx_time < tx_time) {
+    radio.write(&params.my_id, sizeof(params.my_id));
+    msg_count++;
     delay(100);
   }
-  return count;
+  return msg_count;
 
 }
 
-int rx_data(int random_rx_time) {
+int rx_data(int rx_time) {
 
+  // must match dataToSend in master
+  char data_received[15]; 
+  
   int start_rx_time = millis();
-  int count = 0;
-  while (millis() - start_rx_time < random_rx_time) {
+  int msg_count = 0;
+  
+  while (millis() - start_rx_time < rx_time) {
     if ( radio.available() ) {
-      radio.read(&dataReceived, sizeof(dataReceived));
+      radio.read(&data_received, sizeof(data_received));
       Serial.print("Data received: ");
-      Serial.println(dataReceived);
-      count++;
+      Serial.println(data_received);
+      friend_list->addNode(data_received);
+      msg_count++;
     }
     delay(100);
   }
-  return count;
+
+  Serial.println(friend_list->getTotalNodes());
+//  friend_list->printNodes();
+  
+  return msg_count;
 
 }

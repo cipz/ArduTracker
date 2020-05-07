@@ -20,7 +20,7 @@ bool init_sd() {
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-bool load_sd_params(Params params) {
+bool load_sd_params() {
 
   if (!SD.exists("/params.json")) return false;
 
@@ -30,33 +30,26 @@ bool load_sd_params(Params params) {
   params_file = SD.open("/params.json");
 
   DeserializationError error = deserializeJson(params_json, params_file);
-  // Test if parsing succeeds.
-  if (error) {
-    Serial.print("deserializeJson() failed: ");
-    Serial.println(error.c_str());
-    return false;
-  }
+  if (error) Serial.println("Failed to read file, using default configuration");
 
   params_file.close();
 
-  params.ssid = params_json["ssid"];
-  params.password = params_json["password"];
+  // strlcpy(destination, source, destination_dimension);
 
-  params.my_id = params_json["my_id"];
-  params.broadcast_io_addr = params_json["broadcast_io_addr"];
+  // WiFi
+  strlcpy(params.ssid, params_json["ssid"], sizeof(params.ssid));
+  strlcpy(params.password, params_json["password"], sizeof(params.password));
 
-  params.in_topic = params_json["in_topic"];
-  params.out_topic = params_json["out_topic"];
+  strlcpy(params.my_id, params_json["my_id"], sizeof(params.my_id));
 
-  //  Serial.println();
-  //
-  //  for (int i = 0; i < 6; i++) {
-  //    Serial.print(params.broadcast_io_addr[i]);
-  //    Serial.print(" ");
-  //    Serial.println(byte(params_json["broadcast_io_addr"][i]));
-  //    params.broadcastAddress[i] = byte(params.broadcast_io_addr[i]);
-  //  }
-  //  Serial.println();
+  char tmp_broadcast_io_addr[sizeof(params.broadcast_io_addr)];
+  strlcpy(tmp_broadcast_io_addr, params_json["broadcast_io_addr"], sizeof(tmp_broadcast_io_addr));
+  for (int i = 0; i < sizeof(params.broadcast_io_addr); i++)
+    params.broadcast_io_addr[i] = tmp_broadcast_io_addr[i];
+
+  // MQTT
+  strlcpy(params.in_topic, params_json["in_topic"], sizeof(params.in_topic));
+  strlcpy(params.out_topic, params_json["out_topic"], sizeof(params.out_topic));
 
   return true;
 
@@ -76,6 +69,7 @@ void init_log_files() {
 
   cache_log_file.close();
   perm_log_file.close();
+
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -83,14 +77,16 @@ void init_log_files() {
 void listFiles() {
 
   File root = SD.open("/");
-  printDirectory(root, 0);
+  // printDirectory(root, 0);
   Serial.println("done! ----------");
   Serial.println();
+
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void printDirectory(File dir, int numTabs) {
+
   while (true) {
 
     File entry =  dir.openNextFile();
@@ -111,5 +107,6 @@ void printDirectory(File dir, int numTabs) {
       Serial.println(entry.size(), DEC);
     }
     entry.close();
+
   }
 }

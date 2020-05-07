@@ -4,38 +4,33 @@
 
 #include "at_utils.h"
 
+#include "at_list.h"
+
+List * friend_list;
+
 struct Params {
   // WiFi
-  const char *ssid;
-  const char *password;
+  char ssid[50];
+  char password[50];
   // nRF24L01
-  const char *my_id;
-  const char *broadcast_io_addr;
-  byte broadcastAddress[5];
+  char my_id[15];
+  byte broadcast_io_addr[15];
   // MQTT
-  const char *in_topic;
-  const char *out_topic;
-};
-
-struct SeenRecently {
-
-  char friendID[10];
-  int seenMoment;
-
+  char in_topic[25];
+  char out_topic[25];
 };
 
 Params params;
-
-char myID[10] = "Message 3"; // the two values to be sent to the master
-char dataReceived[10]; // must match dataToSend in master
 
 #include "at_nrf24l01.h"
 #include "at_sd.h"
 
 int random_rx_time;
 int random_tx_time;
+
 int start_rx_time;
 int start_tx_time;
+
 int rx_count;
 int tx_count;
 
@@ -46,8 +41,9 @@ void setup() {
   Serial.begin(9600);
   Serial.println("Booting device");
 
-  // SD setup
+  //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+  // SD setup
   Serial.print("Setting up SD card: ");
   if (init_sd())
     Serial.println("OK");
@@ -60,7 +56,7 @@ void setup() {
   listFiles();
 
   Serial.print("Acquiring parameters from SD card: ");
-  if (load_sd_params(params))
+  if (load_sd_params())
     Serial.println("OK");
   else {
     Serial.println("ERROR");
@@ -73,21 +69,28 @@ void setup() {
 
   delay(100);
 
-  // Radio setup
+  //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+  // Radio setup
   radio.begin();
   radio.setDataRate(RF24_250KBPS);
 
   //this is a mesh so we don't want ACKs!
   // radio.setAutoAck(false);
 
-  radio.openWritingPipe(broadcastAddress);
-  radio.openReadingPipe(1, broadcastAddress);
+  radio.openWritingPipe(params.broadcast_io_addr);
+  radio.openReadingPipe(1, params.broadcast_io_addr);
 
   radio.setRetries(3, 5); // delay, count
 
-  Serial.println("Boot sequence finished correctly!");
+  //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+  // Received data list setup
+  friend_list = new List();
+
+  //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+  
+  Serial.println("Boot sequence finished correctly!");
   delay(100);
 
 }
