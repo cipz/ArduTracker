@@ -26,7 +26,7 @@ struct SeenRecently {
 
 Params params;
 
-char myID[10] = "Message 1"; // the two values to be sent to the master
+char myID[10] = "Message 3"; // the two values to be sent to the master
 char dataReceived[10]; // must match dataToSend in master
 
 #include "at_nrf24l01.h"
