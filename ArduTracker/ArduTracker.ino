@@ -12,27 +12,24 @@ struct Params {
   // WiFi
   char ssid[50];
   char password[50];
+  int wifi_send_time;
   // nRF24L01
   char my_id[15];
   byte broadcast_io_addr[15];
   // MQTT
   char in_topic[25];
   char out_topic[25];
+  // Other
+  int friendly_freshness;
 };
 
 Params params;
 
 #include "at_nrf24l01.h"
 #include "at_sd.h"
+#include "at_wifi.h"
 
-int random_rx_time;
-int random_tx_time;
-
-int start_rx_time;
-int start_tx_time;
-
-int rx_count;
-int tx_count;
+int last_wifi_send_time;
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
@@ -89,7 +86,12 @@ void setup() {
   friend_list = new List();
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
-  
+
+  // WiFi
+  last_wifi_send_time = millis();
+
+  //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
   Serial.println("Boot sequence finished correctly!");
   delay(100);
 
@@ -100,15 +102,15 @@ void setup() {
 void loop() {
 
   // Generating random times
-  random_tx_time = random(3000, 6000);
-  random_rx_time = random(3000, 6000);
+  int random_tx_time = random(3000, 6000);
+  int random_rx_time = random(3000, 6000);
 
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
   // Radio receiving
-  start_rx_time = millis();
+  int start_rx_time = millis();
   radio.startListening();
-  rx_count = rx_data(random_rx_time);
+  int rx_count = rx_data(random_rx_time);
   Serial.print("Received ");
   Serial.print(rx_count);
   Serial.println(" messages");
@@ -118,11 +120,36 @@ void loop() {
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
   // Radio sending
-  start_tx_time = millis();
+  int start_tx_time = millis();
   radio.stopListening();
-  tx_count = tx_data(random_tx_time);
+  int tx_count = tx_data(random_tx_time);
   Serial.print("Sent ");
   Serial.print(tx_count);
   Serial.println(" messages");
 
+  Serial.println("\n -- -- -- -- -- -- -- -- \n");
+
+  if (friend_list->getTotalNodes()) {
+    friend_list->printNodes();
+    friend_list->compactList(params.friendly_freshness);
+  }
+
+  //  // Sending messages over WiFi
+  //  if (millis() - last_wifi_send_time > params.wifi_send_time) {
+  //
+  //    Serial.println("Scanning available networks...");
+  //    wifi_scan(params.ssid);
+  //
+  //    Serial.println("Setting up WiFi connection.");
+  //    if (WiFi.status() != WL_CONNECTED){
+  //      Serial.println("Connection attempt: ");
+  //      if (!connect_wifi(params.ssid, params.password))
+  //        Serial.print("UN");
+  //      Serial.println("SUCCESSFULL");
+  //    }
+  //
+  //    Serial.println("WiFi connected successfully");
+  //    Serial.println("IP address: ");
+  //    Serial.println(WiFi.localIP());
+  //  }
 }

@@ -40,6 +40,8 @@ bool load_sd_params() {
   strlcpy(params.ssid, params_json["ssid"], sizeof(params.ssid));
   strlcpy(params.password, params_json["password"], sizeof(params.password));
 
+  params.wifi_send_time = params_json["wifi_send_time"];
+
   strlcpy(params.my_id, params_json["my_id"], sizeof(params.my_id));
 
   char tmp_broadcast_io_addr[sizeof(params.broadcast_io_addr)];
@@ -50,6 +52,9 @@ bool load_sd_params() {
   // MQTT
   strlcpy(params.in_topic, params_json["in_topic"], sizeof(params.in_topic));
   strlcpy(params.out_topic, params_json["out_topic"], sizeof(params.out_topic));
+
+  // Other
+  params.friendly_freshness = params_json["friendly_freshness"] | 20000;
 
   return true;
 
@@ -75,20 +80,14 @@ void init_log_files() {
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void listFiles() {
-
   File root = SD.open("/");
-  // printDirectory(root, 0);
-  Serial.println("done! ----------");
-  Serial.println();
-
+  printDirectory(root, 0);
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void printDirectory(File dir, int numTabs) {
-
   while (true) {
-
     File entry =  dir.openNextFile();
     if (! entry) {
       // no more files
@@ -107,6 +106,6 @@ void printDirectory(File dir, int numTabs) {
       Serial.println(entry.size(), DEC);
     }
     entry.close();
-
   }
+  Serial.println("done! ----------");
 }
