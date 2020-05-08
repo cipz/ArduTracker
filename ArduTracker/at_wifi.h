@@ -1,7 +1,6 @@
 #include <WiFi.h>
 
 bool wifi_scan(String);
-bool connect_wifi(const char *, const char *);
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
@@ -23,23 +22,3 @@ bool wifi_scan(String ssid) {
   
   return false;
 }
-
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-bool connect_wifi(const char *ssid, const char *password) {
-  if (!wifi_scan(ssid)) {
-    Serial.println("Network not found.");
-    return false;
-  }
-  
-  WiFi.begin(ssid, password);
-
-  while (WiFi.status() != WL_CONNECTED) {
-    delay(100);
-    Serial.print(".");
-  } //while
-  Serial.println("");
-  
-  return true;
-
-} //connect_wifi

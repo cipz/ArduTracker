@@ -8,7 +8,7 @@ File perm_log_file;
 bool init_sd();
 bool load_sd_params(Params);
 void init_log_files();
-
+void save_in_log(String);
 void printDirectory(File, int);
 void listFiles();
 
@@ -71,6 +71,22 @@ void init_log_files() {
   // Creating files
   cache_log_file = SD.open("/cache_log.txt", FILE_WRITE);
   perm_log_file = SD.open("/perm_log.txt", FILE_WRITE);
+
+  cache_log_file.close();
+  perm_log_file.close();
+
+}
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+
+void save_in_log(String message) {
+    
+  cache_log_file = SD.open("/cache_log.txt", FILE_WRITE);
+  perm_log_file = SD.open("/perm_log.txt", FILE_WRITE);
+
+  cache_log_file.println(message);
+  perm_log_file.println(message);
 
   cache_log_file.close();
   perm_log_file.close();

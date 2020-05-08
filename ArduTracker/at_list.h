@@ -10,8 +10,6 @@ class Node {
 
 };
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
 Node::Node(const char * rx_msg, Node * prev_node) {
   strlcpy(this->friend_id, rx_msg, sizeof(this->friend_id));
   this->seen_moment = millis();
@@ -36,15 +34,11 @@ class List {
 
 };
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
 List::List() {
   this->first = NULL;
   this->last = NULL;
   this->count = 0;
 }
-
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void List::addNode(const char * rx_msg) {
   Node * new_friend = new Node(rx_msg, this->last);
@@ -57,8 +51,6 @@ void List::addNode(const char * rx_msg) {
   }
   this->count++;
 }
-
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 void List::removeNode(Node * del_node) {
 
@@ -93,8 +85,6 @@ void List::removeNode(Node * del_node) {
 
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
 void List::printNodes() {
   int count = 0;
   Node * current_node = this->first;
@@ -111,15 +101,10 @@ void List::printNodes() {
   }
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
 int List::getTotalNodes() {
   return this->count;
 }
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-
-// deletes duplicates and keeps only encounters x seconds fresh
 int List::compactList(int fresh) {
 
   Node * current_node = this->first;
@@ -136,5 +121,3 @@ int List::compactList(int fresh) {
   return count;
 
 }
-
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --

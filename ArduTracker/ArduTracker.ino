@@ -5,7 +5,6 @@
 #include "at_utils.h"
 
 #include "at_list.h"
-
 List * friend_list;
 
 struct Params {
@@ -22,12 +21,13 @@ struct Params {
   // Other
   int friendly_freshness;
 };
-
 Params params;
 
 #include "at_nrf24l01.h"
 #include "at_sd.h"
 #include "at_wifi.h"
+
+#define MAX_WIFI_RECON_COUNT 5
 
 int last_wifi_send_time;
 
@@ -42,11 +42,14 @@ void setup() {
 
   // SD setup
   Serial.print("Setting up SD card: ");
+
   if (init_sd())
     Serial.println("OK");
   else {
     Serial.println("ERROR");
-    // Rebooot Device
+    Serial.println("Rebooting in 10 seconds");
+    delay(10000);
+    ESP.restart();
   }
 
   Serial.println("SD card contents: ");
@@ -57,7 +60,9 @@ void setup() {
     Serial.println("OK");
   else {
     Serial.println("ERROR");
-    // Rebooot Device
+    Serial.println("Rebooting in 10 seconds");
+    delay(10000);
+    ESP.restart();
   }
 
   Serial.println("Creating log files");
@@ -69,16 +74,7 @@ void setup() {
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // Radio setup
-  radio.begin();
-  radio.setDataRate(RF24_250KBPS);
-
-  //this is a mesh so we don't want ACKs!
-  // radio.setAutoAck(false);
-
-  radio.openWritingPipe(params.broadcast_io_addr);
-  radio.openReadingPipe(1, params.broadcast_io_addr);
-
-  radio.setRetries(3, 5); // delay, count
+  init_radio();
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -101,6 +97,11 @@ void setup() {
 
 void loop() {
 
+  // TODO delete all dangling pointers
+  // TODO remove duplicates in list
+  // TODO save json to sd card and test
+  // MQTT connection
+
   // Generating random times
   int random_tx_time = random(3000, 6000);
   int random_rx_time = random(3000, 6000);
@@ -114,6 +115,34 @@ void loop() {
   Serial.print("Received ");
   Serial.print(rx_count);
   Serial.println(" messages");
+
+  if (friend_list->getTotalNodes()) {
+    // friend_list->printNodes();
+    friend_list->compactList(params.friendly_freshness);
+  }
+
+  // -----------------------------------
+
+  // SAVE DATA TO SD HERE
+
+  // SAVE TO SD CARD
+  // Creating string to save in file
+
+  String current_message = "Message";
+
+  //  String current_message = "{\
+  //\"id\" : \"" + (String)current_id + "\", \
+  //\"air\" : \"" + (String)ppm + "\", \
+  //" + gps + " \
+  //\"tpc\" : \"" + out_topic + "\"\
+  //}";
+
+  Serial.println("Saving to sd card... ");
+  Serial.println(current_message);
+
+  save_in_log(current_message);
+
+  // -----------------------------------
 
   delay(100);
 
@@ -129,27 +158,55 @@ void loop() {
 
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
-  if (friend_list->getTotalNodes()) {
-    friend_list->printNodes();
-    friend_list->compactList(params.friendly_freshness);
-  }
+  // Sending messages over WiFi
+  if (millis() - last_wifi_send_time > params.wifi_send_time) {
+    if (WiFi.status() != WL_CONNECTED) {
 
-  //  // Sending messages over WiFi
-  //  if (millis() - last_wifi_send_time > params.wifi_send_time) {
-  //
-  //    Serial.println("Scanning available networks...");
-  //    wifi_scan(params.ssid);
-  //
-  //    Serial.println("Setting up WiFi connection.");
-  //    if (WiFi.status() != WL_CONNECTED){
-  //      Serial.println("Connection attempt: ");
-  //      if (!connect_wifi(params.ssid, params.password))
-  //        Serial.print("UN");
-  //      Serial.println("SUCCESSFULL");
-  //    }
-  //
-  //    Serial.println("WiFi connected successfully");
-  //    Serial.println("IP address: ");
-  //    Serial.println(WiFi.localIP());
-  //  }
+      Serial.println("Scanning available networks...");
+      if (wifi_scan(params.ssid)) {
+
+        Serial.println("Setting up WiFi connection.");
+        int wifi_recon_count = 0;
+        Serial.print("Attempting connection");
+        while ((WiFi.status() != WL_CONNECTED) and (wifi_recon_count < MAX_WIFI_RECON_COUNT)) {
+          Serial.print(".");
+          WiFi.begin(params.ssid, params.password);
+          wifi_recon_count++;
+          delay(50);
+        }
+
+        if (wifi_recon_count < MAX_WIFI_RECON_COUNT) {
+          Serial.println("WiFi connected successfully");
+          Serial.print("IP address: ");
+          Serial.println(WiFi.localIP());
+        } else {
+          Serial.print("Exceeded connection tries");
+        }
+
+      } else {
+        Serial.print(params.ssid);
+        Serial.println(" not in range.");
+      }
+    } else {
+      Serial.println("WiFi already connected");
+    }
+
+    if (WiFi.status() != WL_CONNECTED) {
+      Serial.print("Error connecting to ");
+      Serial.println(params.ssid);
+
+    } else {
+
+      Serial.print("Connected to ");
+      Serial.println(params.ssid);
+
+      // -----------------------------------
+
+      // SEND DATA SOMEWHERE HERE
+      Serial.println("Sending data over the Internet into the future");
+
+      // -----------------------------------
+
+    }
+  }
 }

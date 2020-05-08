@@ -6,11 +6,27 @@
 
 RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
+void init_radio();
 int tx_data(int);
 int rx_data(int);
 void printRxData(char *);
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+void init_radio(){
+    
+  radio.begin();
+  radio.setDataRate(RF24_250KBPS);
+
+  //this is a mesh so we don't want ACKs!
+  // radio.setAutoAck(false);
+
+  radio.openWritingPipe(params.broadcast_io_addr);
+  radio.openReadingPipe(1, params.broadcast_io_addr);
+
+  radio.setRetries(3, 5); // delay, count
+  
+}
 
 int tx_data(int tx_time) {
   int start_tx_time = millis();
