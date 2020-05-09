@@ -13,19 +13,19 @@ void printRxData(char *);
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-void init_radio(){
-    
+void init_radio() {
+
   radio.begin();
   radio.setDataRate(RF24_250KBPS);
 
   //this is a mesh so we don't want ACKs!
   // radio.setAutoAck(false);
 
-  radio.openWritingPipe(params.broadcast_io_addr);
-  radio.openReadingPipe(1, params.broadcast_io_addr);
+  //  radio.openWritingPipe(params.broadcast_io_addr);
+  //  radio.openReadingPipe(1, params.broadcast_io_addr);
 
   radio.setRetries(3, 5); // delay, count
-  
+
 }
 
 int tx_data(int tx_time) {
@@ -63,7 +63,7 @@ int rx_data(int rx_time) {
 
 }
 
-void printRxData(char * data_received){
+void printRxData(char * data_received) {
   Serial.print("Data received: ");
   Serial.println(data_received);
 }

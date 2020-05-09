@@ -30,6 +30,7 @@ Params params;
 #define SERIAL_BAUD_RATE 9600
 #define MAX_WIFI_RECON_COUNT 5
 
+bool wifi_transmission;
 int last_wifi_send_time;
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -52,7 +53,7 @@ void setup() {
   else {
     Serial.println("ERROR");
     Serial.println("Rebooting in 10 seconds");
-    delay(10000);
+    // delay(10000);
     // ESP.restart();
   }
 
@@ -65,7 +66,7 @@ void setup() {
   else {
     Serial.println("ERROR");
     Serial.println("Rebooting in 10 seconds");
-    delay(10000);
+    // delay(10000);
     // ESP.restart();
   }
 
@@ -80,6 +81,12 @@ void setup() {
   // Radio setup
   init_radio();
 
+  // TODO REMOVE, FOR TESTING WITHOUT SD CARD
+  const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
+  radio.openWritingPipe(broadcastAddress);
+  radio.openReadingPipe(1, broadcastAddress);
+  strlcpy(params.my_id, "COM3", sizeof(params.my_id));
+
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // Received data list setup
@@ -89,6 +96,9 @@ void setup() {
 
   // WiFi
   last_wifi_send_time = millis();
+
+  // TODO SHOULD BE SET ACCORDING TO JSON FILE
+  wifi_transmission = false;
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -101,22 +111,24 @@ void setup() {
 
 void loop() {
 
-  Serial.println("- - - - - \n\n\n\n\n");
-  delay(10000);
+  Serial.println("\n\n\n\n\n- - - - - NEW LOOP CYCLE\n");
 
+  // TODO fix code formatting / camelcase or other to all
   // TODO uncomment reboot line when working
   // TODO remove duplicates in list
   // TODO save json to sd card and test
+  // TODO connect to WIFI only if variable is set
   // TODO MQTT connection
 
-  Serial.println("SD card contents: ");
-  listFiles();
+  // SD card debugging
+  // Serial.println("SD card contents: ");
+  // listFiles();
 
   // Generating random times
-  int random_tx_time = random(3000, 6000);
+  int random_tx_time = random(2000, 4000);
   int random_rx_time = random(3000, 6000);
 
-  Serial.println("\n -- -- -- -- -- -- -- -- \n");
+  // Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
   // Radio receiving
   int start_rx_time = millis();
@@ -134,8 +146,6 @@ void loop() {
   // -----------------------------------
 
   // SAVE DATA TO SD HERE
-
-  // SAVE TO SD CARD
   // Creating string to save in file
 
   // String current_message = "mesajio";
@@ -152,19 +162,22 @@ void loop() {
   //
   //save_in_log(current_message);
 
-//  print_file("/params.json");
-//  print_file("/cache.txt");
-//  print_file("/perm.txt");
+  //  print_file("/params.json");
+  //  print_file("/cache.txt");
+  //  print_file("/perm.txt");
 
   // -----------------------------------
 
-  delay(100);
+  delay(50);
 
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
   // Radio sending
   int start_tx_time = millis();
   radio.stopListening();
+  Serial.print("Sending : '");
+  Serial.print(params.my_id);
+  Serial.println("'");
   int tx_count = tx_data(random_tx_time);
   Serial.print("Sent ");
   Serial.print(tx_count);
@@ -172,57 +185,59 @@ void loop() {
 
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
-  // Sending messages over WiFi
-  if (millis() - last_wifi_send_time > params.wifi_send_time) {
-    if (WiFi.status() != WL_CONNECTED) {
+  if (wifi_transmission) {
+    // Sending messages over WiFi
+    if (millis() - last_wifi_send_time > params.wifi_send_time) {
+      if (WiFi.status() != WL_CONNECTED) {
 
-      Serial.println("Scanning available networks...");
-      if (wifi_scan(params.ssid)) {
+        Serial.println("Scanning available networks...");
+        if (wifi_scan(params.ssid)) {
 
-        Serial.println("Setting up WiFi connection.");
-        int wifi_recon_count = 0;
-        Serial.print("Attempting connection");
-        while ((WiFi.status() != WL_CONNECTED) and (wifi_recon_count < MAX_WIFI_RECON_COUNT)) {
-          Serial.print(".");
-          WiFi.begin(params.ssid, params.password);
-          wifi_recon_count++;
-          delay(50);
-        }
+          Serial.println("Setting up WiFi connection.");
+          int wifi_recon_count = 0;
+          Serial.print("Attempting connection");
+          while ((WiFi.status() != WL_CONNECTED) and (wifi_recon_count < MAX_WIFI_RECON_COUNT)) {
+            Serial.print(".");
+            WiFi.begin(params.ssid, params.password);
+            wifi_recon_count++;
+            delay(50);
+          }
 
-        if (wifi_recon_count < MAX_WIFI_RECON_COUNT) {
-          Serial.println("WiFi connected successfully");
-          Serial.print("IP address: ");
-          Serial.println(WiFi.localIP());
+          if (wifi_recon_count < MAX_WIFI_RECON_COUNT) {
+            Serial.println("WiFi connected successfully");
+            Serial.print("IP address: ");
+            Serial.println(WiFi.localIP());
+          } else {
+            Serial.print("Exceeded connection tries");
+          }
+
         } else {
-          Serial.print("Exceeded connection tries");
+          Serial.print(params.ssid);
+          Serial.println(" not in range.");
         }
+      } else {
+        Serial.println("WiFi already connected");
+      }
+
+      if (WiFi.status() != WL_CONNECTED) {
+        Serial.print("Error connecting to ");
+        Serial.println(params.ssid);
 
       } else {
-        Serial.print(params.ssid);
-        Serial.println(" not in range.");
+
+        Serial.print("Connected to ");
+        Serial.println(params.ssid);
+
+        // -----------------------------------
+
+        // SEND DATA SOMEWHERE HERE
+        Serial.println("Sending data over the Internet into the future");
+
+        // -----------------------------------
+
       }
-    } else {
-      Serial.println("WiFi already connected");
+
+      last_wifi_send_time = millis();
     }
-
-    if (WiFi.status() != WL_CONNECTED) {
-      Serial.print("Error connecting to ");
-      Serial.println(params.ssid);
-
-    } else {
-
-      Serial.print("Connected to ");
-      Serial.println(params.ssid);
-
-      // -----------------------------------
-
-      // SEND DATA SOMEWHERE HERE
-      Serial.println("Sending data over the Internet into the future");
-
-      // -----------------------------------
-
-    }
-
-    last_wifi_send_time = millis();
   }
 }
