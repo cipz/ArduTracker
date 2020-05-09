@@ -120,7 +120,7 @@ To connect the SD Module I have adapted a simple Arduino example
       </td>
       <td align="center">
         <p align="center">
-          <img src="./img/microsd-pinout.jpg" height="250px" alt="nRF24L01 Module" align="center">
+          <img src="./img/microsd-pinout.jpg" height="" alt="nRF24L01 Module" align="center">
         </p>
       </td>
     </tr>
