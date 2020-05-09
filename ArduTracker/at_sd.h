@@ -2,8 +2,8 @@
 
 #define CS_PIN 22 // for SDCard
 
-File cache_log_file;
-File perm_log_file;
+File cache_file;
+File perm_file;
 
 bool init_sd();
 bool load_sd_params(Params);
@@ -64,32 +64,62 @@ bool load_sd_params() {
 
 void init_log_files() {
 
-  // Remove the cache_log file to crete it from scratch
-  if (SD.exists("/cache_log.txt"))
-    SD.remove("/cache_log.txt");
+  // Remove the cache file to create it from scratch
+  if (SD.exists("/cache.txt"))
+    SD.remove("/cache.txt");
 
   // Creating files
-  cache_log_file = SD.open("/cache_log.txt", FILE_WRITE);
-  perm_log_file = SD.open("/perm_log.txt", FILE_WRITE);
+  cache_file = SD.open("/cache.txt", FILE_WRITE);
+  if (cache_file)
+    cache_file.close();
+  else {
+    Serial.println("Error creating cache file");
+    delay(10000);
+  }
 
-  cache_log_file.close();
-  perm_log_file.close();
+  if (!SD.exists("/perm.txt")) {
+    perm_file = SD.open("/perm.txt", FILE_WRITE);
+    if (perm_file)
+      perm_file.close();
+    else {
+      Serial.println("Error creating perm file");
+      delay(10000);
+    }
+  }
 
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
+void print_file(String filename) {
+  File dataFile = SD.open(filename);
+  if (dataFile) {
+    while (dataFile.available())
+      Serial.write(dataFile.read());
+    dataFile.close();
+  } else {
+    Serial.print("Error opening ");
+    Serial.println(filename);
+  }
+}
 
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+// TODO WORK IN PROGRESS
 void save_in_log(String message) {
-    
-  cache_log_file = SD.open("/cache_log.txt", FILE_WRITE);
-  perm_log_file = SD.open("/perm_log.txt", FILE_WRITE);
 
-  cache_log_file.println(message);
-  perm_log_file.println(message);
+  cache_file = SD.open("/cache.txt", FILE_WRITE);
+  if (cache_file) {
+    cache_file.println("ciao");
+    cache_file.flush();
+    cache_file.close();
+  } else {
+    Serial.println("Error opening cache");
+  }
 
-  cache_log_file.close();
-  perm_log_file.close();
+  perm_file = SD.open("/perm.txt", FILE_WRITE);
+  perm_file.println("brebre");
+  perm_file.close();
 
 }
 
@@ -98,6 +128,7 @@ void save_in_log(String message) {
 void listFiles() {
   File root = SD.open("/");
   printDirectory(root, 0);
+  Serial.println("done! ----------");
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -123,5 +154,4 @@ void printDirectory(File dir, int numTabs) {
     }
     entry.close();
   }
-  Serial.println("done! ----------");
 }

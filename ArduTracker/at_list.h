@@ -81,6 +81,8 @@ void List::removeNode(Node * del_node) {
     del_node->next = del_node->prev;
   }
 
+  delete del_node;
+
   this->count--;
 
 }

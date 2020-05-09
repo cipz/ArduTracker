@@ -27,6 +27,7 @@ Params params;
 #include "at_sd.h"
 #include "at_wifi.h"
 
+#define SERIAL_BAUD_RATE 9600
 #define MAX_WIFI_RECON_COUNT 5
 
 int last_wifi_send_time;
@@ -35,8 +36,11 @@ int last_wifi_send_time;
 
 void setup() {
 
-  Serial.begin(9600);
+  Serial.begin(SERIAL_BAUD_RATE);
   Serial.println("Booting device");
+
+  pinMode(CS_PIN, OUTPUT);
+  pinMode(CE_PIN, OUTPUT);
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -49,7 +53,7 @@ void setup() {
     Serial.println("ERROR");
     Serial.println("Rebooting in 10 seconds");
     delay(10000);
-    ESP.restart();
+    // ESP.restart();
   }
 
   Serial.println("SD card contents: ");
@@ -62,7 +66,7 @@ void setup() {
     Serial.println("ERROR");
     Serial.println("Rebooting in 10 seconds");
     delay(10000);
-    ESP.restart();
+    // ESP.restart();
   }
 
   Serial.println("Creating log files");
@@ -97,10 +101,16 @@ void setup() {
 
 void loop() {
 
-  // TODO delete all dangling pointers
+  Serial.println("- - - - - \n\n\n\n\n");
+  delay(10000);
+
+  // TODO uncomment reboot line when working
   // TODO remove duplicates in list
   // TODO save json to sd card and test
-  // MQTT connection
+  // TODO MQTT connection
+
+  Serial.println("SD card contents: ");
+  listFiles();
 
   // Generating random times
   int random_tx_time = random(3000, 6000);
@@ -128,19 +138,23 @@ void loop() {
   // SAVE TO SD CARD
   // Creating string to save in file
 
-  String current_message = "Message";
+  // String current_message = "mesajio";
+  //
+  //  //  String current_message = "{\
+  //  //\"id\" : \"" + (String)current_id + "\", \
+  //  //\"air\" : \"" + (String)ppm + "\", \
+  //  //" + gps + " \
+  //  //\"tpc\" : \"" + out_topic + "\"\
+  //  //}";
+  //
+  //  Serial.println("Saving to sd card... ");
+  //  Serial.println(current_message);
+  //
+  //save_in_log(current_message);
 
-  //  String current_message = "{\
-  //\"id\" : \"" + (String)current_id + "\", \
-  //\"air\" : \"" + (String)ppm + "\", \
-  //" + gps + " \
-  //\"tpc\" : \"" + out_topic + "\"\
-  //}";
-
-  Serial.println("Saving to sd card... ");
-  Serial.println(current_message);
-
-  save_in_log(current_message);
+//  print_file("/params.json");
+//  print_file("/cache.txt");
+//  print_file("/perm.txt");
 
   // -----------------------------------
 
@@ -208,5 +222,7 @@ void loop() {
       // -----------------------------------
 
     }
+
+    last_wifi_send_time = millis();
   }
 }
