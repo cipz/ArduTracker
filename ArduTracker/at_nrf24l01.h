@@ -1,3 +1,5 @@
+#pragma once
+
 #include <nRF24L01.h>
 #include <RF24.h>
 
@@ -8,7 +10,7 @@ RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void init_radio();
 int tx_data(int);
-int rx_data(int);
+int rx_data(int, List *);
 void printRxData(char *);
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -39,7 +41,7 @@ int tx_data(int tx_time) {
   return msg_count;
 }
 
-int rx_data(int rx_time) {
+int rx_data(int rx_time, List * new_friend_list) {
   // must match dataToSend in master
   char data_received[15];
 
@@ -49,8 +51,9 @@ int rx_data(int rx_time) {
   while (millis() - start_rx_time < rx_time) {
     if ( radio.available() ) {
       radio.read(&data_received, sizeof(data_received));
-      printRxData(data_received);
+      // printRxData(data_received);
       friend_list->addNode(data_received);
+      new_friend_list->addNode(data_received);
       msg_count++;
     }
     delay(100);

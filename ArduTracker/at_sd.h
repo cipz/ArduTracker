@@ -1,3 +1,5 @@
+#pragma once
+
 #include <SD.h>
 
 #define CS_PIN 22 // for SDCard
@@ -74,7 +76,7 @@ void init_log_files() {
     cache_file.close();
   else {
     Serial.println("Error creating cache file");
-    delay(10000);
+    restart(RESTART_SECONDS);
   }
 
   if (!SD.exists("/perm.txt")) {
@@ -83,10 +85,9 @@ void init_log_files() {
       perm_file.close();
     else {
       Serial.println("Error creating perm file");
-      delay(10000);
+      restart(RESTART_SECONDS);
     }
   }
-
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --

@@ -1,4 +1,8 @@
 
+#define SERIAL_BAUD_RATE 9600
+#define MAX_WIFI_RECON_COUNT 5
+#define RESTART_SECONDS 10
+
 #include <SPI.h>
 #include <ArduinoJson.h>
 
@@ -27,9 +31,6 @@ Params params;
 #include "at_sd.h"
 #include "at_wifi.h"
 
-#define SERIAL_BAUD_RATE 9600
-#define MAX_WIFI_RECON_COUNT 5
-
 bool wifi_transmission;
 int last_wifi_send_time;
 
@@ -53,8 +54,7 @@ void setup() {
   else {
     Serial.println("ERROR");
     Serial.println("Rebooting in 10 seconds");
-    // delay(10000);
-    // ESP.restart();
+    restart(RESTART_SECONDS);
   }
 
   Serial.println("SD card contents: ");
@@ -66,8 +66,7 @@ void setup() {
   else {
     Serial.println("ERROR");
     Serial.println("Rebooting in 10 seconds");
-    // delay(10000);
-    // ESP.restart();
+    restart(RESTART_SECONDS);
   }
 
   Serial.println("Creating log files");
@@ -85,7 +84,7 @@ void setup() {
   const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
   radio.openWritingPipe(broadcastAddress);
   radio.openReadingPipe(1, broadcastAddress);
-  strlcpy(params.my_id, "COM3", sizeof(params.my_id));
+  strlcpy(params.my_id, "IRON MAN", sizeof(params.my_id));
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -119,6 +118,7 @@ void loop() {
   // TODO save json to sd card and test
   // TODO connect to WIFI only if variable is set
   // TODO MQTT connection
+  // https://www.tutorialspoint.com/cplusplus-program-to-implement-doubly-linked-list
 
   // SD card debugging
   // Serial.println("SD card contents: ");
@@ -133,7 +133,9 @@ void loop() {
   // Radio receiving
   int start_rx_time = millis();
   radio.startListening();
-  int rx_count = rx_data(random_rx_time);
+  List * new_friend_list = new List();
+  int rx_count = rx_data(random_rx_time, new_friend_list);
+
   Serial.print("Received ");
   Serial.print(rx_count);
   Serial.println(" messages");
@@ -142,6 +144,20 @@ void loop() {
     // friend_list->printNodes();
     friend_list->compactList(params.friendly_freshness);
   }
+
+  Serial.println("priting new list");
+  new_friend_list->printNodes();
+
+  new_friend_list->removeDuplicates();
+
+  Serial.println("removing all list");
+  new_friend_list->deleteList();
+
+  Serial.println("removing all list");
+  friend_list->deleteList();
+
+  Serial.println("priting new list");
+  new_friend_list->printNodes();
 
   // -----------------------------------
 
@@ -236,7 +252,6 @@ void loop() {
         // -----------------------------------
 
       }
-
       last_wifi_send_time = millis();
     }
   }

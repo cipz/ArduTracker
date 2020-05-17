@@ -1,3 +1,5 @@
+#pragma once
+
 #include <WiFi.h>
 
 bool wifi_scan(String);

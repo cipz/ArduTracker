@@ -1,3 +1,4 @@
+#pragma once
 
 class Node {
   public:
@@ -28,6 +29,8 @@ class List {
     List();
     void addNode(const char *);
     void removeNode(Node *);
+    void deleteList();
+    void removeDuplicates();
     void printNodes();
     int getTotalNodes();
     int compactList(int);
@@ -38,6 +41,40 @@ List::List() {
   this->first = NULL;
   this->last = NULL;
   this->count = 0;
+}
+
+//TODO RIVEDERE
+void List::removeDuplicates() {
+
+  Serial.println("removing duplicates");
+
+  Node * current_node = this->first;
+
+  while (current_node) {
+
+    Serial.print(current_node->friend_id);
+    Serial.print(" ");
+    Serial.print(current_node->seen_moment);
+
+    Node * next_node = current_node->next;
+
+    while (next_node) {
+      if ((strcmp(current_node->friend_id, next_node->friend_id) == 0) and next_node) {
+        Serial.print(".");
+        Node * tmp = next_node->prev;
+        this->removeNode(next_node);
+        next_node = tmp->next;
+        this->count--;
+      } else {
+        next_node = next_node->next;
+      }      
+    }
+    current_node = current_node->next;
+    Serial.println();
+  }
+
+  delay(10000);
+
 }
 
 void List::addNode(const char * rx_msg) {
@@ -52,15 +89,24 @@ void List::addNode(const char * rx_msg) {
   this->count++;
 }
 
+void List::deleteList() {
+  Node * current_node = this->first;
+  while (current_node) {
+    Node * del = current_node;
+    current_node = current_node->next;
+    this->removeNode(del);
+  }
+}
+
 void List::removeNode(Node * del_node) {
 
-//  Serial.print("Deleting : ");
-//  Serial.print(del_node->friend_id);
-//  Serial.print(" , ");
-//  Serial.print(del_node->seen_moment);
-//  Serial.println(" ;");
+    Serial.print("Deleting : ");
+    Serial.print(del_node->friend_id);
+    Serial.print(" , ");
+    Serial.print(del_node->seen_moment);
+    Serial.println(" ;");
 
-  if (this->first == this->last) {
+  if ((this->first == del_node) and (del_node == this->last)) {
     this->first = NULL;
     this->last = NULL;
     this->count = 0;
@@ -113,9 +159,9 @@ int List::compactList(int fresh) {
   int count = 0;
 
   while (current_node) {
-    if (millis() - current_node->seen_moment > fresh){
-        this->removeNode(current_node);
-        count++;
+    if (millis() - current_node->seen_moment > fresh) {
+      this->removeNode(current_node);
+      count++;
     }
     current_node = current_node->next;
   }
