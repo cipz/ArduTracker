@@ -51,16 +51,12 @@ int rx_data(int rx_time, List * new_friend_list) {
   while (millis() - start_rx_time < rx_time) {
     if ( radio.available() ) {
       radio.read(&data_received, sizeof(data_received));
-      // printRxData(data_received);
-      friend_list->addNode(data_received);
-      new_friend_list->addNode(data_received);
+      printRxData(data_received);
+      friend_list->appendNode(data_received);
       msg_count++;
     }
     delay(100);
   }
-
-  // Serial.println(friend_list->getTotalNodes());
-  // friend_list->printNodes();
 
   return msg_count;
 

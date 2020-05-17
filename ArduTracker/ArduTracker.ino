@@ -118,7 +118,7 @@ void loop() {
   // TODO save json to sd card and test
   // TODO connect to WIFI only if variable is set
   // TODO MQTT connection
-  // https://www.tutorialspoint.com/cplusplus-program-to-implement-doubly-linked-list
+  // https://www.geeksforgeeks.org/doubly-linked-list/
 
   // SD card debugging
   // Serial.println("SD card contents: ");
@@ -145,19 +145,16 @@ void loop() {
     friend_list->compactList(params.friendly_freshness);
   }
 
-  Serial.println("priting new list");
-  new_friend_list->printNodes();
+//  Serial.println(friend_list->getTotalNodes());
+//  friend_list->printNodes();
+//
+//  if (friend_list->getTotalNodes() > 1) {
+//    // friend_list->printNodes();
+//    friend_list->removeDuplicates();
+//  }
 
-  new_friend_list->removeDuplicates();
-
-  Serial.println("removing all list");
-  new_friend_list->deleteList();
-
-  Serial.println("removing all list");
-  friend_list->deleteList();
-
-  Serial.println("priting new list");
-  new_friend_list->printNodes();
+  Serial.println(friend_list->getTotalNodes());
+  friend_list->printNodes();
 
   // -----------------------------------
 

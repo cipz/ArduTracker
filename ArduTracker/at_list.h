@@ -7,14 +7,14 @@ class Node {
     Node * prev;
     Node * next;
 
-    Node(const char *, Node * );
+    Node(const char *);
 
 };
 
-Node::Node(const char * rx_msg, Node * prev_node) {
+Node::Node(const char * rx_msg) {
   strlcpy(this->friend_id, rx_msg, sizeof(this->friend_id));
   this->seen_moment = millis();
-  this->prev = prev_node;
+  this->prev = NULL;
   this->next = NULL;
 }
 
@@ -27,6 +27,7 @@ class List {
     int count;
 
     List();
+    void appendNode(const char *);
     void addNode(const char *);
     void removeNode(Node *);
     void deleteList();
@@ -41,6 +42,21 @@ List::List() {
   this->first = NULL;
   this->last = NULL;
   this->count = 0;
+}
+
+void List::appendNode(const char * rx_msg) {
+
+  Node * new_friend = new Node(rx_msg);
+  if (!this->first) {
+    this->first = new_friend;
+    this->last = this->first;
+  } else {
+    this->last->next = new_friend;
+    new_friend->prev = this->last;
+    this->last = new_friend;
+  }
+  this->count++;
+  Serial.print(this->count);
 }
 
 //TODO RIVEDERE
@@ -59,31 +75,27 @@ void List::removeDuplicates() {
     Node * next_node = current_node->next;
 
     while (next_node) {
-      if ((strcmp(current_node->friend_id, next_node->friend_id) == 0) and next_node) {
+      if (strcmp(current_node->friend_id, next_node->friend_id) == 0) {
         Serial.print(".");
-        Node * tmp = next_node->prev;
         this->removeNode(next_node);
-        next_node = tmp->next;
-        this->count--;
-      } else {
-        next_node = next_node->next;
-      }      
+      }
+      next_node = next_node->next;
     }
     current_node = current_node->next;
     Serial.println();
   }
-
-  delay(10000);
-
 }
 
 void List::addNode(const char * rx_msg) {
-  Node * new_friend = new Node(rx_msg, this->last);
+
+  Node * new_friend = new Node(rx_msg);
+
   if (!this->first) {
     this->first = new_friend;
     this->last = this->first;
   } else {
     this->last->next = new_friend;
+    new_friend->prev = this->last;
     this->last = new_friend;
   }
   this->count++;
@@ -100,11 +112,11 @@ void List::deleteList() {
 
 void List::removeNode(Node * del_node) {
 
-    Serial.print("Deleting : ");
-    Serial.print(del_node->friend_id);
-    Serial.print(" , ");
-    Serial.print(del_node->seen_moment);
-    Serial.println(" ;");
+  Serial.print("Deleting : ");
+  Serial.print(del_node->friend_id);
+  Serial.print(" , ");
+  Serial.print(del_node->seen_moment);
+  Serial.println(" ;");
 
   if ((this->first == del_node) and (del_node == this->last)) {
     this->first = NULL;
