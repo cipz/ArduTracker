@@ -56,33 +56,28 @@ void List::appendNode(const char * rx_msg) {
     this->last = new_friend;
   }
   this->count++;
-  Serial.print(this->count);
+
 }
 
 //TODO RIVEDERE
 void List::removeDuplicates() {
 
-  Serial.println("removing duplicates");
+  if (this->count < 2)
+    return;
 
   Node * current_node = this->first;
-
   while (current_node) {
-
-    Serial.print(current_node->friend_id);
-    Serial.print(" ");
-    Serial.print(current_node->seen_moment);
-
     Node * next_node = current_node->next;
-
     while (next_node) {
       if (strcmp(current_node->friend_id, next_node->friend_id) == 0) {
-        Serial.print(".");
+        Node * tmp = next_node->next;
         this->removeNode(next_node);
+        next_node = tmp;
+      } else {
+        next_node = next_node->next;
       }
-      next_node = next_node->next;
     }
     current_node = current_node->next;
-    Serial.println();
   }
 }
 
@@ -102,6 +97,10 @@ void List::addNode(const char * rx_msg) {
 }
 
 void List::deleteList() {
+
+  if (!this->count)
+    return;
+
   Node * current_node = this->first;
   while (current_node) {
     Node * del = current_node;
@@ -118,34 +117,75 @@ void List::removeNode(Node * del_node) {
   Serial.print(del_node->seen_moment);
   Serial.println(" ;");
 
-  if ((this->first == del_node) and (del_node == this->last)) {
+  if (this->first == del_node)
+    this->first = del_node->next;
+
+  if (del_node->next != NULL)
+    del_node->next->prev = del_node->prev;
+  else
+    this->last = del_node->prev;
+
+  if (del_node->prev != NULL)
+    del_node->prev->next = del_node->next;
+
+  if (this->last == del_node) {
     this->first = NULL;
     this->last = NULL;
-    this->count = 0;
-    return;
   }
 
-  if (del_node == this->first) {
-    this->first = this->first->next;
-    this->first->prev = NULL;
-  } else {
-    del_node->prev->next = del_node->next;
-  }
-
-  if (del_node == this->last) {
-    this->last = this->last->prev;
-    this->last->next = NULL;
-  } else {
-    del_node->next = del_node->prev;
-  }
+  //  if ((this->first == del_node) and (del_node == this->last)) {
+  //    this->first = NULL;
+  //    this->last = NULL;
+  //    this->count = 0;
+  //    return;
+  //  }
+  //
+  //  if (del_node == this->first) {
+  //    this->first = this->first->next;
+  //    this->first->prev = NULL;
+  //  } else {
+  //    del_node->prev->next = del_node->next;
+  //  }
+  //
+  //  if (del_node == this->last) {
+  //    this->last = this->last->prev;
+  //    this->last->next = NULL;
+  //  } else {
+  //    del_node->next = del_node->prev;
+  //  }
 
   delete del_node;
-
   this->count--;
 
 }
 
 void List::printNodes() {
+
+  Serial.println();
+
+  Serial.print("There are ");
+  Serial.print(this->count);
+  Serial.println(" nodes");
+
+  if (!this->count)
+    return;
+
+  Serial.print("FIRST #1: ");
+  Serial.print(this->first->friend_id);
+  Serial.print("', ");
+  Serial.print(this->first->seen_moment);
+  Serial.println(" ;");
+
+  Serial.print("LAST #");
+  Serial.print(this->count);
+  Serial.print(": '");
+  Serial.print(this->last->friend_id);
+  Serial.print("', ");
+  Serial.print(this->last->seen_moment);
+  Serial.println(" ;");
+
+  Serial.println();
+
   int count = 0;
   Node * current_node = this->first;
   while (current_node) {
@@ -167,15 +207,23 @@ int List::getTotalNodes() {
 
 int List::compactList(int fresh) {
 
+  if (!this->count)
+    return 0;
+
   Node * current_node = this->first;
   int count = 0;
 
   while (current_node) {
     if (millis() - current_node->seen_moment > fresh) {
+      // Serial.println(millis() - current_node->seen_moment);
+      Node * tmp = current_node->next;
       this->removeNode(current_node);
+      current_node = tmp;
       count++;
+    } else {
+      current_node = current_node->next;
     }
-    current_node = current_node->next;
+
   }
 
   return count;

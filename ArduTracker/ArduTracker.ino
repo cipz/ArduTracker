@@ -85,6 +85,7 @@ void setup() {
   radio.openWritingPipe(broadcastAddress);
   radio.openReadingPipe(1, broadcastAddress);
   strlcpy(params.my_id, "IRON MAN", sizeof(params.my_id));
+  params.friendly_freshness = 5000;
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
@@ -140,21 +141,11 @@ void loop() {
   Serial.print(rx_count);
   Serial.println(" messages");
 
-  if (friend_list->getTotalNodes()) {
-    // friend_list->printNodes();
-    friend_list->compactList(params.friendly_freshness);
-  }
-
-//  Serial.println(friend_list->getTotalNodes());
-//  friend_list->printNodes();
-//
-//  if (friend_list->getTotalNodes() > 1) {
-//    // friend_list->printNodes();
-//    friend_list->removeDuplicates();
-//  }
-
-  Serial.println(friend_list->getTotalNodes());
   friend_list->printNodes();
+  friend_list->compactList(params.friendly_freshness);
+  friend_list->removeDuplicates();
+  friend_list->printNodes();
+  friend_list->deleteList();
 
   // -----------------------------------
 
