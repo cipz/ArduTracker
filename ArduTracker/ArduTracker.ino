@@ -126,6 +126,7 @@ void loop() {
   // TODO save json to sd card and test
   // TODO connect to WIFI only if variable is set
   // TODO MQTT connection
+  // TODO print function only if debug is on
 
   // SD card debugging
   if (DEBUG_MODE) {
