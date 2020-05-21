@@ -14,13 +14,13 @@ bool wifi_scan(String ssid) {
 
   if (numSsid == 0)
     return false;
-    
+
   // Print the network number and name for each network found:
   for (int thisNet = 0; thisNet < numSsid; thisNet++) {
     // Serial.println(WiFi.SSID(thisNet));
     if (WiFi.SSID(thisNet) == ssid)
       return true;
   }
-  
+
   return false;
 }

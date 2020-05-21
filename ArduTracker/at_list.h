@@ -28,13 +28,14 @@ class List {
 
     List();
     void appendNode(const char *);
-    void addNode(const char *);
     void removeNode(Node *);
     void deleteList();
     void removeDuplicates();
+    void removeDuplicates(Node *);
     void printNodes();
     int getTotalNodes();
     int compactList(int);
+    int compactList(int, Node *);
 
 };
 
@@ -59,13 +60,21 @@ void List::appendNode(const char * rx_msg) {
 
 }
 
-//TODO RIVEDERE
 void List::removeDuplicates() {
 
   if (this->count < 2)
     return;
 
-  Node * current_node = this->first;
+  this->removeDuplicates(this->first);
+
+}
+
+void List::removeDuplicates(Node * starting_node) {
+
+  if (!starting_node)
+    return;
+
+  Node * current_node = starting_node;
   while (current_node) {
     Node * next_node = current_node->next;
     while (next_node) {
@@ -79,21 +88,7 @@ void List::removeDuplicates() {
     }
     current_node = current_node->next;
   }
-}
 
-void List::addNode(const char * rx_msg) {
-
-  Node * new_friend = new Node(rx_msg);
-
-  if (!this->first) {
-    this->first = new_friend;
-    this->last = this->first;
-  } else {
-    this->last->next = new_friend;
-    new_friend->prev = this->last;
-    this->last = new_friend;
-  }
-  this->count++;
 }
 
 void List::deleteList() {
@@ -111,11 +106,13 @@ void List::deleteList() {
 
 void List::removeNode(Node * del_node) {
 
-  Serial.print("Deleting : ");
-  Serial.print(del_node->friend_id);
-  Serial.print(" , ");
-  Serial.print(del_node->seen_moment);
-  Serial.println(" ;");
+  if (DEBUG_MODE) {
+    Serial.print("Deleting : ");
+    Serial.print(del_node->friend_id);
+    Serial.print(" , ");
+    Serial.print(del_node->seen_moment);
+    Serial.println(" ;");
+  }
 
   if (this->first == del_node)
     this->first = del_node->next;
@@ -132,27 +129,6 @@ void List::removeNode(Node * del_node) {
     this->first = NULL;
     this->last = NULL;
   }
-
-  //  if ((this->first == del_node) and (del_node == this->last)) {
-  //    this->first = NULL;
-  //    this->last = NULL;
-  //    this->count = 0;
-  //    return;
-  //  }
-  //
-  //  if (del_node == this->first) {
-  //    this->first = this->first->next;
-  //    this->first->prev = NULL;
-  //  } else {
-  //    del_node->prev->next = del_node->next;
-  //  }
-  //
-  //  if (del_node == this->last) {
-  //    this->last = this->last->prev;
-  //    this->last->next = NULL;
-  //  } else {
-  //    del_node->next = del_node->prev;
-  //  }
 
   delete del_node;
   this->count--;
@@ -210,7 +186,16 @@ int List::compactList(int fresh) {
   if (!this->count)
     return 0;
 
-  Node * current_node = this->first;
+  return compactList(fresh, this->first);
+
+}
+
+int List::compactList(int fresh, Node * starting_node) {
+
+  if (!starting_node)
+    return 0;
+
+  Node * current_node = starting_node;
   int count = 0;
 
   while (current_node) {
@@ -223,9 +208,5 @@ int List::compactList(int fresh) {
     } else {
       current_node = current_node->next;
     }
-
   }
-
-  return count;
-
 }

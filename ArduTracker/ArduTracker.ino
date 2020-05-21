@@ -1,7 +1,13 @@
 
 #define SERIAL_BAUD_RATE 9600
+#define DEBUG_MODE 1
 #define MAX_WIFI_RECON_COUNT 5
 #define RESTART_SECONDS 10
+#define RANDOM_TX_MILLS_MIN 2000
+#define RANDOM_TX_MILLS_MAX 4000
+#define RANDOM_RX_MILLS_MIN 3000
+#define RANDOM_RX_MILLS_MAX 6000
+
 
 #include <SPI.h>
 #include <ArduinoJson.h>
@@ -80,13 +86,6 @@ void setup() {
   // Radio setup
   init_radio();
 
-  // TODO REMOVE, FOR TESTING WITHOUT SD CARD
-  const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
-  radio.openWritingPipe(broadcastAddress);
-  radio.openReadingPipe(1, broadcastAddress);
-  strlcpy(params.my_id, "IRON MAN", sizeof(params.my_id));
-  params.friendly_freshness = 5000;
-
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // Received data list setup
@@ -97,10 +96,20 @@ void setup() {
   // WiFi
   last_wifi_send_time = millis();
 
-  // TODO SHOULD BE SET ACCORDING TO JSON FILE
-  wifi_transmission = false;
-
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
+  if (DEBUG_MODE) {
+
+    // RADIO
+    const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
+    radio.openWritingPipe(broadcastAddress);
+    radio.openReadingPipe(1, broadcastAddress);
+    strlcpy(params.my_id, "IRON MAN", sizeof(params.my_id));
+    params.friendly_freshness = 5000;
+
+    // WiFi
+    wifi_transmission = false;
+  }
 
   Serial.println("Boot sequence finished correctly!");
   delay(100);
@@ -114,20 +123,19 @@ void loop() {
   Serial.println("\n\n\n\n\n- - - - - NEW LOOP CYCLE\n");
 
   // TODO fix code formatting / camelcase or other to all
-  // TODO uncomment reboot line when working
-  // TODO remove duplicates in list
   // TODO save json to sd card and test
   // TODO connect to WIFI only if variable is set
   // TODO MQTT connection
-  // https://www.geeksforgeeks.org/doubly-linked-list/
 
   // SD card debugging
-  // Serial.println("SD card contents: ");
-  // listFiles();
+  if (DEBUG_MODE) {
+    Serial.println("SD card contents: ");
+    listFiles();
+  }
 
   // Generating random times
-  int random_tx_time = random(2000, 4000);
-  int random_rx_time = random(3000, 6000);
+  int random_tx_time = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+  int random_rx_time = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
 
   // Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
@@ -141,16 +149,18 @@ void loop() {
   Serial.print(rx_count);
   Serial.println(" messages");
 
-  friend_list->printNodes();
-  friend_list->compactList(params.friendly_freshness);
+  //  friend_list->printNodes();
+  //  friend_list->compactList(params.friendly_freshness);
   friend_list->removeDuplicates();
   friend_list->printNodes();
-  friend_list->deleteList();
+  //  friend_list->deleteList();
 
   // -----------------------------------
 
   // SAVE DATA TO SD HERE
   // Creating string to save in file
+
+  // per ciascun nodo di friend list, se è più vecchio di, allora salva come json in sd
 
   // String current_message = "mesajio";
   //

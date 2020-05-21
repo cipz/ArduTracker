@@ -23,8 +23,10 @@ void init_radio() {
   //this is a mesh so we don't want ACKs!
   // radio.setAutoAck(false);
 
-  //  radio.openWritingPipe(params.broadcast_io_addr);
-  //  radio.openReadingPipe(1, params.broadcast_io_addr);
+  if (!DEBUG_MODE) {
+    radio.openWritingPipe(params.broadcast_io_addr);
+    radio.openReadingPipe(1, params.broadcast_io_addr);
+  }
 
   radio.setRetries(3, 5); // delay, count
 
@@ -42,7 +44,7 @@ int tx_data(int tx_time) {
 }
 
 int rx_data(int rx_time, List * new_friend_list) {
-  // must match dataToSend in master
+
   char data_received[15];
 
   int start_rx_time = millis();
