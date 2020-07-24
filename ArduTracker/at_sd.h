@@ -42,7 +42,7 @@ bool load_sd_params() {
   strlcpy(params.ssid, params_json["ssid"], sizeof(params.ssid));
   strlcpy(params.password, params_json["password"], sizeof(params.password));
 
-  params.wifi_send_time = params_json["wifi_send_time"];
+  params.wifi_send_interval = params_json["wifi_send_interval"];
 
   strlcpy(params.my_id, params_json["my_id"], sizeof(params.my_id));
 
@@ -107,12 +107,11 @@ void print_file(String filename) {
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
-// TODO WORK IN PROGRESS
 void save_in_log(String message) {
 
   cache_file = SD.open("/cache.txt", FILE_WRITE);
   if (cache_file) {
-    cache_file.println("ciao");
+    cache_file.println(message);
     cache_file.flush();
     cache_file.close();
   } else {
@@ -120,7 +119,7 @@ void save_in_log(String message) {
   }
 
   perm_file = SD.open("/perm.txt", FILE_WRITE);
-  perm_file.println("brebre");
+  perm_file.println(message);
   perm_file.close();
 
 }

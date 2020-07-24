@@ -1,6 +1,6 @@
 
 #define SERIAL_BAUD_RATE 9600
-#define DEBUG_MODE 1
+#define DEBUG_MODE 0
 #define MAX_WIFI_RECON_COUNT 5
 #define RESTART_SECONDS 10
 #define RANDOM_TX_MILLS_MIN 2000
@@ -12,6 +12,7 @@
 #include <ArduinoJson.h>
 
 #include <PubSubClient.h>
+#include <time.h>
 
 #include "at_utils.h"
 
@@ -22,7 +23,7 @@ struct Params {
   // WiFi
   char ssid[50];
   char password[50];
-  int wifi_send_time;
+  int wifi_send_interval;
   // nRF24L01
   char my_id[15];
   byte broadcast_io_addr[15];
@@ -89,8 +90,9 @@ void setup() {
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // Radio setup
+  Serial.println("Initializing radio functions");
   init_radio();
-
+  
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // Received data list setup
@@ -98,19 +100,25 @@ void setup() {
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
-  // WiFi
-  last_wifi_send_time = millis();
+  // WiFi + time
+  Serial.println("Initializing WiFi");
+  WiFi.mode(WIFI_STA);
+  last_wifi_send_time = 0;
+  wifi_transmission = true;
+  // timezone is 2
+  configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // MQTT
-
+  Serial.println("Initializing MQTT");
   client.setServer(params.mqtt_server, 1883);
-  client.setCallback(callback);
-
+  
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   if (DEBUG_MODE) {
+
+    Serial.println("Initializing DEBUG_MODE variables");
 
     // RADIO
     const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
@@ -118,12 +126,15 @@ void setup() {
     radio.openReadingPipe(1, broadcastAddress);
     strlcpy(params.my_id, "IRON MAN", sizeof(params.my_id));
     params.friendly_freshness = 5000;
-
-    // WiFi
-    strlcpy(params.ssid, "TIMTOM", sizeof(params.ssid));
-    strlcpy(params.password, "AppaFerri219", sizeof(params.password));
     
+    // WiFi
+    strlcpy(params.ssid, "NETGEAR66", sizeof(params.ssid));
+    strlcpy(params.password, "elatedowl630", sizeof(params.password));
     wifi_transmission = false;
+
+    // MQTT
+    strlcpy(params.mqtt_server, "192.168.0.13", sizeof(params.mqtt_server));
+    
   }
 
   Serial.println("Boot sequence finished correctly!");
@@ -139,9 +150,6 @@ void loop() {
 
   // TODO fix code formatting / camelcase or other to all
   // TODO save json to sd card and test
-  // TODO connect to WIFI only if variable is set
-  // TODO MQTT connection
-  // TODO print function only if debug is on
 
   // SD card debugging
   if (DEBUG_MODE) {
@@ -167,8 +175,8 @@ void loop() {
 
   //  friend_list->printNodes();
   //  friend_list->compactList(params.friendly_freshness);
-  friend_list->removeDuplicates();
-  friend_list->printNodes();
+  //  friend_list->removeDuplicates();
+  //  friend_list->printNodes();
   //  friend_list->deleteList();
 
   // -----------------------------------
@@ -190,7 +198,7 @@ void loop() {
   //  Serial.println("Saving to sd card... ");
   //  Serial.println(current_message);
   //
-  //save_in_log(current_message);
+  //  save_in_log(current_message);
 
   //  print_file("/params.json");
   //  print_file("/cache.txt");
@@ -215,9 +223,10 @@ void loop() {
 
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
+  wifi_transmission = true;
   if (wifi_transmission) {
     // Sending messages over WiFi
-    if (millis() - last_wifi_send_time > params.wifi_send_time) {
+    if (millis() - last_wifi_send_time > params.wifi_send_interval) {
       if (WiFi.status() != WL_CONNECTED) {
 
         Serial.println("Scanning available networks...");
@@ -238,7 +247,7 @@ void loop() {
             Serial.print("IP address: ");
             Serial.println(WiFi.localIP());
           } else {
-            Serial.print("Exceeded connection tries");
+            Serial.println("Exceeded connection tries");
           }
 
         } else {
@@ -258,64 +267,35 @@ void loop() {
         Serial.print("Connected to ");
         Serial.println(params.ssid);
 
+        // how to get the time
+        time_t now = time(nullptr);
+        Serial.println(ctime(&now));
+        
         // -----------------------------------
+        
+        // Loop until we're reconnected to the MQTT server
+        while (!client.connected()) {
+          Serial.print("Attempting MQTT connection...");
+          // Attempt to connect
+          if (client.connect("ESP8266Client")) {
+            Serial.println("connected");
+          } else {
+            Serial.print("failed, rc=");
+            Serial.print(client.state());
+            Serial.println(" try again in 5 seconds");
+            // Wait 5 seconds before retrying
+            delay(5000);
+          }
+        }
+            
+        client.loop();
 
-        // SEND DATA SOMEWHERE HERE
-        Serial.println("Sending data over the Internet into the future");
+        client.publish("ArduTracker", "ciao");
 
         // -----------------------------------
 
       }
       last_wifi_send_time = millis();
-    }
-  }
-}
-
-
-
-void callback(char* topic, byte* message, unsigned int length) {
-  Serial.print("Message arrived on topic: ");
-  Serial.print(topic);
-  Serial.print(". Message: ");
-  String messageTemp;
-  
-  for (int i = 0; i < length; i++) {
-    Serial.print((char)message[i]);
-    messageTemp += (char)message[i];
-  }
-  Serial.println();
-
-  // Feel free to add more if statements to control more GPIOs with MQTT
-
-  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
-  // Changes the output state according to the message
-  if (String(topic) == "esp32/output") {
-    Serial.print("Changing output to ");
-    if(messageTemp == "on"){
-      Serial.println("on");
-    }
-    else if(messageTemp == "off"){
-      Serial.println("off");
-      
-    }
-  }
-}
-
-void reconnect() {
-  // Loop until we're reconnected
-  while (!client.connected()) {
-    Serial.print("Attempting MQTT connection...");
-    // Attempt to connect
-    if (client.connect("ESP8266Client")) {
-      Serial.println("connected");
-      // Subscribe
-      client.subscribe("esp32/output");
-    } else {
-      Serial.print("failed, rc=");
-      Serial.print(client.state());
-      Serial.println(" try again in 5 seconds");
-      // Wait 5 seconds before retrying
-      delay(5000);
     }
   }
 }

@@ -5,5 +5,6 @@
     "broadcast_io_addr" : "broadcast_io_addr",
     "in_topic" : "in_topic",
     "out_topic" : "out_topic",
+    "mqtt_server" : "192.168.0.13",
     "endpoint" : "endpoint"
 }
