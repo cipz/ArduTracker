@@ -8,9 +8,10 @@
 #define RANDOM_RX_MILLS_MIN 3000
 #define RANDOM_RX_MILLS_MAX 6000
 
-
 #include <SPI.h>
 #include <ArduinoJson.h>
+
+#include <PubSubClient.h>
 
 #include "at_utils.h"
 
@@ -28,6 +29,7 @@ struct Params {
   // MQTT
   char in_topic[25];
   char out_topic[25];
+  char mqtt_server[16];
   // Other
   int friendly_freshness;
 };
@@ -39,6 +41,9 @@ Params params;
 
 bool wifi_transmission;
 int last_wifi_send_time;
+
+WiFiClient espClient;
+PubSubClient client(espClient);
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
@@ -98,6 +103,13 @@ void setup() {
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
+  // MQTT
+
+  client.setServer(params.mqtt_server, 1883);
+  client.setCallback(callback);
+
+  //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
+
   if (DEBUG_MODE) {
 
     // RADIO
@@ -108,6 +120,9 @@ void setup() {
     params.friendly_freshness = 5000;
 
     // WiFi
+    strlcpy(params.ssid, "TIMTOM", sizeof(params.ssid));
+    strlcpy(params.password, "AppaFerri219", sizeof(params.password));
+    
     wifi_transmission = false;
   }
 
@@ -252,6 +267,55 @@ void loop() {
 
       }
       last_wifi_send_time = millis();
+    }
+  }
+}
+
+
+
+void callback(char* topic, byte* message, unsigned int length) {
+  Serial.print("Message arrived on topic: ");
+  Serial.print(topic);
+  Serial.print(". Message: ");
+  String messageTemp;
+  
+  for (int i = 0; i < length; i++) {
+    Serial.print((char)message[i]);
+    messageTemp += (char)message[i];
+  }
+  Serial.println();
+
+  // Feel free to add more if statements to control more GPIOs with MQTT
+
+  // If a message is received on the topic esp32/output, you check if the message is either "on" or "off". 
+  // Changes the output state according to the message
+  if (String(topic) == "esp32/output") {
+    Serial.print("Changing output to ");
+    if(messageTemp == "on"){
+      Serial.println("on");
+    }
+    else if(messageTemp == "off"){
+      Serial.println("off");
+      
+    }
+  }
+}
+
+void reconnect() {
+  // Loop until we're reconnected
+  while (!client.connected()) {
+    Serial.print("Attempting MQTT connection...");
+    // Attempt to connect
+    if (client.connect("ESP8266Client")) {
+      Serial.println("connected");
+      // Subscribe
+      client.subscribe("esp32/output");
+    } else {
+      Serial.print("failed, rc=");
+      Serial.print(client.state());
+      Serial.println(" try again in 5 seconds");
+      // Wait 5 seconds before retrying
+      delay(5000);
     }
   }
 }

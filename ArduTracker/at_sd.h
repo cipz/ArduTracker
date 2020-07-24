@@ -54,6 +54,7 @@ bool load_sd_params() {
   // MQTT
   strlcpy(params.in_topic, params_json["in_topic"], sizeof(params.in_topic));
   strlcpy(params.out_topic, params_json["out_topic"], sizeof(params.out_topic));
+  strlcpy(params.mqtt_server, params_json["mqtt_server"], sizeof(params.mqtt_server));
 
   // Other
   params.friendly_freshness = params_json["friendly_freshness"] | 20000;
