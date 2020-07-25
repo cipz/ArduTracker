@@ -112,7 +112,6 @@ void save_in_log(String message) {
   cache_file = SD.open("/cache.txt", FILE_WRITE);
   if (cache_file) {
     cache_file.println(message);
-    cache_file.flush();
     cache_file.close();
   } else {
     Serial.println("Error opening cache");

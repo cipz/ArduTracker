@@ -3,19 +3,30 @@
 class Node {
   public:
     char friend_id[15];
-    int seen_moment;
+    int seen_millis;
+    time_t seen_time;
     Node * prev;
     Node * next;
 
     Node(const char *);
+    Node(const char *, int, time_t, Node *, Node *);
 
 };
 
-Node::Node(const char * rx_msg) {
-  strlcpy(this->friend_id, rx_msg, sizeof(this->friend_id));
-  this->seen_moment = millis();
+Node::Node(const char * new_friend_id) {
+  strlcpy(this->friend_id, new_friend_id, sizeof(this->friend_id));
+  this->seen_millis = millis();
+  this->seen_time = time(nullptr);
   this->prev = NULL;
   this->next = NULL;
+}
+
+Node::Node(const char * new_friend_id, int new_seen_millis, time_t new_seen_time, Node * new_prev, Node * new_next) {
+  strlcpy(this->friend_id, new_friend_id, sizeof(this->friend_id));
+  this->seen_millis = new_seen_millis;
+  this->seen_time = new_seen_time;
+  this->prev = new_prev;
+  this->next = new_next;
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
@@ -28,6 +39,8 @@ class List {
 
     List();
     void appendNode(const char *);
+    void appendNode(Node *);
+    void appendList(List *);
     void removeNode(Node *);
     void deleteList();
     void removeDuplicates();
@@ -57,6 +70,39 @@ void List::appendNode(const char * rx_msg) {
     this->last = new_friend;
   }
   this->count++;
+
+}
+
+void List::appendNode(Node * new_node) {
+
+  Node * new_friend = new Node(new_node->friend_id, new_node->seen_millis, new_node->seen_time, new_node->prev, new_node->next);
+  if (!this->first) {
+    this->first = new_friend;
+    this->last = this->first;
+  } else {
+    this->last->next = new_friend;
+    new_friend->prev = this->last;
+    this->last = new_friend;
+  }
+  this->count++;
+
+}
+
+void List::appendList(List * new_list) {
+
+  if(!new_list->first)
+    return;
+
+  if (this->first) {
+    this->last->next = new_list->first;
+    this->last = new_list->last;
+  } else {
+    Node * current_node = new_list->first;
+    while (current_node) {
+      this->appendNode(current_node);
+      current_node = current_node->next;
+    }
+  }
 
 }
 
@@ -110,7 +156,7 @@ void List::removeNode(Node * del_node) {
     Serial.print("Deleting : ");
     Serial.print(del_node->friend_id);
     Serial.print(" , ");
-    Serial.print(del_node->seen_moment);
+    Serial.print(del_node->seen_millis);
     Serial.println(" ;");
   }
 
@@ -149,7 +195,7 @@ void List::printNodes() {
   Serial.print("FIRST #1: ");
   Serial.print(this->first->friend_id);
   Serial.print("', ");
-  Serial.print(this->first->seen_moment);
+  Serial.print(this->first->seen_millis);
   Serial.println(" ;");
 
   Serial.print("LAST #");
@@ -157,7 +203,7 @@ void List::printNodes() {
   Serial.print(": '");
   Serial.print(this->last->friend_id);
   Serial.print("', ");
-  Serial.print(this->last->seen_moment);
+  Serial.print(this->last->seen_millis);
   Serial.println(" ;");
 
   Serial.println();
@@ -171,7 +217,7 @@ void List::printNodes() {
     Serial.print(": '");
     Serial.print(current_node->friend_id);
     Serial.print("', ");
-    Serial.print(current_node->seen_moment);
+    Serial.print(current_node->seen_millis);
     Serial.println(" ;");
     current_node = current_node->next;
   }
@@ -199,8 +245,8 @@ int List::compactList(int fresh, Node * starting_node) {
   int count = 0;
 
   while (current_node) {
-    if (millis() - current_node->seen_moment > fresh) {
-      // Serial.println(millis() - current_node->seen_moment);
+    if (millis() - current_node->seen_millis > fresh) {
+      // Serial.println(millis() - current_node->seen_millis);
       Node * tmp = current_node->next;
       this->removeNode(current_node);
       current_node = tmp;
@@ -209,4 +255,6 @@ int List::compactList(int fresh, Node * starting_node) {
       current_node = current_node->next;
     }
   }
+
+  this->last->next = NULL;
 }

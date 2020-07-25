@@ -43,7 +43,7 @@ int tx_data(int tx_time) {
   return msg_count;
 }
 
-int rx_data(int rx_time, List * new_friend_list) {
+int rx_data(int rx_time, List * tmp_friend_list) {
 
   char data_received[15];
 
@@ -54,7 +54,7 @@ int rx_data(int rx_time, List * new_friend_list) {
     if ( radio.available() ) {
       radio.read(&data_received, sizeof(data_received));
       if(DEBUG_MODE) printRxData(data_received);
-      friend_list->appendNode(data_received);
+      tmp_friend_list->appendNode(data_received);
       msg_count++;
     }
     delay(100);

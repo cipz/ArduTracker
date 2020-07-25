@@ -92,7 +92,7 @@ void setup() {
   // Radio setup
   Serial.println("Initializing radio functions");
   init_radio();
-  
+
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   // Received data list setup
@@ -103,7 +103,7 @@ void setup() {
   // WiFi + time
   Serial.println("Initializing WiFi");
   WiFi.mode(WIFI_STA);
-  last_wifi_send_time = 0;
+  last_wifi_send_time = 1000000000;
   wifi_transmission = true;
   // timezone is 2
   configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
@@ -113,20 +113,20 @@ void setup() {
   // MQTT
   Serial.println("Initializing MQTT");
   client.setServer(params.mqtt_server, 1883);
-  
+
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
   if (DEBUG_MODE) {
 
     Serial.println("Initializing DEBUG_MODE variables");
 
-    // RADIO
+    // Radio
     const byte broadcastAddress[5] = {'R', 'x', 'T', 'x', '0'};
     radio.openWritingPipe(broadcastAddress);
     radio.openReadingPipe(1, broadcastAddress);
     strlcpy(params.my_id, "IRON MAN", sizeof(params.my_id));
     params.friendly_freshness = 5000;
-    
+
     // WiFi
     strlcpy(params.ssid, "NETGEAR66", sizeof(params.ssid));
     strlcpy(params.password, "elatedowl630", sizeof(params.password));
@@ -134,7 +134,7 @@ void setup() {
 
     // MQTT
     strlcpy(params.mqtt_server, "192.168.0.13", sizeof(params.mqtt_server));
-    
+
   }
 
   Serial.println("Boot sequence finished correctly!");
@@ -148,10 +148,6 @@ void loop() {
 
   Serial.println("\n\n\n\n\n- - - - - NEW LOOP CYCLE\n");
 
-  // TODO fix code formatting / camelcase or other to all
-  // TODO save json to sd card and test
-
-  // SD card debugging
   if (DEBUG_MODE) {
     Serial.println("SD card contents: ");
     listFiles();
@@ -166,43 +162,50 @@ void loop() {
   // Radio receiving
   int start_rx_time = millis();
   radio.startListening();
-  List * new_friend_list = new List();
-  int rx_count = rx_data(random_rx_time, new_friend_list);
+  List * tmp_friend_list = new List();
+  int rx_count = rx_data(random_rx_time, tmp_friend_list);
 
   Serial.print("Received ");
   Serial.print(rx_count);
   Serial.println(" messages");
 
-  //  friend_list->printNodes();
-  //  friend_list->compactList(params.friendly_freshness);
-  //  friend_list->removeDuplicates();
-  //  friend_list->printNodes();
-  //  friend_list->deleteList();
-
   // -----------------------------------
 
-  // SAVE DATA TO SD HERE
-  // Creating string to save in file
+  // Saving files to sd card
+  Serial.println("friend_list->printNodes();");
+  friend_list->printNodes();
+  Serial.println("tmp_friend_list->printNodes();");
+  tmp_friend_list->printNodes();
+  tmp_friend_list->removeDuplicates();
+  friend_list->appendList(tmp_friend_list);
+  friend_list->compactList(params.friendly_freshness);
+  Serial.println("tmp_friend_list->printNodes();");
+  tmp_friend_list->printNodes();
+  Node * tmp_friend = tmp_friend_list->first;
+  while (tmp_friend) {
 
-  // per ciascun nodo di friend list, se è più vecchio di, allora salva come json in sd
+    if (WiFi.status() != WL_CONNECTED)
+      tmp_friend->seen_time = time(nullptr);
 
-  // String current_message = "mesajio";
-  //
-  //  //  String current_message = "{\
-  //  //\"id\" : \"" + (String)current_id + "\", \
-  //  //\"air\" : \"" + (String)ppm + "\", \
-  //  //" + gps + " \
-  //  //\"tpc\" : \"" + out_topic + "\"\
-  //  //}";
-  //
-  //  Serial.println("Saving to sd card... ");
-  //  Serial.println(current_message);
-  //
-  //  save_in_log(current_message);
+    // Creating string to save in file
+    String current_message = "{\
+\"my_id\" : \"" + (String)params.my_id + "\", \
+\"friend_id\" : \"" + (String)tmp_friend->friend_id + "\", \
+\"seen_millis\" : \"" + (String)tmp_friend->seen_millis + "\", \
+\"seen_time\" : \"" + (String)tmp_friend->seen_time + "\" \
+}";
 
-  //  print_file("/params.json");
-  //  print_file("/cache.txt");
-  //  print_file("/perm.txt");
+    Serial.println(tmp_friend->seen_millis);
+    tmp_friend = tmp_friend->next;
+
+    Serial.println("Saving to sd card... ");
+    Serial.println(current_message);
+    save_in_log(current_message);
+
+  }
+
+  // Removing tmp_list
+  tmp_friend_list->deleteList();
 
   // -----------------------------------
 
@@ -223,7 +226,6 @@ void loop() {
 
   Serial.println("\n -- -- -- -- -- -- -- -- \n");
 
-  wifi_transmission = true;
   if (wifi_transmission) {
     // Sending messages over WiFi
     if (millis() - last_wifi_send_time > params.wifi_send_interval) {
@@ -267,14 +269,10 @@ void loop() {
         Serial.print("Connected to ");
         Serial.println(params.ssid);
 
-        // how to get the time
-        time_t now = time(nullptr);
-        Serial.println(ctime(&now));
-        
         // -----------------------------------
-        
-        // Loop until we're reconnected to the MQTT server
-        while (!client.connected()) {
+
+        int mqtt_conn_attempts = 0;
+        while ((!client.connected()) and (mqtt_conn_attempts < 3)) {
           Serial.print("Attempting MQTT connection...");
           // Attempt to connect
           if (client.connect("ESP8266Client")) {
@@ -282,15 +280,50 @@ void loop() {
           } else {
             Serial.print("failed, rc=");
             Serial.print(client.state());
-            Serial.println(" try again in 5 seconds");
-            // Wait 5 seconds before retrying
-            delay(5000);
+            Serial.println(" try again in 3 seconds");
+            delay(3000);
           }
+          mqtt_conn_attempts++;
         }
-            
+
         client.loop();
 
-        client.publish("ArduTracker", "ciao");
+        Serial.print("Sending all the contents of the cache file to ");
+        Serial.print(params.mqtt_server);
+        Serial.print(" with topic ");
+        Serial.println(params.out_topic);
+
+        int stringIndex = 0;
+        char inputString[200];
+        int inputChar;    
+
+        File cache_log_file = SD.open("cache_log.txt");
+        inputChar = cache_log_file.read();
+
+        while (inputChar != -1) {
+          if (inputChar != '\n') {
+            inputString[stringIndex] = inputChar;
+            stringIndex++;
+            inputString[stringIndex] = '\0';
+          } else {
+            Serial.print("[Sending] : ");
+            Serial.println(inputString);
+            client.publish(params.out_topic, inputString);
+            delay(50);
+            stringIndex = 0;
+          }
+          inputChar = cache_log_file.read();
+        }
+        Serial.print("All records have been sent to ");
+        Serial.println(params.mqtt_server);
+
+        cache_log_file.close();
+
+        // Recreating log file
+        SD.remove("cache_log.txt");
+        cache_log_file = SD.open("cache_log.txt", FILE_WRITE);
+        cache_log_file.close();
+
 
         // -----------------------------------
 
