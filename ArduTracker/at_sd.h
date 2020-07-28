@@ -10,6 +10,7 @@ File perm_file;
 bool init_sd();
 bool load_sd_params(Params);
 void init_log_files();
+void print_file(String); 
 void save_in_log(String);
 void printDirectory(File, int);
 void listFiles();
@@ -129,6 +130,29 @@ void listFiles() {
   File root = SD.open("/");
   printDirectory(root, 0);
   Serial.println("done! ----------");
+}
+
+// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+
+void printFile(File current_file) {
+    
+  int stringIndex = 0;
+  char inputString[200];
+  int inputChar;
+
+  inputChar = current_file.read();
+
+  while (inputChar != -1) {
+    if (inputChar != '\n') {
+      inputString[stringIndex] = inputChar;
+      stringIndex++;
+      inputString[stringIndex] = '\0';
+    } else {
+      Serial.println(inputString);
+      stringIndex = 0;
+    }
+    inputChar = current_file.read();
+  }
 }
 
 // -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --

@@ -89,10 +89,10 @@ void List::appendNode(Node * new_node) {
 }
 
 void List::appendList(List * new_list) {
-
+    
   if(!new_list->first)
     return;
-
+    
   if (this->first) {
     this->last->next = new_list->first;
     this->last = new_list->last;
@@ -101,6 +101,7 @@ void List::appendList(List * new_list) {
     while (current_node) {
       this->appendNode(current_node);
       current_node = current_node->next;
+      Serial.println("Error here");
     }
   }
 

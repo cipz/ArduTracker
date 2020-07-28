@@ -174,11 +174,16 @@ void loop() {
   // Saving files to sd card
   Serial.println("friend_list->printNodes();");
   friend_list->printNodes();
+
   Serial.println("tmp_friend_list->printNodes();");
   tmp_friend_list->printNodes();
+
+  Serial.println("removing duplicates from tmp_friend_list");
   tmp_friend_list->removeDuplicates();
+  
   friend_list->appendList(tmp_friend_list);
   friend_list->compactList(params.friendly_freshness);
+
   Serial.println("tmp_friend_list->printNodes();");
   tmp_friend_list->printNodes();
   Node * tmp_friend = tmp_friend_list->first;
@@ -195,12 +200,12 @@ void loop() {
 \"seen_time\" : \"" + (String)tmp_friend->seen_time + "\" \
 }";
 
-    Serial.println(tmp_friend->seen_millis);
-    tmp_friend = tmp_friend->next;
-
     Serial.println("Saving to sd card... ");
     Serial.println(current_message);
     save_in_log(current_message);
+
+    Serial.println(tmp_friend->seen_millis);
+    tmp_friend = tmp_friend->next;
 
   }
 
@@ -293,11 +298,13 @@ void loop() {
         Serial.print(" with topic ");
         Serial.println(params.out_topic);
 
+        client.publish(params.out_topic, "TRANSMISSION TEST");
+
         int stringIndex = 0;
         char inputString[200];
-        int inputChar;    
+        int inputChar;
 
-        File cache_log_file = SD.open("cache_log.txt");
+        File cache_log_file = SD.open("/cache.txt");
         inputChar = cache_log_file.read();
 
         while (inputChar != -1) {
@@ -320,8 +327,8 @@ void loop() {
         cache_log_file.close();
 
         // Recreating log file
-        SD.remove("cache_log.txt");
-        cache_log_file = SD.open("cache_log.txt", FILE_WRITE);
+        SD.remove("/cache.txt");
+        cache_log_file = SD.open("/cache.txt", FILE_WRITE);
         cache_log_file.close();
 
 
