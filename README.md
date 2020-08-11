@@ -1,5 +1,9 @@
 # ArduTracker
 
+## TODOs
+- check/fix appendList function
+- string is not saved in SD card, probably because of communication error between ESP32 / nRF24L01 / sd module in SPI
+
 WHAT IT IS
 WHY IT IS
 
@@ -133,11 +137,16 @@ To connect the SD Module I have adapted a simple Arduino example
 
 Explain why the sd card adapter does not play well with others
 
+## Raspberry Pi and MQTT server
+The Mosquitto MQTT server can be set on a Raspberry Pi in the network and it uses IBM's Node-Red.
+To configure it I have followed [this](https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/) tutorial.
+
 ## Useful links:
 
 ### Tutorials
 - [Communication nRF24L01 avec cartes ESP32 et ESP8266 ](http://electroniqueamateur.blogspot.com/2019/12/communication-nrf24l01-avec-cartes.html?m=0)
 - [Interfacing Micro SD Card Module with Arduino](https://lastminuteengineers.com/arduino-micro-sd-card-module-tutorial/)
+- [ESP32 MQTT – Publish and Subscribe with Arduino IDE](https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/)
 
 ### Circuit
 - [ESP32 Fritzing file](https://forum.fritzing.org/t/esp32s-hiletgo-dev-boad-with-pinout-template/5357?u=steelgoose)
