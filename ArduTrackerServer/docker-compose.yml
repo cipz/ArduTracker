@@ -4,7 +4,7 @@
 #  Eclipse Mosquitto (with MQTT) + Database + Web panel
 #
 
-version: '3'
+version: '2'
 
 networks:
   ardu-tracker-net:
