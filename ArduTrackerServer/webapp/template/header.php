@@ -19,7 +19,7 @@
   <nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
     <div class="container">
       <a class="navbar-brand" href="./">
-        <img src="assets/images/logo.png" width="28" height="28" class="at-logo" alt="">
+        <img src="assets/images/logo.png" width="24" height="24" class="at-logo" alt="">
         ArduTracker &nbsp;
       </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarResponsive" aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
@@ -28,7 +28,7 @@
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
             <li class="nav-item">
-                <a class="nav-link" href="tracking-list.php">Tracking List</a>
+                <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
             </li>
         </ul>
       </div>
@@ -36,4 +36,4 @@
   </nav>
 
 <div class="container py-3 at-container">
-<?php if(isset($_CURRENT_PAGE_NAME)) echo "<h1 class='my-3'>$_CURRENT_PAGE_NAME</h1>"; ?>
+<?php if(isset($_CURRENT_PAGE_NAME)) echo "<h1 class='my-3 h2 at-title'>$_CURRENT_PAGE_NAME</h1>"; ?>
