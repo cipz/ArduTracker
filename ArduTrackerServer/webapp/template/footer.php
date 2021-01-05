@@ -4,7 +4,7 @@
 
 
 <div class="container text-secondary text-center my-4 small">
-    ArduTracker webapp <?=(DEBUG??"(<span class='text-danger'>Debug mode ON</span>)")?> - Project on <a href="<?=REPO;?>">Github</a>    
+    ArduTracker webapp <?=($_DEBUG?"(<code>DEBUG ON</code>)":"")?> - Project on <a href="<?=REPO;?>">Github</a>    
 </div>
 
 
