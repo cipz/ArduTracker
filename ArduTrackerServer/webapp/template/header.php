@@ -27,9 +27,12 @@
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
         <ul class="navbar-nav ml-auto">
-            <li class="nav-item">
-                <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
-            </li>
+          <li class="nav-item">
+              <a class="nav-link" href="index.php"><i class='fas fa-home'></i> Homepage</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
+          </li>
         </ul>
       </div>
     </div>
