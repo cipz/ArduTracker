@@ -16,8 +16,8 @@
 With docker compose, we want to have an auto-configured environment to turn on and off containers without having to configure anything manually in different OS. 
 The only 2 commands to use are:
 
-- Start: `docker-compose up -d`
-- Stop: `docker-compose down`
+- Start: `docker-compose up --build -d`
+- Stop: `docker-compose down -v`
 
 ### Mosquitto (MQTT server broker)
 

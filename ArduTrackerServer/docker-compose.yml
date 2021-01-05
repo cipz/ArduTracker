@@ -1,8 +1,8 @@
 #
 #  ArduTracker Server 
 #
-#  Eclipse Mosquitto (with MQTT) + Database + Web panel
-#
+#  Eclipse Mosquitto (with MQTT) + Web panel
+#  + Database + Collector
 
 version: '2'
 
@@ -11,10 +11,10 @@ networks:
     driver: bridge
 
 services:
-   mosquitto:
+  mosquitto:
     image: eclipse-mosquitto
     hostname: mosquitto
-    container_name: mosquitto
+    container_name: at_mosquitto
     expose:
       - "1883"
       - "9001"
@@ -27,7 +27,13 @@ services:
       - ardu-tracker-net
     environment:
       - TZ=Europe/Rome
+  collector:    
+    container_name: at_collector
+    build: ./collector
+    networks:
+      - ardu-tracker-net
+    depends_on: 
+      - mosquitto
 
-# TODO: data collector
-# TODO: database MYSQL
+# TODO: database MYSQL (currently externally hosted)
 # TODO: Web panel
