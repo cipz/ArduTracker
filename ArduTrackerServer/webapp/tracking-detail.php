@@ -1,6 +1,6 @@
 <?php
  require_once 'res/config.php';
- $_CURRENT_PAGE_NAME = 'Tracking list';
+ $_CURRENT_PAGE_NAME = 'Tracking detail';
  require_once 'template/header.php';
 ?>
 
@@ -17,12 +17,16 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                <th scope="col">IDs</th>
+                <th scope="col">ID-1</th>
+                <th scope="col">ID-2</th>
+                <th scope="col">Last seen (millis)</th>
+                <th scope="col">Last date</th>
+                <th scope="col">Created at</th> 
                 </tr>
             </thead>
             <tbody>
                 <?php 
-                    require_once 'controller/tracking-list.php';
+                    require_once 'controller/tracking-detail.php';
                 ?>
             </tbody> 
         </table>

@@ -22,14 +22,14 @@ if($_DEBUG)
 // Database 
 
 $_DBC = array();
-$_DBC['host'] = 'localhost';
-$_DBC['user'] = 'root';
-$_DBC['password'] = '';
-$_DBC['database'] = 'db';
+$_DBC['host'] = 'ip1.debug.ovh';
+$_DBC['user'] = 'admin_ardutrack';
+$_DBC['password'] = '1q9p7lETVi';
+$_DBC['database'] = 'admin_ardutrackerdb';
 
 
 // -----------------------------------
-// Global usefull variables 
+// Global useful variables 
 
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 
