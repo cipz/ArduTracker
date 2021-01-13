@@ -3,7 +3,7 @@
 class database
 {
 
-    public static $mysqli;
+    public $mysqli;
     private $fetchMode = MYSQLI_BOTH;
     private $result;
     

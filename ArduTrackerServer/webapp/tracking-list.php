@@ -1,5 +1,5 @@
 <?php
- require_once 'res/config.php';
+ require_once 'res/resources.php';
  $_CURRENT_PAGE_NAME = 'Tracking list';
  require_once 'template/header.php';
 ?>
@@ -8,8 +8,8 @@
     <div class="col-lg-3">
         <div class="card">
             <div class="card-body">
-                <h5 class="card-title text-muted mb-4">Something aside</h5>
-                Maybe <a href="#">urls</a>?
+                <h5 class="card-title text-muted mb-4">Stats</h5>
+                <strong>Total tracking logs:</strong> <?=getTotalRecords();?>
             </div>
         </div>
     </div>

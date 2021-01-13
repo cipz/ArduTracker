@@ -3,7 +3,7 @@ require_once 'res/database.php';
 $db = new database();
 
 $db->query(
-    'SELECT DISTINCT my_id FROM tracking_log 
+    'SELECT DISTINCT my_id FROM tracking_log
     UNION
     SELECT DISTINCT friend_id FROM tracking_log');
 

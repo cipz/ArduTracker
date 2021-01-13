@@ -1,5 +1,5 @@
 <?php
- require_once 'res/config.php';
+ require_once 'res/resources.php';
  $_CURRENT_PAGE_NAME = 'Homepage';
  require_once 'template/header.php';
 ?>
@@ -14,7 +14,6 @@
             </div>
         </div>
     </div>
-    <div class="col-lg-6"></div>
 </div>
 
 <?php
