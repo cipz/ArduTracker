@@ -11,6 +11,7 @@
                 <h5 class="card-title text-muted mb-4">Welcome to the ArduTrack Project</h5>
                 <p class="card-text">This web application is a proof of concept used to visualize data tracking from the ArduTracker components.</p>
                 <p class="card-text">Please, follow the links above to navigate inside this site.</p>
+                <a href="controller/publish.php" class="btn btn-primary">Generate test contact</a>
             </div>
         </div>
     </div>
