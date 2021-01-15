@@ -34,6 +34,19 @@ services:
       - ardu-tracker-net
     depends_on: 
       - mosquitto
+  webapp:
+    build: ./webapp
+    container_name: at_webapp
+    restart: always
+    expose:
+      - "80"
+      - "443"
+    ports:
+      - "8080:80"
+      - "4430:443"
+    volumes: 
+      - ./webapp:/var/www/html/
+    networks:
+      - ardu-tracker-net
 
 # TODO: database MYSQL (currently externally hosted)
-# TODO: Web panel
