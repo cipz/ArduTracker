@@ -5,8 +5,8 @@ import json
 # Database
 db_user = "admin_ardutrack"
 db_password = "1q9p7lETVi"
-db_database = "admin_ardutrackerdb"
-db_host = "ip1.debug.ovh"
+db_database = "ardutrackerdb"
+db_host = "database"
 db_port = "3306" # default: 3306
 
 # Mqtt server

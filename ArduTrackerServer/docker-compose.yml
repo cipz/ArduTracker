@@ -10,6 +10,9 @@ networks:
   ardu-tracker-net:
     driver: bridge
 
+volumes:
+  db_data:
+
 services:
   mosquitto:
     image: eclipse-mosquitto
