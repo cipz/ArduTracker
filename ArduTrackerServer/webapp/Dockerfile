@@ -9,5 +9,5 @@ RUN chmod +x /usr/local/bin/install-php-extensions && sync && \
 COPY . /var/www/html/
 
 # Adding Python packages
-RUN apt-get update && apt-get install -y python python-pip
+RUN apt-get update && apt-get install -y python3 python-pip
 RUN pip install -r /var/www/html/res/python/requirements.txt

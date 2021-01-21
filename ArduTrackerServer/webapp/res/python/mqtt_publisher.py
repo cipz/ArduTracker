@@ -5,20 +5,21 @@ import json
 import random
 
 # Mqtt server
-mqtt_host = "mqtt.ardutracker.debug.ovh"
+mqtt_host = "mosquitto"
 mqtt_id = "123"
 mqtt_topic = "math/wnma/ardutrack"
+mqtt_port = 1883 # default: 1883
 
 ################# MQTT #################
 print("[MQTT] Creating new instance")
 client = mqtt.Client(mqtt_id)
 
 # Connection
-print("[MQTT] Connecting to", mqtt_host)
-client.connect(mqtt_host) 
+print("[MQTT] Connecting to ", mqtt_host)
+client.connect(mqtt_host, port=mqtt_port) 
 
 # Time
-print("[MQTT] Publishing message to topic", mqtt_topic)
+print("[MQTT] Publishing message to topic ", mqtt_topic)
 millis = int(round(time() * 1000))
 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 

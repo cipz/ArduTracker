@@ -5,7 +5,7 @@
 // Static 
 
 define("DEBUG", true);
-define("VERSION", "0.1");
+define("VERSION", "0.1.0");
 define("REPO", "https://github.com/cipz/ArduTracker");
 
 
@@ -22,10 +22,10 @@ if($_DEBUG)
 // Database 
 
 $_DBC = array();
-$_DBC['host'] = 'ip1.debug.ovh';
+$_DBC['host'] = 'database';
 $_DBC['user'] = 'admin_ardutrack';
 $_DBC['password'] = '1q9p7lETVi';
-$_DBC['database'] = 'admin_ardutrackerdb';
+$_DBC['database'] = 'ardutrackerdb';
 
 
 // -----------------------------------

@@ -48,5 +48,32 @@ services:
       - ./webapp:/var/www/html/
     networks:
       - ardu-tracker-net
-
-# TODO: database MYSQL (currently externally hosted)
+    depends_on: 
+      - database
+  database:
+    image: mysql:5.7
+    container_name: at_database
+    restart: always    
+    environment:
+      MYSQL_ROOT_PASSWORD: superSecurePassword
+      MYSQL_DATABASE: ardutrackerdb
+      MYSQL_USER: admin_ardutrack
+      MYSQL_PASSWORD: 1q9p7lETVi
+    networks:
+      - ardu-tracker-net
+    volumes:
+      - db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    container_name: at_phpmyadmin
+    restart: always
+    ports:
+      - '8081:80'
+    environment:
+      PMA_HOST: database
+      MYSQL_ROOT_PASSWORD: superSecurePassword
+    networks:
+      - ardu-tracker-net
+    depends_on:
+      - database
