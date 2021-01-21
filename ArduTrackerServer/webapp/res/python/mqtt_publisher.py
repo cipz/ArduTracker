@@ -5,7 +5,7 @@ import json
 import random
 
 # Mqtt server
-mqtt_host = "debug.ovh"
+mqtt_host = "mqtt.ardutracker.debug.ovh"
 mqtt_id = "123"
 mqtt_topic = "math/wnma/ardutrack"
 

@@ -7,11 +7,13 @@ db_user = "admin_ardutrack"
 db_password = "1q9p7lETVi"
 db_database = "admin_ardutrackerdb"
 db_host = "ip1.debug.ovh"
+db_port = "3306" # default: 3306
 
 # Mqtt server
 mqtt_host = "debug.ovh"
 mqtt_id = "py_client"
 mqtt_topic = "math/wnma/ardutrack"
+mqtt_port = 1883 # default: 1883
 
 ################# Database #################
 
@@ -22,7 +24,8 @@ def mysql_write(data):
         host = db_host,
         user = db_user,
         password = db_password,
-        database = db_database
+        database = db_database,
+        port = db_port
     )
     # Insert
     print("[DB] Inserting into", db_database)
@@ -44,7 +47,7 @@ client = mqtt.Client(mqtt_id)
 
 # Connection
 print("[MQTT] Connecting to", mqtt_host)
-client.connect(mqtt_host) 
+client.connect(mqtt_host, port=mqtt_port) 
 
 # Callback
 def on_message(client, userdata, message):
