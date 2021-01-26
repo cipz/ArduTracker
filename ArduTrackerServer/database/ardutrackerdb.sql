@@ -29,7 +29,7 @@ SET time_zone = "+00:00";
 CREATE TABLE `tracking_log` (
   `my_id` varchar(64) NOT NULL,
   `friend_id` varchar(64) NOT NULL,
-  `seen_millis` int(11) NOT NULL,
+  `seen_millis` bigint(20) NOT NULL,
   `seen_time` datetime NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
