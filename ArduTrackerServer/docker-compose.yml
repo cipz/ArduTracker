@@ -37,6 +37,7 @@ services:
       - ardu-tracker-net
     depends_on: 
       - mosquitto
+      - database
   webapp:
     build: ./webapp
     container_name: at_webapp
