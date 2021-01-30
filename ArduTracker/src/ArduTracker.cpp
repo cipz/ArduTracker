@@ -3,7 +3,7 @@
 #define DEBUG_MODE 0
 #define MAX_WIFI_RECON_COUNT 5
 #define RESTART_SECONDS 10
-#define RANDOM_TX_MILLS_MIN 2000
+#define RANDOM_TX_MILLS_MpioIN 2000
 #define RANDOM_TX_MILLS_MAX 4000
 #define RANDOM_RX_MILLS_MIN 3000
 #define RANDOM_RX_MILLS_MAX 6000
@@ -15,7 +15,6 @@
 #include <time.h>
 
 #include "at_utils.h"
-
 #include "at_list.h"
 List * friend_list;
 
