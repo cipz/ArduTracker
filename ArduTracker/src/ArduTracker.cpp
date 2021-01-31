@@ -29,7 +29,7 @@ struct Params {
   // MQTT
   char in_topic[25];
   char out_topic[25];
-  char mqtt_server[16];
+  char mqtt_server[32]; // Expanding from 16 to 32 also for hostnames, not only ipv4 addresses
   // Other
   int friendly_freshness;
 };
@@ -111,7 +111,7 @@ void setup() {
 
   // MQTT
   Serial.println("Initializing MQTT");
-  client.setServer(params.mqtt_server, 1883);
+  client.setServer(params.mqtt_server, 21883); // default 1883, for this project 21883
 
   //\\//\\//\\//\\//\\//\\//\\//\\//\\//\\
 
