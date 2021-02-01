@@ -297,7 +297,8 @@ void loop() {
         Serial.print(" with topic ");
         Serial.println(params.out_topic);
 
-        client.publish(params.out_topic, "TRANSMISSION TEST");
+        // yep, its working
+        // client.publish(params.out_topic, "TRANSMISSION TEST");
 
         int stringIndex = 0;
         char inputString[200];
