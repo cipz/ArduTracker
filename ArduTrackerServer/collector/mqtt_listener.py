@@ -51,6 +51,7 @@ client.connect(mqtt_host, port=mqtt_port)
 
 # Callback
 def on_message(client, userdata, message):
+    print("[Parsing] ", message)
     msg = message.payload.decode("utf-8")
     data = json.loads(msg)
     mysql_write(data)
