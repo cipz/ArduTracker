@@ -57,7 +57,7 @@ def on_message(client, userdata, message):
         data = json.loads(msg)
         mysql_write(data)
     except json.JSONDecodeError:
-        print("[DecodeError]", data)
+        print("[DecodeError]", msg)
 
 client.on_message = on_message
 
