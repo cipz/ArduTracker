@@ -10,10 +10,10 @@ db_host = "database"
 db_port = "3306" # default: 3306
 
 # Mqtt server
-mqtt_host = "ardutracker.debug.ovh"
+mqtt_host = "mosquitto"
 mqtt_id = "py_client"
 mqtt_topic = "math/wnma/ardutrack"
-mqtt_port = 21883 # default: 1883
+mqtt_port = 1883 # default: 1883
 
 ################# Database #################
 
