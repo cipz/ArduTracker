@@ -5,10 +5,10 @@ import json
 import random
 
 # Mqtt server
-mqtt_host = "mosquitto"
+mqtt_host = "ardutracker.debug.ovh"
 mqtt_id = "123"
 mqtt_topic = "math/wnma/ardutrack"
-mqtt_port = 1883 # default: 1883
+mqtt_port = 21883 # default: 1883
 
 ################# MQTT #################
 print("[MQTT] Creating new instance")

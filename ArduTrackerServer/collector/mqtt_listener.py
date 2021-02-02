@@ -10,10 +10,10 @@ db_host = "database"
 db_port = "3306" # default: 3306
 
 # Mqtt server
-mqtt_host = "mosquitto"
+mqtt_host = "ardutracker.debug.ovh"
 mqtt_id = "py_client"
 mqtt_topic = "math/wnma/ardutrack"
-mqtt_port = 1883 # default: 1883
+mqtt_port = 21883 # default: 1883
 
 ################# Database #################
 
@@ -28,7 +28,7 @@ def mysql_write(data):
         port = db_port
     )
     # Insert
-    print("[DB] Inserting into ", db_database)
+    print("[DB] Inserting into", db_database)
     cursor = mydb.cursor()
     sql = "INSERT INTO tracking_log (my_id, friend_id, seen_millis, seen_time) VALUES (%s,%s,%s,%s);"
     val = (
@@ -42,24 +42,27 @@ def mysql_write(data):
     mydb.close()
 
 ################# MQTT #################
-print("[MQTT] Creating new instance ")
+print("[MQTT] Creating new instance")
 client = mqtt.Client(mqtt_id)
 
 # Connection
-print("[MQTT] Connecting to ", mqtt_host)
+print("[MQTT] Connecting to", mqtt_host)
 client.connect(mqtt_host, port=mqtt_port) 
 
 # Callback
 def on_message(client, userdata, message):
-    print("[Parsing] ", message)
+    print("[Parsing]", message)
     msg = message.payload.decode("utf-8")
-    data = json.loads(msg)
-    mysql_write(data)
+    try:
+        data = json.loads(msg)
+        mysql_write(data)
+    except json.JSONDecodeError:
+        print("[DecodeError]", data)
 
 client.on_message = on_message
 
 # Subscribe
-print("[MQTT] Subscribing to topic ", mqtt_topic)
+print("[MQTT] Subscribing to topic", mqtt_topic)
 client.subscribe(mqtt_topic)
 
 # Loop
