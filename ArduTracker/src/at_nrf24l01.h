@@ -10,7 +10,7 @@ RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void init_radio();
 int tx_data(int);
-int rx_data(int, List *);
+int rx_data(int, LinkedList<Log> *);
 void printTxData(char *);
 void printRxData(char *);
 
@@ -45,7 +45,7 @@ int tx_data(int tx_time) {
   return msg_count;
 }
 
-int rx_data(int rx_time, List * tmp_friend_list) {
+int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
 
   char data_received[15];
 
@@ -55,9 +55,17 @@ int rx_data(int rx_time, List * tmp_friend_list) {
   while (millis() - start_rx_time < rx_time) {
     if ( radio.available() ) {
       radio.read(&data_received, sizeof(data_received));
-      // printRxData(data_received); // FIXME: check here
-      tmp_friend_list->appendNode(data_received);
+      // printRxData(data_received); // FIXME: check here, update logic!
+      tmp_friend_list->add(Log(data_received));
       // A: [B] [C] --> B.friendly_freshness > soglia --> tengo, altrimenti no
+
+      // ============
+
+      
+
+
+
+      // ============
       msg_count++;
     }
     delay(100);

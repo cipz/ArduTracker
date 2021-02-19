@@ -53,10 +53,10 @@ class RadioController {
         init_radio();
     }
 
-    List* receive() {
+    LinkedList<Log>* receive() {
         int startRxTime = millis();
         radio.startListening();
-        List* tmpFriendList = new List();
+        LinkedList<Log>* tmpFriendList = new LinkedList<Log>();
         int rxCount = rx_data(RandomRxTime, tmpFriendList);
 
         Serial.printf("\nReceived %d messages.", rxCount);

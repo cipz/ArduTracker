@@ -11,6 +11,7 @@
 #include <PubSubClient.h>
 #include <time.h>
 #include <ArduinoJson.h>
+#include <LinkedList.h>
 
 bool wifiTransmission;
 int lastWifiSendTime;
@@ -32,9 +33,8 @@ struct Params {
 };
 Params params;
 
-
+#include "at_log.h"
 #include "at_utils.h"
-#include "at_list.h"
 #include "at_nrf24l01.h"
 #include "at_wifi.h"
 #include "at_sd.h"
@@ -47,7 +47,7 @@ RadioController* radioCtrl;
 WiFiContoller* wifiCtrl;
 MQTTController* mqttCtrl;
 
-List* friendList;
+LinkedList<Log> * friendList;
 
 void setup() {
 
@@ -56,7 +56,7 @@ void setup() {
 
     pinMode(CS_PIN, OUTPUT);
     pinMode(CE_PIN, OUTPUT);
-    friendList = new List();
+    friendList = new LinkedList<Log>();
 
     sdCrtl = new SDController();
     radioCtrl = new RadioController();
@@ -86,37 +86,42 @@ void loop() {
 // ! =========================
 // TO REFACTOR
 
-    List* tmpFriendList = radioCtrl->receive();
+    LinkedList<Log>* tmpFriendList = radioCtrl->receive();
 
+    
+
+/*
     friendList->printNodes();
     tmpFriendList->removeDuplicates();
     friendList->appendList(tmpFriendList);
     friendList->compactList(params.friendly_freshness);
     tmpFriendList->printNodes();
+*/
 
 //
 // ! =========================
 
-    Node* tmpFriend = tmpFriendList->first;
-    while(tmpFriend) {
+   
+    for(int i = 0; i < tmpFriendList->size(); i++){
+
+        Log tmpFriend = tmpFriendList->get(i);
+
         if(WiFi.status() != WL_CONNECTED)
-            tmpFriend->seen_millis = time(nullptr);
+            tmpFriend.seen_millis = time(nullptr);
         
         String msg = "{\n";
         msg += "  \"my_id\": \""        + (String)params.my_id + "\",\n";
-        msg += "  \"friend_id\": \""    + (String)tmpFriend->friend_id + "\",\n";
-        msg += "  \"seen_millis\": \""  + (String)tmpFriend->seen_millis + "\",\n";
-        msg += "  \"seen_time\": \""    + (String)tmpFriend->seen_time + "\",\n";
+        msg += "  \"friend_id\": \""    + (String)tmpFriend.friend_id + "\",\n";
+        msg += "  \"seen_millis\": \""  + (String)tmpFriend.seen_millis + "\",\n";
+        msg += "  \"seen_time\": \""    + (String)tmpFriend.seen_time + "\",\n";
         msg += "}";
 
         Serial.print("Saving to SD . . .");
         Serial.print(msg);
 
         sdCrtl->saveInLog(msg);
-
-        tmpFriend = tmpFriend->next;
     }
-    tmpFriendList->deleteList();
+    tmpFriendList->clear();
 
     delay(50);
 
