@@ -56,14 +56,23 @@ int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
     if ( radio.available() ) {
       radio.read(&data_received, sizeof(data_received));
       // printRxData(data_received); // FIXME: check here, update logic!
-      tmp_friend_list->add(Log(data_received));
+      
       // A: [B] [C] --> B.friendly_freshness > soglia --> tengo, altrimenti no
 
       // ============
 
-      
 
+      // Avoiding duplicates x * O(n)
+      // -------------------
+      int index = 0;
+      for( ; index < tmp_friend_list->size(); ++index) {  
+        if(strcmp(tmp_friend_list->get(index).friend_id, data_received) == 0)
+          break;
+      }
 
+      if(index == tmp_friend_list->size()) { //Non presente nella lista
+        tmp_friend_list->add(Log(data_received));
+      }
 
       // ============
       msg_count++;

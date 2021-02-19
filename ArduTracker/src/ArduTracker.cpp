@@ -87,22 +87,56 @@ void loop() {
 // TO REFACTOR
 
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
-
+    // PRE: La lista contiene solo il primo contatto
     
+    // DEBUG print
+    for(int i = 0; i < friendList->size(); ++i){
+        Serial.printf(
+            "\n[DEBUG-BEFORE]{FriendID = %s, SeenMillis = %d, SeenTime = %d}\n", 
+            friendList->get(i).friend_id, 
+            friendList->get(i).seen_millis,
+            friendList->get(i).seen_time);
+    }
+
+    // Append list
+    for(int i = 0; i < tmpFriendList->size(); ++i){
+        friendList->add(tmpFriendList->get(i));
+    }
+
+    // Clear list
+    tmpFriendList->clear();
+    
+    // Compact list
+    for(int i = 0; i<friendList->size(); ++i) {
+        if (millis() - friendList->get(i).seen_millis > params.friendly_freshness) {
+            friendList->remove(i);
+        }
+    }
+
+    // DEBUG print
+    for(int i = 0; i < friendList->size(); ++i){
+        Serial.printf(
+            "\n[DEBUG-AFTER]{FriendID = %s, SeenMillis = %d, SeenTime = %d}\n", 
+            friendList->get(i).friend_id, 
+            friendList->get(i).seen_millis,
+            friendList->get(i).seen_time);
+    }
 
 /*
-    friendList->printNodes();
-    tmpFriendList->removeDuplicates();
+    friendList->printNodes(); 
+    tmpFriendList->removeDuplicates(); // OK by design
     friendList->appendList(tmpFriendList);
     friendList->compactList(params.friendly_freshness);
     tmpFriendList->printNodes();
 */
 
+    // POST: La lista contiene il contatto più recente in base alla soglia "friendly_freshness"
+
 //
 // ! =========================
 
    
-    for(int i = 0; i < tmpFriendList->size(); i++){
+    for(int i = 0; i < tmpFriendList->size(); ++i){
 
         Log tmpFriend = tmpFriendList->get(i);
 
