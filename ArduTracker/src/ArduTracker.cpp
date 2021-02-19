@@ -49,9 +49,8 @@ MQTTController* mqttCtrl;
 
 List* friendList;
 
-
-
 void setup() {
+
     Serial.begin(SERIAL_BAUD_RATE);
     Serial.println("Booting device");
 
@@ -78,10 +77,14 @@ void setup() {
 }
 
 void loop() {
+
     Serial.println("\n\n-- -- -- NEW LOOP CYCLE -- -- --\n");
 
     if(DEBUG_MODE) 
         sdCrtl->listContent();
+
+// ! =========================
+// TO REFACTOR
 
     List* tmpFriendList = radioCtrl->receive();
 
@@ -90,6 +93,9 @@ void loop() {
     friendList->appendList(tmpFriendList);
     friendList->compactList(params.friendly_freshness);
     tmpFriendList->printNodes();
+
+//
+// ! =========================
 
     Node* tmpFriend = tmpFriendList->first;
     while(tmpFriend) {
@@ -120,7 +126,7 @@ void loop() {
     wifiCtrl->send();
     
     Serial.printf(
-        "Sending from cache to %s with topic %s", 
+        "\nSending from cache to %s with topic %s", 
         params.mqtt_server, 
         params.out_topic);
 
@@ -131,6 +137,7 @@ void loop() {
     File cacheLogFile = SD.open(CACHE_FILE);
     inputChar = cacheLogFile.read();
     
+    Serial.println("Sending:");
     while(inputChar != EOF) {
         if(inputChar != '\n') {
             inputStr[strIndex] = inputChar;
@@ -138,16 +145,15 @@ void loop() {
             inputStr[strIndex] = '\0';
         }
         else {
-            Serial.printf("Sending:\n%s", inputStr);
+            Serial.println(inputStr);
             client.publish(params.out_topic, inputStr);
             delay(50);
             strIndex = 0;
         }
         inputChar = cacheLogFile.read();
     }
-    Serial.printf("All records have been sent to %s", params.mqtt_server);
+    Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
     cacheLogFile.close();
 
     lastWifiSendTime = millis();
-    //################# ARRIVATO QUI
 }

@@ -58,7 +58,7 @@ class SDCard {
             paramsJson["mqtt_server"], 
             sizeof(params.mqtt_server));
         
-        params.friendly_freshness = paramsJson["friendly_freshness"] | 20000;
+        params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
 
         int size = sizeof(params.broadcast_io_addr);
         char tmp[size];

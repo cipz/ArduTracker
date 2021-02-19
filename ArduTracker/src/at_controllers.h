@@ -59,17 +59,17 @@ class RadioController {
         List* tmpFriendList = new List();
         int rxCount = rx_data(RandomRxTime, tmpFriendList);
 
-        Serial.printf("Received %d messages.", rxCount);
+        Serial.printf("\nReceived %d messages.", rxCount);
         return tmpFriendList;
     }
 
     void send() {
         radio.stopListening();
-        Serial.printf("Sending id: %s", params.my_id);
+        Serial.printf("\nSending id: %s", params.my_id);
 
         int startTxTime = millis();
         int txCount = tx_data(RandomTxTime);
-        Serial.printf("Sent %d messages.", txCount);
+        Serial.printf("\nSent %d messages.", txCount);
     }
 };
 
@@ -94,15 +94,15 @@ class WiFiContoller {
             return;
         
         if(WiFi.status() != WL_CONNECTED) {
-            Serial.print("Scanning available networks...");
+            Serial.println("Scanning available networks...");
 
             if(wifi_scan(params.ssid)) {
-                Serial.print("Attempting WiFi connection");
+                Serial.println("Attempting WiFi connection");
                 int reconCount = 0;
 
                 while(WiFi.status() != WL_CONNECTED) {
                     if(reconCount > MAX_WIFI_RECON_COUNT) {
-                        Serial.print("Exceeded WiFi connection tries");
+                        Serial.println("Exceeded WiFi connection tries");
                         return;
                     }
                     Serial.print(".");
@@ -112,11 +112,11 @@ class WiFiContoller {
                     delay(50);
                 }
 
-                Serial.print("WiFi connected successfully");
-                Serial.print("IP address " + WiFi.localIP());
+                Serial.println("WiFi connected successfully");
+                Serial.println("IP address " + WiFi.localIP());
             }
             else  //!wifi_scan(params.ssid)
-                Serial.printf("%s not in range", params.ssid);
+                Serial.printf("\n%s not in range", params.ssid);
         }
         else //WiFi.status() == WL_CONNECTED
             Serial.println("WiFi already connected");
@@ -145,7 +145,7 @@ class MQTTController {
             if(client.connect("ESP8266Client"))
                 Serial.print("MQTT connected.");
             else {
-                Serial.printf("Failed, rc= %d");
+                Serial.printf("\nFailed, rc= %d");
                 Serial.print("Retrying in 3s");
                 delay(3000);
             }
