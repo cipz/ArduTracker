@@ -83,61 +83,35 @@ void loop() {
     if(DEBUG_MODE) 
         sdCrtl->listContent();
 
-// ! =========================
-// TO REFACTOR
+
+
+    //-------------------- Receive radio message
+
+    /*  --------- OLD VERSION ----------
+        friendList->printNodes(); 
+        tmpFriendList->removeDuplicates(); // OK by design
+        friendList->appendList(tmpFriendList);
+        friendList->compactList(params.friendly_freshness);
+        tmpFriendList->printNodes();
+    */
+   
+    // PRE: La lista contiene solo il primo contatto
 
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
-    // PRE: La lista contiene solo il primo contatto
-    
-    // DEBUG print
-    for(int i = 0; i < friendList->size(); ++i){
-        Serial.printf(
-            "\n[DEBUG-BEFORE]{FriendID = %s, SeenMillis = %d, SeenTime = %d}\n", 
-            friendList->get(i).friend_id, 
-            friendList->get(i).seen_millis,
-            friendList->get(i).seen_time);
-    }
 
-    // Append list
-    for(int i = 0; i < tmpFriendList->size(); ++i){
-        friendList->add(tmpFriendList->get(i));
-    }
+    ListUtils list = ListUtils(friendList, tmpFriendList);
+    list.printList("[DEBUG-BRFORE]");
+    list.appendList();
+    list.compactList();
+    list.printList("[DEBUG-AFTER]");
 
-    // Clear list
+    // Clear tmp list
     tmpFriendList->clear();
-    
-    // Compact list
-    for(int i = 0; i<friendList->size(); ++i) {
-        if (millis() - friendList->get(i).seen_millis > params.friendly_freshness) {
-            friendList->remove(i);
-        }
-    }
-
-    // DEBUG print
-    for(int i = 0; i < friendList->size(); ++i){
-        Serial.printf(
-            "\n[DEBUG-AFTER]{FriendID = %s, SeenMillis = %d, SeenTime = %d}\n", 
-            friendList->get(i).friend_id, 
-            friendList->get(i).seen_millis,
-            friendList->get(i).seen_time);
-    }
-
-/*
-    friendList->printNodes(); 
-    tmpFriendList->removeDuplicates(); // OK by design
-    friendList->appendList(tmpFriendList);
-    friendList->compactList(params.friendly_freshness);
-    tmpFriendList->printNodes();
-*/
 
     // POST: La lista contiene il contatto più recente in base alla soglia "friendly_freshness"
-
-//
-// ! =========================
-
    
-    for(int i = 0; i < tmpFriendList->size(); ++i){
-
+    //-------------------- Save list to sd
+    for(int i = 0; i < tmpFriendList->size(); ++i){ //FIXME: tmpFriendList è stata cancellata a linea 107 (?)
         Log tmpFriend = tmpFriendList->get(i);
 
         if(WiFi.status() != WL_CONNECTED)
@@ -159,6 +133,8 @@ void loop() {
 
     delay(50);
 
+
+    //-------------------- Send radio message
     radioCtrl->send();
     wifiCtrl->connect();
     mqttCtrl->connect();
@@ -173,6 +149,8 @@ void loop() {
     char inputStr[200];
     int inputChar;
 
+
+    //-------------------- Send to mqtt
     File cacheLogFile = SD.open(CACHE_FILE);
     inputChar = cacheLogFile.read();
     

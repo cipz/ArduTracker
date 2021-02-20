@@ -38,7 +38,7 @@ int tx_data(int tx_time) {
   int msg_count = 0;
   while (millis() - start_tx_time < tx_time) {
     radio.write(&params.my_id, sizeof(params.my_id));
-    // printTxData(params.my_id); // FIXME: check here
+    
     msg_count++;
     delay(100);
   }
@@ -53,24 +53,18 @@ int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
   int msg_count = 0;
 
   while (millis() - start_rx_time < rx_time) {
-    if ( radio.available() ) {
+    if (radio.available()) {
       radio.read(&data_received, sizeof(data_received));
-      // printRxData(data_received); // FIXME: check here, update logic!
-      
-      // A: [B] [C] --> B.friendly_freshness > soglia --> tengo, altrimenti no
-
       // ============
 
-
-      // Avoiding duplicates x * O(n)
-      // -------------------
+      // Avoiding duplicates: x * O(n) [before was O(n²)]
       int index = 0;
       for( ; index < tmp_friend_list->size(); ++index) {  
         if(strcmp(tmp_friend_list->get(index).friend_id, data_received) == 0)
           break;
       }
 
-      if(index == tmp_friend_list->size()) { //Non presente nella lista
+      if(index == tmp_friend_list->size()) { //Not listed
         tmp_friend_list->add(Log(data_received));
       }
 

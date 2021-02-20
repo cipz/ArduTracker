@@ -44,8 +44,8 @@ class SDController {
 };
 
 class RadioController {
-    int RandomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
-    int RandomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
+    int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+    int randomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
     
     public: 
     void init() {
@@ -57,7 +57,7 @@ class RadioController {
         int startRxTime = millis();
         radio.startListening();
         LinkedList<Log>* tmpFriendList = new LinkedList<Log>();
-        int rxCount = rx_data(RandomRxTime, tmpFriendList);
+        int rxCount = rx_data(randomRxTime, tmpFriendList);
 
         Serial.printf("\nReceived %d messages.", rxCount);
         return tmpFriendList;
@@ -68,7 +68,7 @@ class RadioController {
         Serial.printf("\nSending id: %s", params.my_id);
 
         int startTxTime = millis();
-        int txCount = tx_data(RandomTxTime);
+        int txCount = tx_data(randomTxTime);
         Serial.printf("\nSent %d messages.", txCount);
     }
 };
