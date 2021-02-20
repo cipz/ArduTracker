@@ -1,6 +1,9 @@
 import paho.mqtt.client as mqtt
 import mysql.connector
 import json
+from time import sleep
+
+RESTART_DELAY = 10
 
 # Database
 db_user = "admin_ardutrack"
@@ -42,28 +45,36 @@ def mysql_write(data):
     mydb.close()
 
 ################# MQTT #################
-print("[MQTT] Creating new instance")
-client = mqtt.Client(mqtt_id)
-
-# Connection
-print("[MQTT] Connecting to", mqtt_host)
-client.connect(mqtt_host, port=mqtt_port) 
-
 # Callback
 def on_message(client, userdata, message):
     print("[Parsing]", message)
-    msg = message.payload.decode("utf-8")
     try:
+        msg = message.payload.decode("utf-8")
         data = json.loads(msg)
         mysql_write(data)
     except json.JSONDecodeError:
-        print("[DecodeError]", msg)
+        print("[DecodeError]", message)
 
-client.on_message = on_message
+while (True):
+    try:
+        # Connection
+        print("[MQTT] Creating new instance")
+        client = mqtt.Client(mqtt_id)
+            
+        print("[MQTT] Connecting to", mqtt_host)
+        client.connect(mqtt_host, port=mqtt_port) 
 
-# Subscribe
-print("[MQTT] Subscribing to topic", mqtt_topic)
-client.subscribe(mqtt_topic)
+        client.on_message = on_message
 
-# Loop
-client.loop_forever()
+        # Subscribe
+        print("[MQTT] Subscribing to topic", mqtt_topic)
+        client.subscribe(mqtt_topic)
+
+        print("[MQTT] Connected")
+
+        # Loop
+        client.loop_forever()
+
+    except:
+        print("[Error] Retrying in {} secs".format(RESTART_DELAY))
+        sleep(RESTART_DELAY)

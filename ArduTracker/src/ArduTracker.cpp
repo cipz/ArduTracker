@@ -131,7 +131,11 @@ void loop() {
     }
     tmpFriendList->clear();
 
-    delay(50);
+    // delay(50);
+    //-------------------- Random delay befor sending (?)
+    int randomDelay = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+    Serial.printf("\nRandom delay before sending = %d millis", randomDelay);
+    delay(randomDelay);
 
 
     //-------------------- Send radio message
