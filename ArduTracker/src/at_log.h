@@ -1,4 +1,11 @@
+/*
+ *  Log class
+ *  --------
+ *  This file contains the class that describes a single log record between 2 subjects
+*/
+#pragma once
 #include <time.h>
+
 class Log {
 public:
 
@@ -12,12 +19,8 @@ public:
     int seen_millis;
     time_t seen_time;
 
-    // FIXME: is this right? 
-    void updateSeenMillis(int millis){
-        if(millis > 0)
-            this->seen_millis+millis;
-    }
-
+    // FIXME: are these useless? 
+    void updateSeenMillis(int millis);
     void updateSeenTime(time_t time);
 };
 

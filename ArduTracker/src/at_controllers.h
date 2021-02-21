@@ -1,3 +1,9 @@
+/*
+ *  Controller classes
+ *  --------
+ *  This file contains all classes for the core business logic of the program
+*/
+#pragma once
 class SDController {
     SDCard* sd;
 

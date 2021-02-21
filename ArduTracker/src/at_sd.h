@@ -1,3 +1,9 @@
+/*
+ *  SD Card class
+ *  --------
+ *  This contains the business logic for the I/O files in the SD card
+*/
+
 #pragma once
 #include <SD.h>
 

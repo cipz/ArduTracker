@@ -52,7 +52,7 @@ LinkedList<Log> * friendList;
 void setup() {
 
     Serial.begin(SERIAL_BAUD_RATE);
-    Serial.println("Booting device");
+    Serial.println("Booting device...");
 
     pinMode(CS_PIN, OUTPUT);
     pinMode(CE_PIN, OUTPUT);
@@ -83,19 +83,9 @@ void loop() {
     if(DEBUG_MODE) 
         sdCrtl->listContent();
 
+    // -------------------- Receive radio message
 
-
-    //-------------------- Receive radio message
-
-    /*  --------- OLD VERSION ----------
-        friendList->printNodes(); 
-        tmpFriendList->removeDuplicates(); // OK by design
-        friendList->appendList(tmpFriendList);
-        friendList->compactList(params.friendly_freshness);
-        tmpFriendList->printNodes();
-    */
-   
-    // PRE: La lista contiene solo il primo contatto
+    // PRE: the list contains all the contacts within a short period of time, without duplicates
 
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
 
@@ -105,18 +95,22 @@ void loop() {
     list.compactList();
     list.printList("[DEBUG-AFTER]");
 
-    // Clear tmp list
-    tmpFriendList->clear();
+    // tmpFriendList->clear();
 
-    // POST: La lista contiene il contatto più recente in base alla soglia "friendly_freshness"
+    // POST: The list contains all the contacts above the threshold called "friendly_freshness"
    
-    //-------------------- Save list to sd
-    for(int i = 0; i < tmpFriendList->size(); ++i){ //FIXME: tmpFriendList è stata cancellata a linea 107 (?)
+
+    // -------------------- Save list to SD
+
+    for(int i = 0; i < tmpFriendList->size(); ++i){
+
         Log tmpFriend = tmpFriendList->get(i);
 
         if(WiFi.status() != WL_CONNECTED)
             tmpFriend.seen_millis = time(nullptr);
         
+
+        // TODO: create a serializer in the Log class
         String msg = "{\n";
         msg += "  \"my_id\": \""        + (String)params.my_id + "\",\n";
         msg += "  \"friend_id\": \""    + (String)tmpFriend.friend_id + "\",\n";
@@ -124,21 +118,24 @@ void loop() {
         msg += "  \"seen_time\": \""    + (String)tmpFriend.seen_time + "\",\n";
         msg += "}";
 
-        Serial.print("Saving to SD . . .");
+        Serial.print("Saving to SD . . . ");
         Serial.print(msg);
-
         sdCrtl->saveInLog(msg);
+        Serial.print("Saved!");
+
     }
+    // NOTE: This temporary list will be cleared after being saved
     tmpFriendList->clear();
 
-    // delay(50);
+
     //-------------------- Random delay befor sending (?)
     int randomDelay = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
     Serial.printf("\nRandom delay before sending = %d millis", randomDelay);
     delay(randomDelay);
-
+    // FIXME: the delay must be done in the at_nrf24l01 class
 
     //-------------------- Send radio message
+
     radioCtrl->send();
     wifiCtrl->connect();
     mqttCtrl->connect();

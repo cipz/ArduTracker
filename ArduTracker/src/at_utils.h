@@ -1,3 +1,9 @@
+/*
+ *  Utils functions
+ *  --------
+ *  This file contains all some utilities to manage certain classes in the embed software
+*/
+
 #pragma once
 
 void restart(int delay_seconds) {
@@ -29,11 +35,11 @@ class ListUtils {
         }
     }
 
-    void printList(String label = "[DEBUG]") {
+    void printList(const char * label = "[DEBUG]") {
         // DEBUG print
         for (int i = 0; i < friendList->size(); ++i) {
             Serial.printf(
-                "\n%s{FriendID = %s, SeenMillis = %d, SeenTime = %d}\n",
+                "\n%s {FriendID = %s, SeenMillis = %d, SeenTime = %d}\n",
                 label,
                 friendList->get(i).friend_id,
                 friendList->get(i).seen_millis,

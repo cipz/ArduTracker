@@ -1,5 +1,11 @@
-#pragma once
+/*
+ *  nrf24l01 Module functions
+ *  --------
+ *  This file contains all the functions relative to the radio controls in order to
+ *  send and receive messages between multiple prototypes
+*/
 
+#pragma once
 #include <nRF24L01.h>
 #include <RF24.h>
 
@@ -38,9 +44,8 @@ int tx_data(int tx_time) {
   int msg_count = 0;
   while (millis() - start_tx_time < tx_time) {
     radio.write(&params.my_id, sizeof(params.my_id));
-    
     msg_count++;
-    delay(100);
+    delay(100); // TODO: change this delay to random
   }
   return msg_count;
 }
@@ -64,19 +69,21 @@ int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
           break;
       }
 
-      if(index == tmp_friend_list->size()) { //Not listed
+      if(index == tmp_friend_list->size()) { // Non listed friend, gets added
         tmp_friend_list->add(Log(data_received));
       }
 
       // ============
       msg_count++;
     }
-    delay(100);
+    delay(100); // FIXME: change this to be random or not?
   }
 
   return msg_count;
 
 }
+
+// ------------------ Debugging
 
 void printTxData(char * data) {
   Serial.print(" =====> Data sent: ");
