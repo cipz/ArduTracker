@@ -45,7 +45,11 @@ int tx_data(int tx_time) {
   while (millis() - start_tx_time < tx_time) {
     radio.write(&params.my_id, sizeof(params.my_id));
     msg_count++;
-    delay(100); // TODO: change this delay to random
+    
+    int randomDelay = random(50, 200);
+    delay(randomDelay);
+
+    // delay(100); // TODO: change this delay to random
   }
   return msg_count;
 }
@@ -76,7 +80,7 @@ int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
       // ============
       msg_count++;
     }
-    delay(100); // FIXME: change this to be random or not?
+    delay(75); // FIXME: change this to be random or not?
   }
 
   return msg_count;

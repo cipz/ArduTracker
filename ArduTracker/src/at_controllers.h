@@ -47,11 +47,21 @@ class SDController {
         sd->saveInLog(msg);
     }
 
+    void saveInStats(int tx, int rx) {
+        String msg = millis() + String("\t") +
+                    tx + String("\t") + 
+                    rx + String("\n");
+        sd->saveAndAppendInStats(msg);
+    }
+
 };
 
 class RadioController {
     int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
     int randomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
+
+    int statsTx = 0;
+    int statsRx = 0;
     
     public: 
     void init() {
@@ -66,6 +76,7 @@ class RadioController {
         int rxCount = rx_data(randomRxTime, tmpFriendList);
 
         Serial.printf("\nReceived %d messages.", rxCount);
+        this->statsRx = rxCount;
         return tmpFriendList;
     }
 
@@ -75,7 +86,16 @@ class RadioController {
 
         int startTxTime = millis();
         int txCount = tx_data(randomTxTime);
+        this->statsTx = txCount;
         Serial.printf("\nSent %d messages.", txCount);
+    }
+
+    int getStatsTx() {
+        return this->statsTx;
+    }
+
+    int getStatsRx() {
+        return this->statsRx;
     }
 };
 

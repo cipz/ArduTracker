@@ -90,7 +90,7 @@ void loop() {
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
 
     ListUtils list = ListUtils(friendList, tmpFriendList);
-    list.printList("[DEBUG-BRFORE]");
+    list.printList("[DEBUG-BEFORE]");
     list.appendList();
     list.compactList();
     list.printList("[DEBUG-AFTER]");
@@ -101,6 +101,7 @@ void loop() {
    
 
     // -------------------- Save list to SD
+    // TODO: move the logic to SD Controller
 
     for(int i = 0; i < tmpFriendList->size(); ++i){
 
@@ -129,14 +130,18 @@ void loop() {
 
 
     //-------------------- Random delay befor sending (?)
-    int randomDelay = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+    /*int randomDelay = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
     Serial.printf("\nRandom delay before sending = %d millis", randomDelay);
     delay(randomDelay);
-    // FIXME: the delay must be done in the at_nrf24l01 class
+    */
+   // FIXME: the delay must be done in the at_nrf24l01 class
 
     //-------------------- Send radio message
 
     radioCtrl->send();
+
+    sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx()); // Save stats to SD Card
+
     wifiCtrl->connect();
     mqttCtrl->connect();
     wifiCtrl->send();

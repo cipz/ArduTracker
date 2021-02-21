@@ -10,10 +10,12 @@
 #define CS_PIN      22 //for SD card
 #define CACHE_FILE  "/cache.txt"
 #define PERM_FILE   "/perm.txt"
+#define STATS_FILE  "/stats.txt"
 
 class SDCard {
     File cacheFile;
     File permFile;
+    File statsFile;
 
     public: 
 
@@ -85,7 +87,7 @@ class SDCard {
         if(cacheFile)
             cacheFile.close();
         else {
-            Serial.println("ERROR creating"+ filename +"file");
+            Serial.println("ERROR creating "+ filename +" file");
             restart(RESTART_SECONDS);
         }
     }
@@ -93,6 +95,7 @@ class SDCard {
     void initLogFiles() {
         initFile(CACHE_FILE);
         initFile(PERM_FILE);
+        initFile(STATS_FILE);
     }
 
     void printFile(String filename) {
@@ -165,6 +168,16 @@ class SDCard {
         permFile.close();
     }
 
+    void saveAndAppendInStats(String msg) {
+        statsFile = SD.open(STATS_FILE, FILE_APPEND);
+        if(statsFile) {
+            statsFile.println(msg);
+            statsFile.close();
+        }
+        else {
+            Serial.println("ERROR opening Stats file");
+        }
+    }
     void listFiles() {
         File root = SD.open("/");
         printDirectory(root, 0);
