@@ -11,6 +11,7 @@
 #include <PubSubClient.h>
 #include <time.h>
 #include <ArduinoJson.h>
+#include <LinkedList.h>
 
 bool wifiTransmission;
 int lastWifiSendTime;
@@ -32,9 +33,8 @@ struct Params {
 };
 Params params;
 
-
+#include "at_log.h"
 #include "at_utils.h"
-#include "at_list.h"
 #include "at_nrf24l01.h"
 #include "at_wifi.h"
 #include "at_sd.h"
@@ -47,16 +47,16 @@ RadioController* radioCtrl;
 WiFiContoller* wifiCtrl;
 MQTTController* mqttCtrl;
 
-List* friendList;
+LinkedList<Log> * friendList;
 
 void setup() {
 
     Serial.begin(SERIAL_BAUD_RATE);
-    Serial.println("Booting device");
+    Serial.println("Booting device...");
 
     pinMode(CS_PIN, OUTPUT);
     pinMode(CE_PIN, OUTPUT);
-    friendList = new List();
+    friendList = new LinkedList<Log>();
 
     sdCrtl = new SDController();
     radioCtrl = new RadioController();
@@ -83,44 +83,65 @@ void loop() {
     if(DEBUG_MODE) 
         sdCrtl->listContent();
 
-// ! =========================
-// TO REFACTOR
+    // -------------------- Receive radio message
 
-    List* tmpFriendList = radioCtrl->receive();
+    // PRE: the list contains all the contacts within a short period of time, without duplicates
 
-    friendList->printNodes();
-    tmpFriendList->removeDuplicates();
-    friendList->appendList(tmpFriendList);
-    friendList->compactList(params.friendly_freshness);
-    tmpFriendList->printNodes();
+    LinkedList<Log>* tmpFriendList = radioCtrl->receive();
 
-//
-// ! =========================
+    ListUtils list = ListUtils(friendList, tmpFriendList);
+    list.printList("[DEBUG-BEFORE]");
+    list.appendList();
+    list.compactList();
+    list.printList("[DEBUG-AFTER]");
 
-    Node* tmpFriend = tmpFriendList->first;
-    while(tmpFriend) {
+    // tmpFriendList->clear();
+
+    // POST: The list contains all the contacts above the threshold called "friendly_freshness"
+   
+
+    // -------------------- Save list to SD
+    // TODO: move the logic to SD Controller
+
+    for(int i = 0; i < tmpFriendList->size(); ++i){
+
+        Log tmpFriend = tmpFriendList->get(i);
+
         if(WiFi.status() != WL_CONNECTED)
-            tmpFriend->seen_millis = time(nullptr);
+            tmpFriend.seen_millis = time(nullptr);
         
-        String msg = "{\n";
-        msg += "  \"my_id\": \""        + (String)params.my_id + "\",\n";
-        msg += "  \"friend_id\": \""    + (String)tmpFriend->friend_id + "\",\n";
-        msg += "  \"seen_millis\": \""  + (String)tmpFriend->seen_millis + "\",\n";
-        msg += "  \"seen_time\": \""    + (String)tmpFriend->seen_time + "\",\n";
+
+        // TODO: create a serializer in the Log class
+        String msg = "{";
+        msg += "\"my_id\": \""        + (String)params.my_id + "\",";
+        msg += "\"friend_id\": \""    + (String)tmpFriend.friend_id + "\",";
+        msg += "\"seen_millis\": \""  + (String)tmpFriend.seen_millis + "\",";
+        msg += "\"seen_time\": \""    + (String)tmpFriend.seen_time + "\"";
         msg += "}";
 
-        Serial.print("Saving to SD . . .");
+        Serial.print("Saving to SD . . . ");
         Serial.print(msg);
-
         sdCrtl->saveInLog(msg);
+        Serial.print("Saved!");
 
-        tmpFriend = tmpFriend->next;
     }
-    tmpFriendList->deleteList();
+    // NOTE: This temporary list will be cleared after being saved
+    tmpFriendList->clear();
 
-    delay(50);
+
+    //-------------------- Random delay befor sending (?)
+    /*int randomDelay = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+    Serial.printf("\nRandom delay before sending = %d millis", randomDelay);
+    delay(randomDelay);
+    */
+   // FIXME: the delay must be done in the at_nrf24l01 class
+
+    //-------------------- Send radio message
 
     radioCtrl->send();
+
+    sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx()); // Save stats to SD Card
+
     wifiCtrl->connect();
     mqttCtrl->connect();
     wifiCtrl->send();
@@ -134,10 +155,13 @@ void loop() {
     char inputStr[200];
     int inputChar;
 
+
+    //-------------------- Send to mqtt
     File cacheLogFile = SD.open(CACHE_FILE);
     inputChar = cacheLogFile.read();
     
     Serial.println("Sending:");
+
     while(inputChar != EOF) {
         if(inputChar != '\n') {
             inputStr[strIndex] = inputChar;
@@ -152,6 +176,7 @@ void loop() {
         }
         inputChar = cacheLogFile.read();
     }
+
     Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
     cacheLogFile.close();
 

@@ -1,10 +1,13 @@
-#pragma once
+/*
+ *  Wifi module functions
+ *  --------
+ *  This file contains all the functions relative to WIFI connection
+*/
 
+#pragma once
 #include <WiFi.h>
 
 bool wifi_scan(String);
-
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
 
 bool wifi_scan(String ssid) {
   byte numSsid = WiFi.scanNetworks();

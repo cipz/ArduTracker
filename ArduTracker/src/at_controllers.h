@@ -1,3 +1,9 @@
+/*
+ *  Controller classes
+ *  --------
+ *  This file contains all classes for the core business logic of the program
+*/
+#pragma once
 class SDController {
     SDCard* sd;
 
@@ -41,11 +47,21 @@ class SDController {
         sd->saveInLog(msg);
     }
 
+    void saveInStats(int tx, int rx) {
+        String msg = millis() + String("\t") +
+                    tx + String("\t") + 
+                    rx;
+        sd->saveAndAppendInStats(msg);
+    }
+
 };
 
 class RadioController {
-    int RandomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
-    int RandomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
+    int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+    int randomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
+
+    int statsTx = 0;
+    int statsRx = 0;
     
     public: 
     void init() {
@@ -53,13 +69,14 @@ class RadioController {
         init_radio();
     }
 
-    List* receive() {
+    LinkedList<Log>* receive() {
         int startRxTime = millis();
         radio.startListening();
-        List* tmpFriendList = new List();
-        int rxCount = rx_data(RandomRxTime, tmpFriendList);
+        LinkedList<Log>* tmpFriendList = new LinkedList<Log>();
+        int rxCount = rx_data(randomRxTime, tmpFriendList);
 
         Serial.printf("\nReceived %d messages.", rxCount);
+        this->statsRx = rxCount;
         return tmpFriendList;
     }
 
@@ -68,8 +85,17 @@ class RadioController {
         Serial.printf("\nSending id: %s", params.my_id);
 
         int startTxTime = millis();
-        int txCount = tx_data(RandomTxTime);
+        int txCount = tx_data(randomTxTime);
+        this->statsTx = txCount;
         Serial.printf("\nSent %d messages.", txCount);
+    }
+
+    int getStatsTx() {
+        return this->statsTx;
+    }
+
+    int getStatsRx() {
+        return this->statsRx;
     }
 };
 

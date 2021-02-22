@@ -120,7 +120,6 @@ void List::removeDuplicates(Node * starting_node) {
 
   if (!starting_node)
     return;
-
   Node * current_node = starting_node;
   while (current_node) {
     Node * next_node = current_node->next;

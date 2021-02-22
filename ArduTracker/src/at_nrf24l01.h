@@ -1,5 +1,11 @@
-#pragma once
+/*
+ *  nrf24l01 Module functions
+ *  --------
+ *  This file contains all the functions relative to the radio controls in order to
+ *  send and receive messages between multiple prototypes
+*/
 
+#pragma once
 #include <nRF24L01.h>
 #include <RF24.h>
 
@@ -10,7 +16,7 @@ RF24 radio(CE_PIN, CSN_PIN); // Create a Radio
 
 void init_radio();
 int tx_data(int);
-int rx_data(int, List *);
+int rx_data(int, LinkedList<Log> *);
 void printTxData(char *);
 void printRxData(char *);
 
@@ -38,14 +44,17 @@ int tx_data(int tx_time) {
   int msg_count = 0;
   while (millis() - start_tx_time < tx_time) {
     radio.write(&params.my_id, sizeof(params.my_id));
-    // printTxData(params.my_id); // FIXME: check here
     msg_count++;
-    delay(100);
+    
+    int randomDelay = random(50, 200);
+    delay(randomDelay);
+
+    // delay(100); // TODO: change this delay to random
   }
   return msg_count;
 }
 
-int rx_data(int rx_time, List * tmp_friend_list) {
+int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
 
   char data_received[15];
 
@@ -53,19 +62,32 @@ int rx_data(int rx_time, List * tmp_friend_list) {
   int msg_count = 0;
 
   while (millis() - start_rx_time < rx_time) {
-    if ( radio.available() ) {
+    if (radio.available()) {
       radio.read(&data_received, sizeof(data_received));
-      // printRxData(data_received); // FIXME: check here
-      tmp_friend_list->appendNode(data_received);
-      // A: [B] [C] --> B.friendly_freshness > soglia --> tengo, altrimenti no
+      // ============
+
+      // Avoiding duplicates: x * O(n) [before was O(n²)]
+      int index = 0;
+      for( ; index < tmp_friend_list->size(); ++index) {  
+        if(strcmp(tmp_friend_list->get(index).friend_id, data_received) == 0)
+          break;
+      }
+
+      if(index == tmp_friend_list->size()) { // Non listed friend, gets added
+        tmp_friend_list->add(Log(data_received));
+      }
+
+      // ============
       msg_count++;
     }
-    delay(100);
+    delay(75); // FIXME: change this to be random or not?
   }
 
   return msg_count;
 
 }
+
+// ------------------ Debugging
 
 void printTxData(char * data) {
   Serial.print(" =====> Data sent: ");
