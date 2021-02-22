@@ -161,6 +161,8 @@ void loop() {
     inputChar = cacheLogFile.read();
     
     Serial.println("Sending:");
+
+    char* msg = "";
     while(inputChar != EOF) {
         if(inputChar != '\n') {
             inputStr[strIndex] = inputChar;
@@ -168,13 +170,14 @@ void loop() {
             inputStr[strIndex] = '\0';
         }
         else {
-            Serial.println(inputStr);
-            client.publish(params.out_topic, inputStr);
+            strcat(msg, inputStr); //Concatenation
             delay(50);
             strIndex = 0;
         }
         inputChar = cacheLogFile.read();
     }
+    Serial.println(msg);
+    client.publish(params.out_topic, msg); //Send the whole message
     Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
     cacheLogFile.close();
 
