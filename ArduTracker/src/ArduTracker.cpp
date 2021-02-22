@@ -112,11 +112,11 @@ void loop() {
         
 
         // TODO: create a serializer in the Log class
-        String msg = "{\n";
-        msg += "  \"my_id\": \""        + (String)params.my_id + "\",\n";
-        msg += "  \"friend_id\": \""    + (String)tmpFriend.friend_id + "\",\n";
-        msg += "  \"seen_millis\": \""  + (String)tmpFriend.seen_millis + "\",\n";
-        msg += "  \"seen_time\": \""    + (String)tmpFriend.seen_time + "\",\n";
+        String msg = "{";
+        msg += "\"my_id\": \""        + (String)params.my_id + "\",";
+        msg += "\"friend_id\": \""    + (String)tmpFriend.friend_id + "\",";
+        msg += "\"seen_millis\": \""  + (String)tmpFriend.seen_millis + "\",";
+        msg += "\"seen_time\": \""    + (String)tmpFriend.seen_time + "\"";
         msg += "}";
 
         Serial.print("Saving to SD . . . ");
@@ -162,7 +162,6 @@ void loop() {
     
     Serial.println("Sending:");
 
-    char* msg = "";
     while(inputChar != EOF) {
         if(inputChar != '\n') {
             inputStr[strIndex] = inputChar;
@@ -170,14 +169,14 @@ void loop() {
             inputStr[strIndex] = '\0';
         }
         else {
-            strcat(msg, inputStr); //Concatenation
+            Serial.println(inputStr);
+            client.publish(params.out_topic, inputStr);
             delay(50);
             strIndex = 0;
         }
         inputChar = cacheLogFile.read();
     }
-    Serial.println(msg);
-    client.publish(params.out_topic, msg); //Send the whole message
+
     Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
     cacheLogFile.close();
 
