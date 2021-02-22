@@ -50,7 +50,7 @@ class SDController {
     void saveInStats(int tx, int rx) {
         String msg = millis() + String("\t") +
                     tx + String("\t") + 
-                    rx + String("\n");
+                    rx;
         sd->saveAndAppendInStats(msg);
     }
 

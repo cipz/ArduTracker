@@ -94,7 +94,9 @@ class SDCard {
 
     void initLogFiles() {
         initFile(CACHE_FILE);
-        initFile(PERM_FILE);
+        if (!SD.exists(PERM_FILE)) {
+            initFile(PERM_FILE);
+        }
         initFile(STATS_FILE);
     }
 
@@ -163,7 +165,7 @@ class SDCard {
             Serial.println("ERROR opening cache");
         }
 
-        permFile = SD.open(PERM_FILE, FILE_WRITE);
+        permFile = SD.open(PERM_FILE, FILE_APPEND);
         permFile.println(msg);
         permFile.close();
     }
