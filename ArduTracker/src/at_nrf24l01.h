@@ -98,3 +98,58 @@ void printRxData(char * data) {
   Serial.print(" >===== Data received: ");
   Serial.println(data);
 }
+
+
+// --------------------------------------- Controller
+
+class RadioController {
+    int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
+    int randomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
+
+    int statsTx = 0;
+    int statsRx = 0;
+    
+    public: 
+    /**
+     * Initialize radio parameters
+    */
+    void init() {
+        Serial.println("Initializing radio functions");
+        init_radio();
+    }
+
+    /**
+     * Receive messages from other devices
+     * @returns tmpFriendList
+    */  
+    LinkedList<Log>* receive() {
+        int startRxTime = millis();
+        radio.startListening();
+        LinkedList<Log>* tmpFriendList = new LinkedList<Log>();
+        int rxCount = rx_data(randomRxTime, tmpFriendList);
+
+        Serial.printf("\nReceived %d messages.", rxCount);
+        this->statsRx = rxCount;
+        return tmpFriendList;
+    }
+
+    /**
+     * Send params.my_id
+    */
+    void send() {
+        radio.stopListening();
+        Serial.printf("\nSending id: %s", params.my_id);
+
+        int startTxTime = millis();
+        int txCount = tx_data(randomTxTime);
+        this->statsTx = txCount;
+        Serial.printf("\nSent %d messages.", txCount);
+    }
+    int getStatsTx() {
+        return this->statsTx;
+    }
+
+    int getStatsRx() {
+        return this->statsRx;
+    }
+};

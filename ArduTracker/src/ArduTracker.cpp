@@ -12,6 +12,7 @@
 #include <time.h>
 #include <ArduinoJson.h>
 #include <LinkedList.h>
+#include <WiFi.h>
 
 bool wifiTransmission;
 int lastWifiSendTime;
@@ -33,14 +34,14 @@ struct Params {
 };
 Params params;
 
+WiFiClient espClient;
+PubSubClient client(espClient);
+
 #include "at_log.h"
 #include "at_utils.h"
 #include "at_nrf24l01.h"
 #include "at_wifi.h"
 #include "at_sd.h"
-WiFiClient espClient;
-PubSubClient client(espClient);
-#include "at_controllers.h"
 
 SDController* sdCrtl;
 RadioController* radioCtrl;
@@ -142,9 +143,11 @@ void loop() {
 
     sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx()); // Save stats to SD Card
 
+
+    //-------------------- Connect to WiFi
+    
     wifiCtrl->connect();
     mqttCtrl->connect();
-    wifiCtrl->send();
     
     Serial.printf(
         "\nSending from cache to %s with topic %s", 
@@ -157,6 +160,7 @@ void loop() {
 
 
     //-------------------- Send to mqtt
+    
     File cacheLogFile = SD.open(CACHE_FILE);
     inputChar = cacheLogFile.read();
     
@@ -170,7 +174,7 @@ void loop() {
         }
         else {
             Serial.println(inputStr);
-            client.publish(params.out_topic, inputStr);
+            mqttCtrl->publish(params.out_topic, inputStr);
             delay(50);
             strIndex = 0;
         }
