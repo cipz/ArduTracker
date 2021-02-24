@@ -187,3 +187,72 @@ class SDCard {
     }
 };
 
+
+// --------------------------------------- Controller
+
+class SDController {
+    SDCard* sd;
+
+    public:
+    SDController() {
+        sd = new SDCard();
+    }
+
+    /**
+     * Initialize SD class (or restart)
+    */
+    void init() {
+        Serial.print("Setting up SD card: ");
+        if(sd->init()) 
+            Serial.println("OK");
+        else {
+            Serial.println("ERROR, rebooting in 10s");
+            restart(RESTART_SECONDS);
+        }
+    }
+
+    void listContent() {
+        Serial.println("SD card content: ");
+        sd->listFiles();
+    }
+    
+    /**
+     * Get parameters from params.json file (or restart)
+    */
+    void acquireParams() {
+        Serial.print("Acquiring parameters: ");
+        if (sd->loadParams())
+            Serial.println("OK");
+        else {
+            Serial.printf("\nERROR, rebooting in %d sec", RESTART_SECONDS);
+            restart(RESTART_SECONDS);
+        }
+    }
+
+    /** 
+     * Initialize cache and perm files
+    */
+    void initLog() {
+        Serial.println("Creating log files");
+        sd->initLogFiles();
+        Serial.println("Log files correctly created!");
+    }
+
+    /**
+     * Save msg to cache (override) and perm (append)
+    */
+    void saveInLog(String msg) {
+        sd->saveInLog(msg);
+    }
+
+    /**
+     * Save statistics
+    */
+    void saveInStats(int tx, int rx) {
+        String msg = millis() + String("\t") +
+                    tx + String("\t") + 
+                    rx;
+        sd->saveAndAppendInStats(msg);
+    }
+
+};
