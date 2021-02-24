@@ -1,11 +1,30 @@
-#define SERIAL_BAUD_RATE 9600
-#define DEBUG_MODE 0
-#define MAX_WIFI_RECON_COUNT 5
-#define RESTART_SECONDS 10
+/*
+ *  ARDUTRACKER BOARD (2020 - 2021)
+ *  -----------------
+ *  Wireless Networks for mobile applications, UniPD
+ *  --------
+ *  Created by Ciprian Voinea
+ *  Edited by Federico Carboni and Mariano Sciacco
+*/
+
+// --------------------------------------- Static config
+
 #define RANDOM_TX_MILLS_MIN 2000
 #define RANDOM_TX_MILLS_MAX 4000
 #define RANDOM_RX_MILLS_MIN 3000
 #define RANDOM_RX_MILLS_MAX 6000
+#define SERIAL_BAUD_RATE 9600
+#define MAX_WIFI_RECON_COUNT 5
+#define RESTART_SECONDS 10
+#define ONBOARD_LED_PIN 2
+
+// Debug modes
+
+#define DEBUG_MODE 0
+#define SD_DEBUG_MODE 0
+#define STATS_DEBUG_MODE 1
+
+// --------------------------------------- Initialization
 
 #include <SPI.h>
 #include <PubSubClient.h>
@@ -39,6 +58,7 @@ PubSubClient client(espClient);
 
 #include "at_log.h"
 #include "at_utils.h"
+#include "at_mqtt.h"
 #include "at_nrf24l01.h"
 #include "at_wifi.h"
 #include "at_sd.h"
@@ -54,6 +74,8 @@ void setup() {
 
     Serial.begin(SERIAL_BAUD_RATE);
     Serial.println("Booting device...");
+
+    pinMode(ONBOARD_LED_PIN,OUTPUT);
 
     pinMode(CS_PIN, OUTPUT);
     pinMode(CE_PIN, OUTPUT);
@@ -77,32 +99,32 @@ void setup() {
     delay(100);
 }
 
+// --------------------------------------- Loop operations
+
 void loop() {
 
     Serial.println("\n\n-- -- -- NEW LOOP CYCLE -- -- --\n");
 
-    if(DEBUG_MODE) 
+    if(SD_DEBUG_MODE) 
         sdCrtl->listContent();
 
     // -------------------- Receive radio message
 
     // PRE: the list contains all the contacts within a short period of time, without duplicates
-
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
-
     ListUtils list = ListUtils(friendList, tmpFriendList);
-    list.printList("[DEBUG-BEFORE]");
+    if(DEBUG_MODE)
+        list.printList("[DEBUG-BEFORE]");
+    
     list.appendList();
     list.compactList();
-    list.printList("[DEBUG-AFTER]");
 
-    // tmpFriendList->clear();
-
+    if(DEBUG_MODE)
+        list.printList("[DEBUG-AFTER]");
     // POST: The list contains all the contacts above the threshold called "friendly_freshness"
    
 
     // -------------------- Save list to SD
-    // TODO: move the logic to SD Controller
 
     for(int i = 0; i < tmpFriendList->size(); ++i){
 
@@ -111,37 +133,25 @@ void loop() {
         if(WiFi.status() != WL_CONNECTED)
             tmpFriend.seen_millis = time(nullptr);
         
-
-        // TODO: create a serializer in the Log class
-        String msg = "{";
-        msg += "\"my_id\": \""        + (String)params.my_id + "\",";
-        msg += "\"friend_id\": \""    + (String)tmpFriend.friend_id + "\",";
-        msg += "\"seen_millis\": \""  + (String)tmpFriend.seen_millis + "\",";
-        msg += "\"seen_time\": \""    + (String)tmpFriend.seen_time + "\"";
-        msg += "}";
+        String msg = tmpFriend.serialize();
 
         Serial.print("Saving to SD . . . ");
-        Serial.print(msg);
+        if(DEBUG_MODE)
+            Serial.print(msg);
         sdCrtl->saveInLog(msg);
         Serial.print("Saved!");
 
     }
-    // NOTE: This temporary list will be cleared after being saved
+
     tmpFriendList->clear();
 
-
-    //-------------------- Random delay befor sending (?)
-    /*int randomDelay = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
-    Serial.printf("\nRandom delay before sending = %d millis", randomDelay);
-    delay(randomDelay);
-    */
-   // FIXME: the delay must be done in the at_nrf24l01 class
 
     //-------------------- Send radio message
 
     radioCtrl->send();
 
-    sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx()); // Save stats to SD Card
+    if(STATS_DEBUG_MODE)
+        sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
 
 
     //-------------------- Connect to WiFi
@@ -159,7 +169,7 @@ void loop() {
     int inputChar;
 
 
-    //-------------------- Send to mqtt
+    //-------------------- Send data to MQTT
     
     File cacheLogFile = SD.open(CACHE_FILE);
     inputChar = cacheLogFile.read();
@@ -185,4 +195,10 @@ void loop() {
     cacheLogFile.close();
 
     lastWifiSendTime = millis();
+
+    //-------------------- Blink ;)
+
+    digitalWrite(ONBOARD_LED_PIN,HIGH);
+    delay(1000);
+    digitalWrite(ONBOARD_LED_PIN,LOW);
 }

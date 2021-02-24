@@ -6,6 +6,8 @@
 #pragma once
 #include <time.h>
 
+// --------------------------------------- Log class data structure
+
 class Log {
 public:
 
@@ -19,8 +21,16 @@ public:
     int seen_millis;
     time_t seen_time;
 
-    // FIXME: are these useless? 
-    void updateSeenMillis(int millis);
-    void updateSeenTime(time_t time);
+    String serialize(const char * my_id = params.my_id) const {
+    
+        String msg = "{";
+        msg += "\"my_id\": \""        + (String)my_id + "\",";
+        msg += "\"friend_id\": \""    + (String)this->friend_id + "\",";
+        msg += "\"seen_millis\": \""  + (String)this->seen_millis + "\",";
+        msg += "\"seen_time\": \""    + (String)this->seen_time + "\"";
+        msg += "}";
+
+        return msg;
+    }
 };
 

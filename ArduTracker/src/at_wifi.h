@@ -6,6 +6,8 @@
 
 #pragma once
 
+// --------------------------------------- WIFI Controller class
+
 class WiFiContoller {
     public:
     /** 
