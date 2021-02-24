@@ -31,10 +31,10 @@
               <a class="nav-link" href="index.php"><i class='fas fa-home'></i> Homepage</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
+              <a class="nav-link" href="boards.php"><i class='fas fa-microchip'></i> Boards</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="boards.php"><i class='fas fa-microchip'></i> Boards</a>
+              <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
           </li>
         </ul>
       </div>

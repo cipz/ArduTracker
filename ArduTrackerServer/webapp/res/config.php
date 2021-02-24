@@ -5,7 +5,7 @@
 // Static 
 
 define("DEBUG", true);
-define("VERSION", "0.1.0");
+define("VERSION", "0.2.0");
 define("REPO", "https://github.com/cipz/ArduTracker");
 
 

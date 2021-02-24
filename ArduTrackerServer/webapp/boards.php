@@ -5,17 +5,11 @@
 ?>
 
 <div class="row">
-    <div class="col-lg-3">
-        <div class="card">
-            <div class="card-body">
-                <a href="index.php" class="btn btn-danger btn-sm mb-4">&larr; Go back Home</a>
-            </div>
-        </div>
-    </div>
-    <div class="col-lg-9">
+    <div class="col-lg-12">
         <div class="row">
-            <?php printBoards(getTotalBoards()); ?>
+            <?php $nboards = printBoards(getRecentBoards()); ?>
         </div>
+        There is a total of <?=count($nboards);?> boards.
     </div>
 </div>
 
