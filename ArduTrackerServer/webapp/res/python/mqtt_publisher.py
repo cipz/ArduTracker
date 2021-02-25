@@ -6,7 +6,7 @@ import random
 
 # Mqtt server
 mqtt_host = "mosquitto"
-mqtt_id = "123"
+mqtt_id = "py_publisher"
 mqtt_topic = "math/wnma/ardutrack"
 mqtt_port = 1883 # default: 1883
 

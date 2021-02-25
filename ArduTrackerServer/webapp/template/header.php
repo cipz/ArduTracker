@@ -8,7 +8,7 @@
   <link rel="icon" href="assets/images/logo.png">
   <title><?php if(isset($_CURRENT_PAGE_NAME)) echo "$_CURRENT_PAGE_NAME | "; ?>ArduTracker - Webapp</title>
   <!-- Bootstrap core CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta1/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-giJF6kkoqNQ00vy+HMDP7azOuL0xtbfIcaT9wjKHr8RbDVddVHyTfAAsrekwKmP1" crossorigin="anonymous">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/style.css">
   <!-- Fontawesome icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.12.0/css/all.min.css">
@@ -29,6 +29,9 @@
         <ul class="navbar-nav ml-auto">
           <li class="nav-item">
               <a class="nav-link" href="index.php"><i class='fas fa-home'></i> Homepage</a>
+          </li>
+          <li class="nav-item">
+              <a class="nav-link" href="boards.php"><i class='fas fa-microchip'></i> Boards</a>
           </li>
           <li class="nav-item">
               <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>

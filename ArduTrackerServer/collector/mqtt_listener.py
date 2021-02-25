@@ -75,6 +75,7 @@ while (True):
         # Loop
         client.loop_forever()
 
-    except:
-        print("[Error] Retrying in {} secs".format(RESTART_DELAY))
+    except Exception as e:
+        print(e)
+        print("Retrying in {} secs".format(RESTART_DELAY))
         sleep(RESTART_DELAY)

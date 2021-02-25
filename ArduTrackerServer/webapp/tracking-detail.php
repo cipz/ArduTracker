@@ -8,7 +8,7 @@
     <div class="col-lg-3">
         <div class="card">
             <div class="card-body">
-                <a href="tracking-list.php" class="btn btn-danger btn-sm mb-4">&larr; Go back</a>
+                <a href="tracking-list.php" class="btn btn-danger btn-sm mb-4">&larr; Go back to List</a>
 
                 <!--<h5 class="card-title text-muted mb-4">Stats</h5>-->
             </div>
