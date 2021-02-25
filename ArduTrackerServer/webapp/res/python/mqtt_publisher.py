@@ -20,11 +20,12 @@ client.connect(mqtt_host, port=mqtt_port)
 
 # Time
 print("[MQTT] Publishing message to topic ", mqtt_topic)
+randseen = random.randint(1000, 90000)
 millis = int(round(time() * 1000))
 timestamp = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
 # Generate ids
-id_list = ["THOR", "IRON MAN", "CAP", "HULK", "SPIDEY"]
+id_list = ["THOR", "IRON MAN", "CAP", "HULK", "SPIDEY", "RICK", "MORTY"]
 my_id = random.choice(id_list)
 friend_id = random.choice(id_list)
 while(friend_id == my_id):
@@ -34,7 +35,7 @@ while(friend_id == my_id):
 msg = {
     "my_id" : my_id,
     "friend_id" : friend_id,
-    "seen_millis" : millis,
-    "seen_time" : timestamp }
+    "seen_millis" : randseen,
+    "seen_time" : millis }
 client.publish(mqtt_topic, json.dumps(msg))
 print("Done")
