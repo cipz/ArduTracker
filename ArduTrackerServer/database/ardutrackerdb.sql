@@ -30,9 +30,9 @@ CREATE TABLE `tracking_log` (
   `my_id` varchar(64) NOT NULL,
   `friend_id` varchar(64) NOT NULL,
   `seen_millis` bigint(20) NOT NULL,
-  `seen_time` timestamp(3) NOT NULL,
+  `seen_time` bigint(20) NOT NULL,
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=ARCHIVE DEFAULT CHARSET=utf8;
 
 --
 -- Dump dei dati per la tabella `tracking_log`

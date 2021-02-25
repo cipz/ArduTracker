@@ -54,7 +54,7 @@ function printBoards($boards) {
 
 
 // Thanks stack overflow :)
-function time2String($datetime, $full = false) {
+function time2String($datetime, $full = false, $ago = true) {
     $now = new DateTime;
     $ago = new DateTime($datetime);
     $diff = $now->diff($ago);
@@ -80,5 +80,5 @@ function time2String($datetime, $full = false) {
     }
 
     if (!$full) $string = array_slice($string, 0, 1);
-    return $string ? implode(', ', $string) . ' ago' : 'just now';
+    return $string ? implode(', ', $string) . ($ago ? ' ago' : '') : 'just now';
 }
