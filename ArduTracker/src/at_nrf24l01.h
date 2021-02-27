@@ -20,7 +20,7 @@ int rx_data(int, LinkedList<Log> *);
 void printTxData(char *);
 void printRxData(char *);
 
-// -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
+// --------------------------------------- RF24 Module functions
 
 void init_radio() {
 
@@ -30,10 +30,8 @@ void init_radio() {
   //this is a mesh so we don't want ACKs!
   // radio.setAutoAck(false);
 
-  if (!DEBUG_MODE) {
-    radio.openWritingPipe(params.broadcast_io_addr);
-    radio.openReadingPipe(1, params.broadcast_io_addr);
-  }
+  radio.openWritingPipe(params.broadcast_io_addr);
+  radio.openReadingPipe(1, params.broadcast_io_addr);
 
   radio.setRetries(3, 5); // delay, count
 
@@ -45,11 +43,8 @@ int tx_data(int tx_time) {
   while (millis() - start_tx_time < tx_time) {
     radio.write(&params.my_id, sizeof(params.my_id));
     msg_count++;
-    
-    int randomDelay = random(50, 200);
-    delay(randomDelay);
 
-    // delay(100); // TODO: change this delay to random
+    delay(random(50, 200));
   }
   return msg_count;
 }
@@ -64,23 +59,21 @@ int rx_data(int rx_time, LinkedList<Log> * tmp_friend_list) {
   while (millis() - start_rx_time < rx_time) {
     if (radio.available()) {
       radio.read(&data_received, sizeof(data_received));
-      // ============
 
-      // Avoiding duplicates: x * O(n) [before was O(n²)]
+      // Avoiding duplicates: a * O(n) where a = RXpackets [before was O(n²)]
       int index = 0;
       for( ; index < tmp_friend_list->size(); ++index) {  
         if(strcmp(tmp_friend_list->get(index).friend_id, data_received) == 0)
           break;
       }
 
-      if(index == tmp_friend_list->size()) { // Non listed friend, gets added
+      if(index == tmp_friend_list->size()) { // Non listed friend are added
         tmp_friend_list->add(Log(data_received));
       }
 
-      // ============
       msg_count++;
     }
-    delay(75); // FIXME: change this to be random or not?
+    delay(75);
   }
 
   return msg_count;
@@ -100,7 +93,7 @@ void printRxData(char * data) {
 }
 
 
-// --------------------------------------- Controller
+// --------------------------------------- RF24 Controller
 
 class RadioController {
     int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
@@ -123,7 +116,6 @@ class RadioController {
      * @returns tmpFriendList
     */  
     LinkedList<Log>* receive() {
-        int startRxTime = millis();
         radio.startListening();
         LinkedList<Log>* tmpFriendList = new LinkedList<Log>();
         int rxCount = rx_data(randomRxTime, tmpFriendList);
@@ -140,7 +132,6 @@ class RadioController {
         radio.stopListening();
         Serial.printf("\nSending id: %s", params.my_id);
 
-        int startTxTime = millis();
         int txCount = tx_data(randomTxTime);
         this->statsTx = txCount;
         Serial.printf("\nSent %d messages.", txCount);

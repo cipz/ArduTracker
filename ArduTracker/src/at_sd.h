@@ -7,10 +7,12 @@
 #pragma once
 #include <SD.h>
 
-#define CS_PIN      22 //for SD card
+#define CS_PIN      22            // for SD card
 #define CACHE_FILE  "/cache.txt"
 #define PERM_FILE   "/perm.txt"
 #define STATS_FILE  "/stats.txt"
+
+// --------------------------------------- SD low-level operations
 
 class SDCard {
     File cacheFile;
@@ -24,7 +26,7 @@ class SDCard {
     }
 
     bool loadParams() {
-        //Json deserialization
+        
         if(!SD.exists("/params.json")) 
             return false;
         
@@ -37,7 +39,7 @@ class SDCard {
 
         paramsFile.close();
 
-        //Params copy
+        
         strlcpy(
             params.ssid, 
             paramsJson["ssid"], 
@@ -78,11 +80,10 @@ class SDCard {
     }
 
     void initFile(String filename) {
-        //Remove if existing
+
         if(SD.exists(filename))
             SD.remove(filename);
 
-        //Create file
         cacheFile = SD.open(filename, FILE_WRITE);
         if(cacheFile)
             cacheFile.close();
@@ -188,7 +189,7 @@ class SDCard {
 };
 
 
-// --------------------------------------- Controller
+// --------------------------------------- SD Controller class
 
 class SDController {
     SDCard* sd;
