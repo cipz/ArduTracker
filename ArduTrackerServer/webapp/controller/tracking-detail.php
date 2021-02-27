@@ -11,14 +11,17 @@ if(isset($_GET["id"])) {
 $num = $db->num();
 $data = $db->get();
 
-for($i=0; $i<$num; ++$i) {
-    echo("<tr>");
-    echo("<th scope='row'>".$data[$i]["my_id"]."</th>");
-    echo("<th scope='row'>".$data[$i]["friend_id"]."</th>");
-    echo("<td>".time2string('@'.$data[$i]["seen_millis"], true, false)."</td>");
-    echo("<td>".time2string('@'.$data[$i]["seen_time"], true, true)."</td>");
-    echo("<td>".$data[$i]["created_at"]."</td>");
-    echo("</tr>");
+function printTrackingDetail($data, $num) {
+
+    for($i=0; $i<$num; ++$i) {
+        echo("<tr>");
+        echo("<th scope='row'>".$data[$i]["my_id"]."</th>");
+        echo("<th scope='row'>".$data[$i]["friend_id"]."</th>");
+        echo("<td>".millis2string($data[$i]["seen_millis"])."</td>");
+        echo("<td>".date('Y-m-d H:i:s', $data[$i]["seen_time"]/1000)."</td>");
+        echo("<td>".time2String($data[$i]["created_at"])."</td>");
+        echo("</tr>");
+    }
 }
 
 ?>
