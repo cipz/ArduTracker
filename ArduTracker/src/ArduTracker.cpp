@@ -59,7 +59,8 @@ PubSubClient client(espClient);
 #include "at_log.h"
 #include "at_utils.h"
 #include "at_mqtt.h"
-#include "at_nrf24l01.h"
+// #include "at_nrf24l01.h"
+#include "at_ble.h"
 #include "at_wifi.h"
 #include "at_sd.h"
 
@@ -78,7 +79,7 @@ void setup() {
     pinMode(ONBOARD_LED_PIN,OUTPUT);
 
     pinMode(CS_PIN, OUTPUT);
-    pinMode(CE_PIN, OUTPUT);
+    // pinMode(CE_PIN, OUTPUT);
     friendList = new LinkedList<Log>();
 
     sdCrtl = new SDController();
@@ -110,6 +111,7 @@ void loop() {
 
     // -------------------- Receive radio message
 
+/*
     // PRE: the list contains all the contacts within a short period of time, without duplicates
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
     ListUtils list = ListUtils(friendList, tmpFriendList);
@@ -147,6 +149,8 @@ void loop() {
 
 
     //-------------------- Send radio message
+
+*/
 
     radioCtrl->send();
 
