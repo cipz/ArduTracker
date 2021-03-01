@@ -82,3 +82,27 @@ function time2String($datetime, $full = false, $ago = true) {
     if (!$full) $string = array_slice($string, 0, 1);
     return $string ? implode(', ', $string) . ($ago ? ' ago' : '') : 'just now';
 }
+
+function millis2string($millis) {
+	$sec = $millis / 1000;
+	if($sec > 60)
+		return floor($sec/60) . ' min, ' . $sec%60 . ' seconds';
+	else
+		return $sec%60 . ' seconds';
+}
+
+function calcultateLongestExposureTime($subject, $haystack) {
+
+	$friends = array();
+	foreach($haystack as $exp) {
+		if($exp['my_id'] == $subject) {
+
+			if(!isset($friends['friend_id'])) 
+				$friends[$exp['friend_id']] = $exp['seen_millis'];
+			else
+				$friends[$exp['friend_id']] = max($friends[$exp['my_friend']], $exp['seen_millis']);
+		}
+	}
+	arsort($friends);
+	return $friends;
+}
