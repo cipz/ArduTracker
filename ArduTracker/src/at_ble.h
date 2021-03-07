@@ -25,12 +25,14 @@ String stdToString(std::string str) {
 }
 
 /**
- * Callback class: called on Characteristic value changed
+ * Callback called foreach devices found
 */
-class BLECallback: public BLECharacteristicCallbacks {
-    void onWrite(BLECharacteristic* pCharacteristic) {
-        String value = stdToString(pCharacteristic->getValue());
-        Serial.printf("\nReceived value: %s", value);
+class BLEScanCallback: public BLEAdvertisedDeviceCallbacks {
+    void onResult(BLEAdvertisedDevice advertisedDevice) {
+        // TODO: check if the ble device is esp32 and if it has the ID field
+        // FIXME: maybe move this in the main class
+        Serial.printf("\nDevice: %s \n", advertisedDevice.toString().c_str());
+        Serial.printf("Payload: %s \n", advertisedDevice.getServiceData().c_str());
     }
 };
 
@@ -41,7 +43,7 @@ class RadioController {
     int statsTx = 0;
     int statsRx = 0;
 
-    BLECharacteristic* pCharacteristic;
+    BLEScan* pBLEScan;  
 
     public: 
     /**
@@ -50,30 +52,35 @@ class RadioController {
     void init() {
         Serial.println("Initializing BLE functions");
 
-        //Start BLE Server and set Characteristic
+        //Start BLE Server
         BLEDevice::init("ArduTracker_ESP32");
         BLEServer *pServer = BLEDevice::createServer();
-        BLEService *pService = pServer->createService(SERV_UUID);
-        pCharacteristic = pService->createCharacteristic(
-                                                CHAR_UUID,
-                                                BLECharacteristic::PROPERTY_READ |
-                                                BLECharacteristic::PROPERTY_WRITE
-                                            );
 
-        pCharacteristic->setCallbacks(new BLECallback());
-        pService->start();
+        // Setup Payload attached to the advertisement with my_id
+        BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
+        // pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
+        pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), params.my_id);
 
         // Advertise BLE Server readiness
         BLEAdvertising *pAdvertising = pServer->getAdvertising();
+        pAdvertising->setAdvertisementData(pAdvertisementData);
         pAdvertising->start();
+
+        // Initialize BLE scanning
+        pBLEScan = BLEDevice::getScan();
+        pBLEScan->setAdvertisedDeviceCallbacks(new BLEScanCallback);
+        pBLEScan->setActiveScan(true);
     }
 
     /**
-     * Send params.my_id
+     * Scan for other BLE devices
     */
-    void send() {
-        Serial.printf("\nSending id: %s", params.my_id);
-        pCharacteristic->setValue(params.my_id);
+    void scan() {
+        int scanDuration = 5;
+        BLEScanResults found = pBLEScan->start(scanDuration); 
+        Serial.printf("\nFound  %d devices", found.getCount());
+        pBLEScan->clearResults();
+        delay(2000);
     }
 
     int getStatsTx() {

@@ -111,6 +111,11 @@ void loop() {
 
     // -------------------- Receive radio message
 
+    radioCtrl->scan();
+    // TODO: (in BLEScanCallback) check if the device is compatible
+    // TODO: save received data to SD/ send to MQTT
+    // ....
+
 /*
     // PRE: the list contains all the contacts within a short period of time, without duplicates
     LinkedList<Log>* tmpFriendList = radioCtrl->receive();
@@ -146,13 +151,9 @@ void loop() {
     }
 
     tmpFriendList->clear();
-
-
     //-------------------- Send radio message
 
 */
-
-    radioCtrl->send();
 
     if(STATS_DEBUG_MODE)
         sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
