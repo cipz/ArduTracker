@@ -11,8 +11,11 @@
 #include <BLEUtils.h>
 // --------------------------------------- RF24 Controller
 
+#define BLE_NAME "ArduTracker_ESP32"
 #define SERV_UUID "e96bf93a-79b0-11eb-9439-0242ac130002" //random-generated
 #define CHAR_UUID "50e88e70-79b1-11eb-9439-0242ac130002" //random-generated
+
+int newFriendsCount;
 
 /**
  *  Util: converts std::string to String
@@ -23,18 +26,6 @@ String stdToString(std::string str) {
         res += str[i];
     return res;
 }
-
-/**
- * Callback called foreach devices found
-*/
-class BLEScanCallback: public BLEAdvertisedDeviceCallbacks {
-    void onResult(BLEAdvertisedDevice advertisedDevice) {
-        // TODO: check if the ble device is esp32 and if it has the ID field
-        // FIXME: maybe move this in the main class
-        Serial.printf("\nDevice: %s \n", advertisedDevice.toString().c_str());
-        Serial.printf("Payload: %s \n", advertisedDevice.getServiceData().c_str());
-    }
-};
 
 class RadioController {
     int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
@@ -53,13 +44,14 @@ class RadioController {
         Serial.println("Initializing BLE functions");
 
         //Start BLE Server
-        BLEDevice::init("ArduTracker_ESP32");
+        BLEDevice::init(BLE_NAME);
         BLEServer *pServer = BLEDevice::createServer();
 
         // Setup Payload attached to the advertisement with my_id
         BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
         // pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
         pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), params.my_id);
+        pAdvertisementData.setName(BLE_NAME);
 
         // Advertise BLE Server readiness
         BLEAdvertising *pAdvertising = pServer->getAdvertising();
@@ -68,19 +60,48 @@ class RadioController {
 
         // Initialize BLE scanning
         pBLEScan = BLEDevice::getScan();
-        pBLEScan->setAdvertisedDeviceCallbacks(new BLEScanCallback);
         pBLEScan->setActiveScan(true);
     }
 
     /**
      * Scan for other BLE devices
+     * @return the number of new friends found
     */
-    void scan() {
+    int scan() {
+        newFriendsCount = 0;
         int scanDuration = 5;
-        BLEScanResults found = pBLEScan->start(scanDuration); 
-        Serial.printf("\nFound  %d devices", found.getCount());
+        BLEScanResults devices = pBLEScan->start(scanDuration); 
+
+        for(int i=0; i<devices.getCount(); ++i){
+            BLEAdvertisedDevice advertisedDevice = devices.getDevice(i);
+
+            Serial.printf(
+                "Found: %s >> %s [%s]\n",
+                advertisedDevice.getName().c_str(),
+                advertisedDevice.getServiceData().c_str(),
+                advertisedDevice.getAddress().toString().c_str());
+
+            if(advertisedDevice.getName() != BLE_NAME) // FIXME: the Name field is not always shown!!!
+                return;
+
+            newFriendsCount++;
+
+            // Avoiding duplicates: a * O(n) where a = RXpackets [before was O(n²)]
+            int i = 0;
+            for(; i < tmpFriendList->size(); ++i) {  
+                if(strcmp(tmpFriendList->get(i).friend_id, advertisedDevice.getServiceData().c_str()) == 0)
+                    break;
+            }
+
+            if(i == tmpFriendList->size()) { // Non listed friend are added
+                tmpFriendList->add(Log(advertisedDevice.getServiceData().c_str()));
+            }
+        }
+
+        Serial.printf("\nNum. of BLE devices in range: %d\n", devices.getCount());
         pBLEScan->clearResults();
-        delay(2000);
+        // delay(2000);
+        return newFriendsCount;
     }
 
     int getStatsTx() {

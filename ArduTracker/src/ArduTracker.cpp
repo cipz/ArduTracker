@@ -60,16 +60,20 @@ PubSubClient client(espClient);
 #include "at_utils.h"
 #include "at_mqtt.h"
 // #include "at_nrf24l01.h"
+
+LinkedList<Log>* tmpFriendList;
+LinkedList<Log>* friendList;
+
 #include "at_ble.h"
 #include "at_wifi.h"
 #include "at_sd.h"
+
 
 SDController* sdCrtl;
 RadioController* radioCtrl;
 WiFiContoller* wifiCtrl;
 MQTTController* mqttCtrl;
 
-LinkedList<Log> * friendList;
 
 void setup() {
 
@@ -111,27 +115,15 @@ void loop() {
 
     // -------------------- Receive radio message
 
-    radioCtrl->scan();
-    // TODO: (in BLEScanCallback) check if the device is compatible
-    // TODO: save received data to SD/ send to MQTT
-    // ....
-
-/*
-    // PRE: the list contains all the contacts within a short period of time, without duplicates
-    LinkedList<Log>* tmpFriendList = radioCtrl->receive();
-    ListUtils list = ListUtils(friendList, tmpFriendList);
-    if(DEBUG_MODE)
-        list.printList("[DEBUG-BEFORE]");
-    
-    list.appendList();
-    list.compactList();
-
-    if(DEBUG_MODE)
-        list.printList("[DEBUG-AFTER]");
-    // POST: The list contains all the contacts above the threshold called "friendly_freshness"
-   
+    tmpFriendList = new LinkedList<Log>();
+    int count = radioCtrl->scan();
 
     // -------------------- Save list to SD
+
+    if(count <= 0) {
+        Serial.println("No new contacts found.");
+        return;
+    }
 
     for(int i = 0; i < tmpFriendList->size(); ++i){
 
@@ -152,8 +144,6 @@ void loop() {
 
     tmpFriendList->clear();
     //-------------------- Send radio message
-
-*/
 
     if(STATS_DEBUG_MODE)
         sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
@@ -179,7 +169,7 @@ void loop() {
     File cacheLogFile = SD.open(CACHE_FILE);
     inputChar = cacheLogFile.read();
     
-    Serial.println("Sending:");
+    Serial.println("\nSending:");
 
     while(inputChar != EOF) {
         if(inputChar != '\n') {
@@ -205,5 +195,6 @@ void loop() {
 
     digitalWrite(ONBOARD_LED_PIN,HIGH);
     delay(1000);
+
     digitalWrite(ONBOARD_LED_PIN,LOW);
 }
