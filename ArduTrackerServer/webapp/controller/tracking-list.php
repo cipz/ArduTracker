@@ -11,14 +11,10 @@ $num = $db->num();
 $data = $db->get();
 
 
-function printTrackingList($data, $num) {
 
-    $out = "";
-    for($i=0; $i<$num; ++$i) {
-        $id = $data[$i][0];
-        $out .= "<tr>";
-        $out .= "<td><a href='tracking-detail.php?id=$id'>$id</a></td>";
-        $out .= "</tr>";
-    }
-    return $out;
+$out = "";
+ foreach($data as $board) {
+    $out .= "<tr>";
+    $out .= "<td><i class='fas fa-microchip text-primary'></i> <a href='tracking-detail.php?id=".$board[0]."'>".$board[0]."</a></td>";
+    $out .= "</tr>";
 }

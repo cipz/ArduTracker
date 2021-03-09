@@ -67,7 +67,7 @@ class Pagination {
 							    </li>
 							    <li class='page-item $addclass_pre'>
 							      <a class='page-link' href='?page=".$before.$values."'>
-							        <span>&lsaquo;</span>
+							        <span>&lsaquo; Previous</span>
 							      </a>
 							    </li>";
 
@@ -80,7 +80,7 @@ class Pagination {
 
 			$Pagination .= "    <li class='page-item $addclass_aft'>
 								    <a class='page-link' href='?page=".$after.$values."'>
-								      <span>&rsaquo;</span>
+								      <span>Next &rsaquo;</span>
 								    </a>
 								</li>
 								<li class='page-item $addclass_aft'>

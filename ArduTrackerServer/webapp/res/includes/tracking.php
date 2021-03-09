@@ -23,11 +23,11 @@ class Tracking {
 
     static function printExposureRisk($millis) {
         if($millis/1000 < 60*LOW_RISK_MINUTES)
-            return "<span class='badge bg-secondary'>Low risk</span>";
+            return "<span class='badge bg-secondary'>Low</span>";
         elseif($millis/1000 < 60*MID_RISK_MINUTES)
-            return "<span class='badge bg-warning'>Mid risk</span>";
+            return "<span class='badge bg-warning'>Mid</span>";
         else 
-            return "<span class='badge bg-danger'>High risk</span>";        
+            return "<span class='badge bg-danger'>High</span>";        
     }
 
     static function printExposureRiskColor($millis) {
