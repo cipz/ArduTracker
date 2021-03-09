@@ -10,7 +10,7 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title text-muted mb-4">Stats</h5>
-                <strong>Total tracking logs:</strong> <?=getTotalRecords();?>
+                <strong>Total tracking logs:</strong> <?=Board::getTotalRecords();?>
             </div>
         </div>
     </div>
@@ -18,7 +18,7 @@
         <table class="table table-striped">
             <thead>
                 <tr>
-                <th scope="col">IDs</th>
+                    <th scope="col">IDs</th>
                 </tr>
             </thead>
             <tbody>

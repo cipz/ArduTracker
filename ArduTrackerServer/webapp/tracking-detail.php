@@ -22,7 +22,7 @@
 
                 <ul class="list-group mt-3">
                 <?php 
-                        $friends = calcultateLongestExposureTime($id, $data); 
+                        $friends = Tracking::calcultateLongestExposureTime($id, $data); 
 
                         foreach($friends as $friend => $ftime) {
                             echo ' <li class="list-group-item d-flex justify-content-between align-items-center">

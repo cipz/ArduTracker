@@ -7,9 +7,9 @@
 <div class="row">
     <div class="col-lg-12">
         <div class="row">
-            <?php $nboards = printBoards(getRecentBoards()); ?>
+            <?php $nboards = Board::printBoards(Board::getRecentBoards()); ?>
         </div>
-        There is a total of <?=count($nboards);?> boards.
+        There is a total of <?=count($nboards);?> boards discovered.
     </div>
 </div>
 

@@ -1,5 +1,5 @@
 <?php
-require_once 'res/database.php';
+require_once 'res/resources.php';
 $db = new database();
 if(isset($_GET["id"])) {
     $id = $_GET["id"];

@@ -7,7 +7,7 @@
 define("DEBUG", true);
 define("VERSION", "0.2.0");
 define("REPO", "https://github.com/cipz/ArduTracker");
-
+define("PAGINATION_LIMIT", "10");
 
 // -----------------------------------
 // Debug mode
