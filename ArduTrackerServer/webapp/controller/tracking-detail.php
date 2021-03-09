@@ -20,7 +20,7 @@ function printTrackingDetail($data) {
         $out .= "<tr>";
         $out .= "<th scope='row'>".$record["my_id"]."</th>";
         $out .= "<th scope='row'>".$record["friend_id"]."</th>";
-        $out .= "<td>".millis2string($record["seen_millis"])."</td>";
+        $out .= "<td>".Tracking::printExposureRisk($record['seen_millis'])." ".millis2string($record["seen_millis"])."</td>";
         $out .= "<td>".date('Y-m-d H:i:s', $record["seen_time"]/1000)."</td>";
         $out .= "<td>".time2String($record["created_at"])."</td>";
         $out .= "</tr>";
