@@ -10,11 +10,15 @@ $db->query(
 $num = $db->num();
 $data = $db->get();
 
-for($i=0; $i<$num; ++$i) {
-    $id = $data[$i][0];
-    echo("<tr>");
-    echo("<td><a href='tracking-detail.php?id=$id'>$id</a></td>");
-    echo("</tr>");
-}
 
-?>
+function printTrackingList($data, $num) {
+
+    $out = "";
+    for($i=0; $i<$num; ++$i) {
+        $id = $data[$i][0];
+        $out .= "<tr>";
+        $out .= "<td><a href='tracking-detail.php?id=$id'>$id</a></td>";
+        $out .= "</tr>";
+    }
+    return $out;
+}

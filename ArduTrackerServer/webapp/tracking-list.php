@@ -2,6 +2,7 @@
  require_once 'res/resources.php';
  $_CURRENT_PAGE_NAME = 'Tracking list';
  require_once 'template/header.php';
+ require_once 'controller/tracking-list.php';
 ?>
 
 <div class="row">
@@ -22,7 +23,7 @@
             </thead>
             <tbody>
                 <?php 
-                    require_once 'controller/tracking-list.php';
+                   echo printTrackingList($data, $num);
                 ?>
             </tbody> 
         </table>

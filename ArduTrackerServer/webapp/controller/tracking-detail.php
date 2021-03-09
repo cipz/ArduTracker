@@ -13,15 +13,16 @@ $data = $db->get();
 
 function printTrackingDetail($data, $num) {
 
+    $out = "";
     for($i=0; $i<$num; ++$i) {
-        echo("<tr>");
-        echo("<th scope='row'>".$data[$i]["my_id"]."</th>");
-        echo("<th scope='row'>".$data[$i]["friend_id"]."</th>");
-        echo("<td>".millis2string($data[$i]["seen_millis"])."</td>");
-        echo("<td>".date('Y-m-d H:i:s', $data[$i]["seen_time"]/1000)."</td>");
-        echo("<td>".time2String($data[$i]["created_at"])."</td>");
-        echo("</tr>");
+        $out .= "<tr>";
+        $out .= "<th scope='row'>".$data[$i]["my_id"]."</th>";
+        $out .= "<th scope='row'>".$data[$i]["friend_id"]."</th>";
+        $out .= "<td>".millis2string($data[$i]["seen_millis"])."</td>";
+        $out .= "<td>".date('Y-m-d H:i:s', $data[$i]["seen_time"]/1000)."</td>";
+        $out .= "<td>".time2String($data[$i]["created_at"])."</td>";
+        $out .= "</tr>";
     }
-}
 
-?>
+    return $out;
+}

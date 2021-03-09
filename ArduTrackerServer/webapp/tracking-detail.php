@@ -51,7 +51,7 @@
             </thead>
             <tbody>
                 <?php 
-                    printTrackingDetail($data, $num);
+                   echo printTrackingDetail($data, $num);
                 ?>
             </tbody> 
         </table>
