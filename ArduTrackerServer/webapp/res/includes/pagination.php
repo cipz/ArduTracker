@@ -3,24 +3,24 @@
 // -----------------------------------
 // Pagination - Functions
 
+class Pagination {
 
-    function paginationQuery($LIMIT=0)
+    static function limitQuery($LIMIT=0)
 	{
-		if(!$LIMIT) $LIMIT = PAGINATION_LIMIT;
+		if($LIMIT == 0) $LIMIT = PAGINATION_LIMIT;
 
-        if(!isset($_GET['page'])) $page = 1;
-        else $page = (int)$_GET['page'];
+        if(!isset($_GET['page'])) $Page = 1;
+        else $Page = (int)$_GET['page'];
 
-        $Page = $page;
         $Start = ($Page * $LIMIT) - $LIMIT;
     
 		return " LIMIT ".$Start.",".$LIMIT;
 	}
 
 
-	function paginationMenu($num, $values="", $LIMIT=0)
+	static function printMenu($num, $values="", $LIMIT=0)
 	{
-		if(!$LIMIT) $LIMIT = PAGINATION_LIMIT;
+		if($LIMIT == 0) $LIMIT = PAGINATION_LIMIT;
 
         if(!isset($_GET['page'])) 
             $Page = 1;
@@ -96,3 +96,5 @@
 
 		return $Pagination;
 	}	
+
+}

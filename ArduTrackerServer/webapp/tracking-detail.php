@@ -32,8 +32,6 @@
                         }
                     } 
                 ?>
-
-                
                 </ul>
             </div>
         </div>
@@ -55,6 +53,7 @@
                 ?>
             </tbody> 
         </table>
+        <?=Pagination::printMenu($num, '&id='.$_GET['id']);?>
     </div>
 </div>
 
