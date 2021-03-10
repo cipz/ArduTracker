@@ -13,7 +13,6 @@
 
 #define BLE_NAME "ArduTracker_ESP32"
 #define SERV_UUID "e96bf93a-79b0-11eb-9439-0242ac130002" //random-generated
-#define CHAR_UUID "50e88e70-79b1-11eb-9439-0242ac130002" //random-generated
 
 int newFriendsCount;
 
@@ -51,13 +50,12 @@ class RadioController {
         BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
         // pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
         pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), params.my_id);
-        pAdvertisementData.setName(BLE_NAME);
+        // pAdvertisementData.setName(BLE_NAME);
 
         // Advertise BLE Server readiness
         BLEAdvertising *pAdvertising = pServer->getAdvertising();
         pAdvertising->setAdvertisementData(pAdvertisementData);
         pAdvertising->start();
-
         // Initialize BLE scanning
         pBLEScan = BLEDevice::getScan();
         pBLEScan->setActiveScan(true);
@@ -76,30 +74,31 @@ class RadioController {
             BLEAdvertisedDevice advertisedDevice = devices.getDevice(i);
 
             Serial.printf(
-                "Found: %s >> %s [%s]\n",
+                "Found: %s >> %s [%s] RSSI:%d\n",
                 advertisedDevice.getName().c_str(),
                 advertisedDevice.getServiceData().c_str(),
-                advertisedDevice.getAddress().toString().c_str());
+                advertisedDevice.getAddress().toString().c_str(),
+                advertisedDevice.getRSSI());
 
-            if(advertisedDevice.getName() != BLE_NAME) // FIXME: the Name field is not always shown!!!
-                return;
+            if(advertisedDevice.getName() != BLE_NAME)
+                continue;
 
             newFriendsCount++;
 
             // Avoiding duplicates: a * O(n) where a = RXpackets [before was O(n²)]
-            int i = 0;
-            for(; i < tmpFriendList->size(); ++i) {  
-                if(strcmp(tmpFriendList->get(i).friend_id, advertisedDevice.getServiceData().c_str()) == 0)
+            int j = 0;
+            for(; j < tmpFriendList->size(); ++j) {  
+                if(strcmp(tmpFriendList->get(j).friend_id, advertisedDevice.getServiceData().c_str()) == 0)
                     break;
             }
 
-            if(i == tmpFriendList->size()) { // Non listed friend are added
+            if(j == tmpFriendList->size()) { // Non listed friend are added
                 tmpFriendList->add(Log(advertisedDevice.getServiceData().c_str()));
             }
         }
 
         Serial.printf("\nNum. of BLE devices in range: %d\n", devices.getCount());
-        pBLEScan->clearResults();
+        // pBLEScan->clearResults();
         // delay(2000);
         return newFriendsCount;
     }
