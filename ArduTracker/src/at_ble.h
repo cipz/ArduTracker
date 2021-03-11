@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "abstract_radio.h"
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
@@ -26,7 +27,7 @@ String stdToString(std::string str) {
     return res;
 }
 
-class RadioController {
+class BLEController : public AbsRadioController{
     int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
     int randomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
 
@@ -39,7 +40,7 @@ class RadioController {
     /**
      * Initialize radio parameters
     */
-    void init() {
+    void init() override {
         Serial.println("Initializing BLE functions");
 
         //Start BLE Server
@@ -48,9 +49,8 @@ class RadioController {
 
         // Setup Payload attached to the advertisement with my_id
         BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
-        // pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
+        pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
         pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), params.my_id);
-        // pAdvertisementData.setName(BLE_NAME);
 
         // Advertise BLE Server readiness
         BLEAdvertising *pAdvertising = pServer->getAdvertising();
@@ -65,8 +65,9 @@ class RadioController {
      * Scan for other BLE devices
      * @return the number of new friends found
     */
-    int scan() {
-        newFriendsCount = 0;
+    LinkedList<Log>* scan() override {
+        LinkedList<Log>* newFriends = new LinkedList<Log>();
+
         int scanDuration = 5;
         BLEScanResults devices = pBLEScan->start(scanDuration); 
 
@@ -80,34 +81,26 @@ class RadioController {
                 advertisedDevice.getAddress().toString().c_str(),
                 advertisedDevice.getRSSI());
 
-            if(advertisedDevice.getName() != BLE_NAME)
-                continue;
-
-            newFriendsCount++;
-
-            // Avoiding duplicates: a * O(n) where a = RXpackets [before was O(n²)]
-            int j = 0;
-            for(; j < tmpFriendList->size(); ++j) {  
-                if(strcmp(tmpFriendList->get(j).friend_id, advertisedDevice.getServiceData().c_str()) == 0)
-                    break;
-            }
-
-            if(j == tmpFriendList->size()) { // Non listed friend are added
-                tmpFriendList->add(Log(advertisedDevice.getServiceData().c_str()));
+            if(advertisedDevice.getName() == BLE_NAME){
+                newFriends->add(Log(advertisedDevice.getServiceData().c_str()));
             }
         }
 
         Serial.printf("\nNum. of BLE devices in range: %d\n", devices.getCount());
         // pBLEScan->clearResults();
         // delay(2000);
-        return newFriendsCount;
+        return newFriends;
     }
 
-    int getStatsTx() {
+    void send(){
+        return;
+    }
+
+    int getStatsTx() override{
         return this->statsTx;
     }
 
-    int getStatsRx() {
+    int getStatsRx() override{
         return this->statsRx;
     }
 };
