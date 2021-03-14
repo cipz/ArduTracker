@@ -46,7 +46,10 @@
 
                     <br>
 
-                    <input type="submit" class="btn btn-success btn-sm" name="search" value="Search"> <a href="?id=<?=$id;?>&type=<?=$type;?>" class="btn btn-outline-danger btn-sm">&times; Clear filters</a>
+                    <input type="submit" class="btn btn-success btn-sm" name="search" value="Search"> 
+                    <?php if($activeFilters) { ?> 
+                        <a href="?id=<?=$id;?>&type=<?=$type;?>" class="btn btn-outline-danger btn-sm">&times; Clear filters</a>
+                    <?php } ?>
                 </form>
             </div>
         </div>

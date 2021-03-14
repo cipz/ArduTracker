@@ -16,29 +16,29 @@ if(isset($_POST['search'])) {
     goToLocation('?id='.$id.'&type='.$type.'&risk='.$_POST['risk'].'&date_from='.$_POST['date_from'].'&date_to='.$_POST['date_to']);
 }
 
-$add = "";
-if(!empty($date_from)) $add .= " AND seen_time >= ".strtotime($date_from)*1000;
-if(!empty($date_to)) $add .= " AND seen_time <= ".strtotime($date_to)*1000;
+$add_filters = "";
+if(!empty($date_from)) $add_filters .= " AND seen_time >= ".strtotime($date_from)*1000;
+if(!empty($date_to)) $add_filters .= " AND seen_time <= ".strtotime($date_to)*1000;
 
 switch ($risk) {
-    case 'high': $add .= ' AND seen_millis > '.(1000*60*MID_RISK_MINUTES); break;
-    case 'mid': $add .= ' AND seen_millis > '.(1000*60*LOW_RISK_MINUTES) . ' AND seen_millis <= '.(1000*60*MID_RISK_MINUTES); break;
-    case 'low': $add .= ' AND seen_millis <= '.(1000*60*LOW_RISK_MINUTES); break;
+    case 'high': $add_filters .= ' AND seen_millis > '.(1000*60*MID_RISK_MINUTES); break;
+    case 'mid': $add_filters .= ' AND seen_millis > '.(1000*60*LOW_RISK_MINUTES) . ' AND seen_millis <= '.(1000*60*MID_RISK_MINUTES); break;
+    case 'low': $add_filters .= ' AND seen_millis <= '.(1000*60*LOW_RISK_MINUTES); break;
     default: break;
 }
 
 switch ($type) {
-    case 'b2a': $sql = "SELECT * FROM tracking_log WHERE my_id='$id' $add ORDER BY created_at DESC"; break;
-    case 'a2b': $sql = "SELECT * FROM tracking_log WHERE friend_id='$id' $add ORDER BY created_at DESC";  break;
-    default: $sql = "SELECT * FROM tracking_log WHERE (my_id='$id' OR friend_id='$id') $add ORDER BY created_at DESC"; break;
+    case 'b2a': $sql = "SELECT * FROM tracking_log WHERE my_id='$id' $add_filters ORDER BY created_at DESC"; break;
+    case 'a2b': $sql = "SELECT * FROM tracking_log WHERE friend_id='$id' $add_filters ORDER BY created_at DESC";  break;
+    default: $sql = "SELECT * FROM tracking_log WHERE (my_id='$id' OR friend_id='$id') $add_filters ORDER BY created_at DESC"; break;
 }
 
+$activeFilters = !empty($add_filters);
 
 $db->query($sql);
 $num = $db->num(); // Total number of rows
 $db->query($sql.Pagination::limitQuery());
 $data = $db->get(); // Get data for the current limited rows
-
 
 $out = "";
 foreach($data as $record) {
