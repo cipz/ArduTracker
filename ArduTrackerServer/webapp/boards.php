@@ -9,7 +9,7 @@ require_once 'template/header.php';
 
         <h4>Boards Management Dashboard</h4>
         <div class="card my-3">
-        <div class="card-header">
+            <div class="card-header">
                 <i class="fas fa-plus-circle"></i> Add a new board
             </div>
             <div class="card-body">
