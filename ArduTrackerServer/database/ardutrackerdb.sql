@@ -27,9 +27,10 @@ SET time_zone = "+00:00";
 --
 
 CREATE TABLE `tracking_board` (
-  `id_mac` varchar(16) NOT NULL,
+  `id_mac` varchar(17) NOT NULL,
   `id_board` varchar(64) NOT NULL,
   `configuration` text NOT NULL,
+  `new_config_sent` tinyint(1) NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
@@ -70,6 +71,7 @@ INSERT INTO `tracking_log` (`my_id`, `friend_id`, `seen_millis`, `seen_time`, `c
 --
 -- Indici per le tabelle `tracking_boards`
 --
-ALTER TABLE `tracking_boards`
-  ADD PRIMARY KEY (`id_mac`);
+ALTER TABLE `tracking_board`
+  ADD PRIMARY KEY (`id_mac`),
+  ADD UNIQUE KEY `id_board` (`id_board`);
 COMMIT;

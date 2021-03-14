@@ -5,28 +5,73 @@
 
 class Board {
 
+    public $id;
+    public $idMac;
+    public $config;
+    public $new_config_sent;
+    public $created_at;
+    public $updated_at;
+
+    private function getBoardInfoFromId($id) {
+        $db = new database();
+        $db->query('SELECT id_board,id_mac,configuration,new_config_sent,created_at,updated_at FROM '.$table.' WHERE id_board = '.$id.' ORDER BY created_at DESC LIMIT 1');
+        return $db->get();
+    }
+
+    public function __construct($id) {
+
+        if(checkIdBoard($id)) {
+            list($this->id, 
+                $this->idMac,
+                $this->config,
+                $this->new_config_sent,
+                $this->created_at,
+                $this->updated_at) = getBoardInfoFromId();
+        }
+        else
+        {
+            $this->idBoard = 'undefined';
+        }
+    }
+
+    static public function checkIdBoard($id){
+        $db = new database();
+        $db->query('SELECT * FROM tracking_board WHERE id_board = '.$id.' ORDER BY created_at DESC');
+        return $db->exists();
+    }
+
+    static function getRegisteredBoards() {
+        $db = new database();
+        $db->query('SELECT id_board as my_id FROM tracking_board ORDER BY created_at DESC');
+        return $db->get();
+    }
+
+
+
+    // Boards from Tracking logs
+
+
     static function getTotalRecords($table="tracking_log") {
-        global $_DBC;
         $db = new database();
         $db->query('SELECT * FROM '.$table);
         return $db->num();
     }
 
     static function getRecentBoards($table="tracking_log") {
-        global $_DBC;
         $db = new database();
-        $db->query('SELECT my_id,created_at FROM '.$table.' WHERE created_at > (NOW() - INTERVAL 100 DAY) ORDER BY created_at DESC');
+        $db->query('SELECT my_id,created_at FROM '.$table.' WHERE created_at > (NOW() - INTERVAL 365 DAY) ORDER BY created_at DESC');
         return $db->get();
     }
 
-    static function printBoards($boards) {
+    static function printBoards($boards, $printTime=true) {
 
         if(empty($boards)) {
-            echo "No boards available.";
+            echo "<p class='my-3'>No boards available.</p>";
             return array();
         }
 
         $names = array();
+        echo '<div class="row">';
         foreach($boards as $board)
         {
             $board = (object) $board;
@@ -40,13 +85,16 @@ class Board {
             echo '<div class="col-md-4 mb-4">
                 <div class="card">
                     <div class="card-body">
-                        <h5 class="card-title"><i class="fas fa-microchip text-muted"></i> <a class="" href="tracking-detail.php?id='.$board->my_id.'">'.$board->my_id.'</a></h5>
-                        <p class="card-text">'.$label.'</p>
-                        <small><i class="fas fa-history"></i> '.time2String($board->created_at).'</small>
+                        <h5 class="card-title"><i class="fas fa-microchip text-muted"></i> <a class="" href="tracking-detail.php?id='.$board->my_id.'">'.$board->my_id.'</a></h5>';
+            if($printTime)
+                echo '  <p class="card-text">'.$label.'</p>
+                        <small><i class="fas fa-history"></i> '.time2String($board->created_at).'</small>';
+            echo '
                     </div>
                 </div>
             </div>';
         }
+        echo '</div>';
         
         return $names;	
     }

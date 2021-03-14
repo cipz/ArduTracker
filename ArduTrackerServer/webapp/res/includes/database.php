@@ -84,6 +84,11 @@ class database
         return $this->result->num_rows;
     }
 
+    public function exists()
+    {
+        return $this->num() > 0;
+    }
+
     public function get($field = NULL)
     {
         if ($field == NULL)
