@@ -8,7 +8,6 @@
     <div class="col-lg-12">
         <div class="card">
             <div class="card-body">
-                
                 <img src="assets/images/logo.png" alt="ArduTracker" width=120 height=120 class="my-3">
                 
                 <h5 class="card-title text-muted mb-4">Welcome to the ArduTrack Project</h5>

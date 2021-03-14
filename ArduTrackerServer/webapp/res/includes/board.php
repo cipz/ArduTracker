@@ -48,7 +48,7 @@ class Board {
 
     static public function getRegisteredBoards() {
         $db = new database();
-        $db->query('SELECT id_board as my_id FROM tracking_board ORDER BY created_at DESC');
+        $db->query('SELECT * FROM tracking_board ORDER BY created_at DESC');
         return $db->get();
     }
 
@@ -61,6 +61,33 @@ class Board {
         $defaultConfig = json_encode($_DEFAULT_BOARD_CONFIG);
         $db->query("INSERT INTO tracking_board (id_board, id_mac, configuration) VALUES ('$id', '$mac', '$defaultConfig')");
         return $db->status();
+    }
+
+    static public function printBoardsInTable($boards) {
+        
+        if(empty($boards)) {
+            echo "<p class='my-3'>No boards available.</p>";
+        }
+        foreach($boards as $board)
+        {
+            $board = (object) $board;
+            $online = (strtotime($board->created_at) > time()-60*10);
+            $label = $board->new_config_sent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-sync-alt'></i> Synched</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synched</span>";
+
+            echo '<tr>
+                    <td>
+                        <i class="fas fa-edit text-muted"></i> <a class="text-success" href="board-detail.php?id='.$board->id_board.'">'.$board->id_board.'</a>
+                    </td>
+                    <td><code>'.$board->id_mac.'</code></td>
+                    <td>'.$label.'</td>
+                    <td>
+                        <small><i class="fas fa-history"></i> '.time2String($board->updated_at).'</small>
+                    </td>
+                    <td><small><i class="fas fa-history"></i> '.$board->created_at.'</small></td>
+                    <td class="small">
+                        &raquo; <a href="tracking-detail.php?id='.$board->id_board.'">Go to tracking log</a>
+                    </td>';        
+        }
     }
 
 
@@ -79,7 +106,7 @@ class Board {
         return $db->get();
     }
 
-    static function printBoards($boards, $printTime=true) {
+    static function printBoardsFromTrackingLog($boards, $printTime=true) {
 
         if(empty($boards)) {
             echo "<p class='my-3'>No boards available.</p>";
