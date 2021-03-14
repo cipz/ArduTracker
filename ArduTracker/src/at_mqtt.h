@@ -6,6 +6,21 @@
 
 // --------------------------------------- MQTT Controller
 
+SDController* pSdCtrl;
+void callback(char* topic, byte* payload, unsigned int length) {
+    Serial.print("New message on topic: ");
+    Serial.println(topic);
+
+    Serial.print("Message:");
+    String msg = "";
+    for (int i = 0; i < length; i++) {
+        msg += (char)payload[i];
+    }
+    
+    Serial.println(msg);
+    pSdCtrl->updateParams(msg);
+}
+
 class MQTTController {
     public:
     /**
@@ -49,6 +64,16 @@ class MQTTController {
     */
     void publish(char* out_topic, char* message) {
         client.publish(out_topic, message);
+    }
+
+
+    /**
+     * Subscribe to the topic
+    */
+    void subscribe(const char* topic, SDController* sdCtrl) {
+        pSdCtrl = sdCrtl;
+        client.subscribe(topic);
+        client.setCallback(callback);
     }
 
 };

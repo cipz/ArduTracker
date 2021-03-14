@@ -58,17 +58,20 @@ PubSubClient client(espClient);
 
 #include "at_log.h"
 #include "at_utils.h"
-#include "at_mqtt.h"
 #include "at_nrf24l01.h"
 #include "at_wifi.h"
 #include "at_sd.h"
 
 SDController* sdCrtl;
+#include "at_mqtt.h"
+
 RadioController* radioCtrl;
 WiFiContoller* wifiCtrl;
 MQTTController* mqttCtrl;
 
 LinkedList<Log> * friendList;
+
+int fetchParamsCount = 0;
 
 void setup() {
 
@@ -158,6 +161,14 @@ void loop() {
     
     wifiCtrl->connect();
     mqttCtrl->connect();
+
+    // Subscribe to params configuration topic
+    String configTopic = "math/ardutrack/config/" + WiFi.macAddress();
+    mqttCtrl->subscribe(configTopic.c_str(), sdCrtl);
+    Serial.printf(
+        "\nSubscribed to: %s [status:%d]", 
+        configTopic.c_str(), 
+        client.connected());
     
     Serial.printf(
         "\nSending from cache to %s with topic %s", 
@@ -196,6 +207,7 @@ void loop() {
 
     lastWifiSendTime = millis();
 
+    
     //-------------------- Blink ;)
 
     digitalWrite(ONBOARD_LED_PIN,HIGH);
