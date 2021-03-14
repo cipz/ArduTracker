@@ -1,18 +1,16 @@
 <?php
- require_once 'res/resources.php';
+ require_once 'controller/boards.php';
  $_CURRENT_PAGE_NAME = 'Boards';
  require_once 'template/header.php';
 ?>
 
 <div class="row">
     <div class="col-lg-12">
-        
-
-            <h4>Registered Boards</h4>
+           <h4>Registered Boards</h4>
 
            <div class="card">
                 <div class="card-body"> 
-                    <form action="?id=<?=$id;?>&type=<?=$type;?>" method="post">
+                    <form action="?" method="post">
                         <div class="row g-2 my-2">
                             <div class="col-md">
                                 <div class="form-floating">
@@ -22,7 +20,7 @@
                             </div>
                             <div class="col-md">
                                 <div class="form-floating">
-                                    <input type="text" required maxlength="17" class="form-control" id="macBoardInput" placeholder="Board MAC address" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" name="id">
+                                    <input type="text" required maxlength="17" class="form-control" id="macBoardInput" placeholder="Board MAC address" pattern="([0-9A-Fa-f]{2}[:-]){5}([0-9A-Fa-f]{2})" name="mac">
                                     <label for="macBoardInput">Board MAC address (from network card)</label>
                                 </div>
                             </div>

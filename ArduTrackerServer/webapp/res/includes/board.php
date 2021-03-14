@@ -14,19 +14,19 @@ class Board {
 
     private function getBoardInfoFromId($id) {
         $db = new database();
-        $db->query('SELECT id_board,id_mac,configuration,new_config_sent,created_at,updated_at FROM '.$table.' WHERE id_board = '.$id.' ORDER BY created_at DESC LIMIT 1');
+        $db->query('SELECT id_board,id_mac,configuration,new_config_sent,created_at,updated_at FROM tracking_board WHERE id_board = "'.$id.'" LIMIT 1');
         return $db->get();
     }
 
     public function __construct($id) {
 
-        if(checkIdBoard($id)) {
+        if($this->checkIdBoard($id)) {
             list($this->id, 
                 $this->idMac,
                 $this->config,
                 $this->new_config_sent,
                 $this->created_at,
-                $this->updated_at) = getBoardInfoFromId();
+                $this->updated_at) = $this->getBoardInfoFromId($id)[0];
         }
         else
         {
@@ -36,16 +36,32 @@ class Board {
 
     static public function checkIdBoard($id){
         $db = new database();
-        $db->query('SELECT * FROM tracking_board WHERE id_board = '.$id.' ORDER BY created_at DESC');
+        $db->query('SELECT * FROM tracking_board WHERE id_board = "'.$id.'"');
         return $db->exists();
     }
 
-    static function getRegisteredBoards() {
+    static public function checkMacBoard($mac){
+        $db = new database();
+        $db->query('SELECT * FROM tracking_board WHERE id_mac = "'.$mac.'"');
+        return $db->exists();
+    }
+
+    static public function getRegisteredBoards() {
         $db = new database();
         $db->query('SELECT id_board as my_id FROM tracking_board ORDER BY created_at DESC');
         return $db->get();
     }
 
+
+    static public function addNewBoard($id, $mac) {
+        global $_DEFAULT_BOARD_CONFIG;
+        $db = new database();
+        $id = $db->clean($id);
+        $mac = $db->clean($mac);
+        $defaultConfig = json_encode($_DEFAULT_BOARD_CONFIG);
+        $db->query("INSERT INTO tracking_board (id_board, id_mac, configuration) VALUES ('$id', '$mac', '$defaultConfig')");
+        return $db->status();
+    }
 
 
     // Boards from Tracking logs

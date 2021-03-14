@@ -35,4 +35,18 @@ $_DBC['database'] = 'ardutrackerdb';
 
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
 
+// -----------------------------------
+// Default Board Configuration
+
+$_DEFAULT_BOARD_CONFIG = json_decode('{
+	"ssid" : "WIFI-ARDUTRACK",
+	"password" : "changeme",
+	"my_id" : "JohnDoe",
+	"broadcast_io_addr" : "RxTx0",
+	"in_topic" : "math/wnma/ardutrack",
+	"out_topic" : "math/wnma/ardutrack",
+	"mqtt_server" : "ardutracker.debug.ovh",
+    "friendly_freshness" : 5000
+}');
+
 

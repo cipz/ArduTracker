@@ -11,6 +11,8 @@
         <form action="?=" method="POST" class="form-box form-full">
 
         <?php
+
+            $mv = json_decode($board->config);
             
             if(empty($mv))
                 echo "The configuration file is empty!";
@@ -24,7 +26,7 @@
                     echo '    <br /> <small>(<a href="javascript:void(0)" onclick="deleteDefault('.$i.')">delete</a>)</small>';
                     echo '  </label>';
                     echo '  <input type="hidden" name="tkey[]" value="'.$k.'" />';
-                    echo '  <textarea class="form-input textarea-translate" name="tval[]" rows="'.(strlen($v) > 32 ? 6 : 1).'">'.$v.'</textarea>';
+                    echo '  <textarea class="form-control textarea-translate" name="tval[]" rows="'.(strlen($v) > 32 ? 6 : 1).'">'.$v.'</textarea>';
                     echo '</div>';
                     $i++;
                 }
@@ -32,13 +34,14 @@
 
         ?>
             
-            <div class='form-row h4'>New config variable</div>
-            <div id="addRow"></div>
-            <div class="form-row">
-                <button class="btn btn-reverse" type='button' onclick="addRow();"><span class="fas fa-plus-square"></span> Add a new variable</button>
-            </div>
+                <div class='form-row h4'>New config variable</div>
+                <div id="addRow"></div>
+            
+                <div class="form-row">
+                    <button class="btn btn-success" type='button' onclick="addRow();"><span class="fas fa-plus-square"></span> Add a new variable</button>
+                </div>
 
-            <div class="form-row">
+            <div class="form-row mt-3">
                 <button type="submit" class="btn btn-primary"><span class="fas fa-check"></span> Save and send</button>
             </div>
         </div>
@@ -60,7 +63,7 @@ function addRow()
                 + "<label> <i class='fa fa-key'></i> Key</label>"
                 + "<input type='text' class='form-input' maxlength='32' name='tkey[]' placeholder='Key' />"
                 + "</div><div class='form-row'>"
-                + "<label class='textarea'><span class='fa fa-pen-square'></span> Value</label>"
+                + "<label class='textarea'><span class='fas fa-pen-square'></span> Value</label>"
                 + "<textarea class='form-input textarea-translate' name='tval[]' placeholder='Value'></textarea>"
                 + "</div><hr />";
     x.appendChild(container);

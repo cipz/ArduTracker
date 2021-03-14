@@ -45,3 +45,7 @@ function goToLocation($url)
 {
     echo "<script>location.replace('$url');</script>";
 }
+
+function errorBox($txt) {
+    echo "<div class='alert alert-danger'>Error - $txt</div>";
+}
