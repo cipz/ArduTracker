@@ -200,6 +200,7 @@ void loop() {
         else {
             Serial.println(inputStr);
             mqttCtrl->publish(params.out_topic, inputStr);
+            sdCrtl->initLog(); // clear cache
             delay(50);
             strIndex = 0;
         }
