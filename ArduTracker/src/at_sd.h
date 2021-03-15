@@ -67,6 +67,11 @@ class SDCard {
             params.mqtt_server, 
             paramsJson["mqtt_server"], 
             sizeof(params.mqtt_server));
+            
+        strlcpy(
+            params.radio_mode, 
+            paramsJson["radio_mode"], 
+            sizeof(params.radio_mode));
         
         params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
 
