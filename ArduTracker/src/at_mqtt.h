@@ -18,10 +18,15 @@ void callback(char* topic, byte* payload, unsigned int length) {
     }
     
     Serial.println(msg);
-    pSdCtrl->updateParams(msg);
+    if(pSdCtrl->updateParams(msg)) {
+        restart(RESTART_SECONDS);
+    }
 }
 
 class MQTTController {
+    private:
+    bool subscribed = false;
+
     public:
     /**
      * Initialize MQTT parameters
@@ -29,6 +34,7 @@ class MQTTController {
     void init() {
         Serial.println("Initializing MQTT");
         client.setServer(params.mqtt_server, 21883);
+        client.setBufferSize(2048);
     }
 
     /**
@@ -74,6 +80,16 @@ class MQTTController {
         pSdCtrl = sdCrtl;
         client.subscribe(topic);
         client.setCallback(callback);
+        subscribed = true;
     }
 
+    bool isConnected() {
+        return client.connected();
+    }
+
+    bool isSubscribed() {
+        if(!isConnected())
+            subscribed = false;
+        return subscribed;
+    }
 };

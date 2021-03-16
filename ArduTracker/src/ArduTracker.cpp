@@ -141,9 +141,7 @@ void loop() {
         list.printList("[DEBUG-AFTER]");
     // POST: The list contains all the contacts above the threshold called "friendly_freshness"
    
-
     // -------------------- Save list to SD
-
     for(int i = 0; i < tmpFriendList->size(); ++i){
 
         Log tmpFriend = tmpFriendList->get(i);
@@ -158,7 +156,6 @@ void loop() {
             Serial.print(msg);
         sdCrtl->saveInLog(msg);
         Serial.print("Saved!");
-
     }
 
     tmpFriendList->clear();
@@ -176,14 +173,17 @@ void loop() {
     
     wifiCtrl->connect();
     mqttCtrl->connect();
-
-    // Subscribe to params configuration topic
-    String configTopic = "math/ardutrack/config/" + WiFi.macAddress();
-    mqttCtrl->subscribe(configTopic.c_str(), sdCrtl);
-    Serial.printf(
-        "\nSubscribed to: %s [status:%d]", 
-        configTopic.c_str(), 
-        client.connected());
+    
+    if(WiFi.isConnected() && !mqttCtrl->isSubscribed()) {
+        // Subscribe to params configuration topic
+        String configTopic = "math/wnma/ardutrack/config/" + WiFi.macAddress();
+        mqttCtrl->subscribe(configTopic.c_str(), sdCrtl);
+        Serial.printf(
+            "\nSubscribed to: %s [status:%d]", 
+            configTopic.c_str(), 
+            client.connected());
+    }
+    
     
     Serial.printf(
         "\nSending from cache to %s with topic %s", 
@@ -193,7 +193,6 @@ void loop() {
     int strIndex = 0;
     char inputStr[200];
     int inputChar;
-
 
     //-------------------- Send data to MQTT
     
