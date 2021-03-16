@@ -8,9 +8,9 @@ class Board {
     public $id;
     public $idMac;
     public $config;
-    public $new_config_sent;
-    public $created_at;
-    public $updated_at;
+    public $newConfigSent;
+    public $createdAt;
+    public $updatedAt;
 
     private function getBoardInfoFromId($id) {
         $db = new database();
@@ -24,9 +24,9 @@ class Board {
             list($this->id, 
                 $this->idMac,
                 $this->config,
-                $this->new_config_sent,
-                $this->created_at,
-                $this->updated_at) = $this->getBoardInfoFromId($id)[0];
+                $this->newConfigSent,
+                $this->createdAt,
+                $this->updatedAt) = $this->getBoardInfoFromId($id)[0];
         }
         else
         {
@@ -91,8 +91,7 @@ class Board {
     }
 
 
-    // Boards from Tracking logs
-
+    // Functions from Tracking logs
 
     static function getTotalRecords($table="tracking_log") {
         $db = new database();

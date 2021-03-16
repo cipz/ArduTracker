@@ -8,6 +8,7 @@ if(!isset($_GET["id"]))
 
 $id = $db->clean($_GET["id"]);
 $board = new Board($id);
+$label = $board->newConfigSent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-sync-alt'></i> Synched</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synched</span>";
 
 if($board->id == 'undefined')
     goToLocation('boards.php');
