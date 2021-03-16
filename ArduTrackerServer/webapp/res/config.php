@@ -11,6 +11,7 @@ define("PAGINATION_LIMIT", "20");
 define("LOW_RISK_MINUTES", "2");
 define("MID_RISK_MINUTES", "4");
 define("DEFAULT_MAX_PACKET_SIZE", "2048");
+define("BOARD_MODE_CONFIG_FIELD", "type");
 
 // -----------------------------------
 // Debug mode

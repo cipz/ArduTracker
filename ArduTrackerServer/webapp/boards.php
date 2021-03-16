@@ -13,6 +13,7 @@ require_once 'template/header.php';
                 <i class="fas fa-plus-circle"></i> Add a new board
             </div>
             <div class="card-body">
+                <?=(isset($out) ? $out : '');?>
                 <form action="?" method="post">
                     <div class="row g-2 my-2">
                         <div class="col-md">
@@ -28,7 +29,7 @@ require_once 'template/header.php';
                             </div>
                         </div>
                     </div>
-                    <input type="submit" name="AddBoard" value="Confirm" class="btn btn-success btn-block">
+                    <button type="submit" name="AddBoard" class="btn btn-success btn-sm"><i class="fas fa-check"></i> Confirm</button>
                 </form>
             </div>
         </div>
@@ -44,8 +45,9 @@ require_once 'template/header.php';
                             <tr>
                                 <th scope="col">IDs</th>
                                 <th scope="col">MAC Address</th>
-                                <th scope="col">Configuration Sync</th>
-                                <th scope="col">Last configuration update</th>
+                                <th scope="col">Mode</th>
+                                <th scope="col">Configuration</th>
+                                <th scope="col">Last update</th>
                                 <th scope="col">Creation date</th>
                                 <th scope="col">View logs</th>
                             </tr>

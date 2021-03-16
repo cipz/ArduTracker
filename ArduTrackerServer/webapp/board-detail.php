@@ -1,10 +1,12 @@
 <?php
 require_once 'controller/board-detail.php';
-$_TITLE_CURRENT_PAGE_NAME = 'Board detail - '.$id;
+$_TITLE_CURRENT_PAGE_NAME = 'Board detail - ' . $id;
 $_CURRENT_PAGE_NAME = '<a href="boards.php" class="text-secondary">Boards</a>';
-$_EXTRA_CURRENT_PAGE_NAME = '&raquo; <span class="small text-secondary">'.$id.'</span>';
+$_EXTRA_CURRENT_PAGE_NAME = '&raquo; <span class="small text-secondary">' . $id . '</span>';
 require_once 'template/header.php';
 ?>
+
+<?= (isset($out) ? '<div class="row"><div class="col-lg-12">' . $out . '</div></div>' : ''); ?>
 
 <div class="row">
     <div class="col-lg-3">
@@ -15,24 +17,40 @@ require_once 'template/header.php';
             <div class="card-body">
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Board ID</p>
-                    <?=$board->id;?>
+                    <?= $board->id; ?>
                 </div>
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Board MAC Address</p>
-                    <code><?=$board->idMac;?></code>
+                    <code><?= $board->idMac; ?></code>
                 </div>
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Configuration Synchronized</p>
-                    <?=$label;?>
+                    <?= $label; ?>
                 </div>
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Updated at</p>
-                    <?=time2string($board->updatedAt);?>
+                    <?= time2string($board->updatedAt); ?>
                 </div>
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Created at</p>
-                    <?=$board->createdAt;?>
+                    <?= $board->createdAt; ?>
                 </div>
+            </div>
+        </div>
+
+        <div class="card my-3">
+            <div class="card-body">
+                <form action="?id=<?= $board->id; ?>" method="post">
+                    <button type="submit" name="Send" class="btn btn-primary btn-sm"><i class="fas fa-sync-alt"></i> Sync config now</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="card my-3">
+            <div class="card-body">
+                <form action="?id=<?= $board->id; ?>" method="post">
+                    <button type="submit" name="Remove" onclick="return confirm('Are you really sure to delete this board?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Remove this board</button>
+                </form>
             </div>
         </div>
     </div>
@@ -45,10 +63,10 @@ require_once 'template/header.php';
 
                 <div class='alert alert-secondary my-3'><i class='fas fa-info-circle'></i> The max configuration size for the JSON is <?= DEFAULT_MAX_PACKET_SIZE; ?> bytes</div>
 
-                <form action="?" method="POST" class="form-box form-full">
+                <form action="?id=<?= $board->id; ?>" method="post" class="form">
                     <?php
 
-                    if (!$board->new_config_sent) {
+                    if (!$board->newConfigSent) {
                         echo "<div class='alert alert-warning'><i class='fas fa-exclamation-triangle'></i> The new configuration has <b>not been synchronized</b> with the board yet.</div>";
                     }
 
@@ -61,7 +79,7 @@ require_once 'template/header.php';
                         foreach ($mv as $k => $v) {
                             echo '<div class="row mb-3" id="default_' . $i . '">';
                             echo '  <label class="col-sm-3 col-form-label"><span class="fa fa-pen-square"></span> ' . $k;
-                            echo '    <small>(<a href="javascript:void(0)" onclick="deleteDefault(' . $i . ')" class="text-danger"><i class="fas fa-times"></i> delete</a>)</small>';
+                            echo '    <small>(<a href="javascript:void(0)" onclick="deleteDefault(' . $i . ')" class="text-danger"><i class="fas fa-times"></i></a>)</small>';
                             echo '  </label>';
                             echo '   <div class="col-sm-9"> <input type="hidden" name="tkey[]" value="' . $k . '" />';
                             echo '  <textarea required class="form-control" name="tval[]" rows="' . (strlen($v) > 32 ? 6 : 1) . '">' . $v . '</textarea>';
@@ -77,8 +95,8 @@ require_once 'template/header.php';
         </div>
         <div class="card my-3">
             <div class="card-body">
-                <button type="submit" name="SaveAndSend" class="btn btn-primary mr-2"><span class="fas fa-file-export"></span> Save and send</button> &nbsp;
-                <button type="submit" name="Save" class="btn btn-secondary mr-2"><span class="fas fa-check"></span> Save without sending</button>
+                <button type="submit" name="SaveAndSend" class="btn btn-primary mr-2"><i class="fas fa-file-export"></i> Save and sync</button> &nbsp;
+                <button type="submit" name="Save" class="btn btn-secondary mr-2"><i class="fas fa-check"></i> Save without synching</button>
             </div>
         </div>
     </div>

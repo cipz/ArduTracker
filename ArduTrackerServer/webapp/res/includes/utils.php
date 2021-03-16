@@ -47,5 +47,9 @@ function goToLocation($url)
 }
 
 function errorBox($txt) {
-    echo "<div class='alert alert-danger'>Error - $txt</div>";
+    return "<div class='alert alert-danger'><i class='fas fa-times'></i> <b>Error</b> - $txt</div>";
+}
+
+function successBox($txt) {
+    return "<div class='alert alert-success'><i class='fas fa-check'></i> <b>Success</b> - $txt</div>";
 }
