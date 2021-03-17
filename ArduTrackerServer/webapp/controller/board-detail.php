@@ -108,4 +108,4 @@ if (isset($_POST['Remove'])) {
 }
 
 
-$label = $board->newConfigSent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-spin fa-sync-alt'></i> Synched</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synched</span>";
+$label = $board->newConfigSent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-spin fa-sync-alt'></i> Synced</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synced</span>";

@@ -109,7 +109,7 @@ class Board {
             $board = (object) $board;
             
             $online = (strtotime($board->created_at) > time()-60*10);
-            $label = $board->new_config_sent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-spin fa-sync-alt'></i> Synched</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synched</span>";
+            $label = $board->new_config_sent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-spin fa-sync-alt'></i> Synced</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synced</span>";
             $config = json_decode($board->configuration, true);
             $type = (isset($config[BOARD_MODE_CONFIG_FIELD])) ? $config[BOARD_MODE_CONFIG_FIELD] : "undefined";
 
