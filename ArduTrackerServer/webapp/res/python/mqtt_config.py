@@ -19,7 +19,8 @@ mqtt_port = 1883 # default: 1883
 ################# Database #################
 
 if(len(sys.argv) != 2):
-    print("Not enough argouments")
+    # print("Not enough argouments")
+    print("error")
     exit()
 
 mac = sys.argv[1]
@@ -34,25 +35,27 @@ mydb = mysql.connector.connect(
 )
 
 # Fetch params
-print("[DB] Reading configurations", db_database)
+# print("[DB] Reading configurations", db_database)
 cursor = mydb.cursor()
-sql = "SELECT configuration FROM tracking_board WHERE id_mac='"+ mac +"';"
-print('[SQL]',sql)
+sql = "SELECT configuration FROM tracking_board WHERE id_mac='"+ mac +"' LIMIT 1;"
+# print('[SQL]',sql)
 
 cursor.execute(sql)
 result = cursor.fetchall()
 
 for row in result:
     ################# MQTT #################
-    print("[MQTT] Creating new instance")
+    # print("[MQTT] Creating new instance")
     client = mqtt.Client(mqtt_id)
 
     # Connection
-    print("[MQTT] Connecting to ", mqtt_host)
+    # print("[MQTT] Connecting to ", mqtt_host)
     client.connect(mqtt_host, port=mqtt_port) 
 
     # Publish
     client.publish(mqtt_topic + mac, row[0])
-    print("Config sent.")
+    # print("Config sent.")
+    print("done")
 
 mydb.close()
+exit()
