@@ -6,8 +6,6 @@ require_once 'template/header.php';
 
 <div class="row">
     <div class="col-lg-12">
-
-        <h4>Boards Management Dashboard</h4>
         <div class="card my-3">
             <div class="card-header">
                 <i class="fas fa-plus-circle"></i> Add a new board
@@ -62,15 +60,6 @@ require_once 'template/header.php';
                 </div>
             </div>
         </div>
-
-
-        <h5 class="my-3">Recent Boards</h5>
-        <?php
-        $recentBoards = Board::getRecentBoards();
-        $uboards = Board::printBoardsFromTrackingLog($recentBoards);
-        ?>
-
-        <p>There is a total of <?= count($uboards); ?> boards active in the last 48 hours.</p>
     </div>
 </div>
 

@@ -1,8 +1,8 @@
 <?php
- require_once 'res/resources.php';
- $_CURRENT_PAGE_NAME = 'Tracking list';
- require_once 'template/header.php';
- require_once 'controller/tracking-list.php';
+require_once 'res/resources.php';
+$_CURRENT_PAGE_NAME = 'Tracking list';
+require_once 'template/header.php';
+require_once 'controller/tracking-list.php';
 ?>
 
 <script src="res/javascript/tracking-list.js"></script>
@@ -12,8 +12,14 @@
         <div class="card">
             <div class="card-body">
                 <h5 class="card-title text-muted mb-4"><i class="fas fa-chart-bar"></i> Stats</h5>
-                <strong>Total tracking logs:</strong> <?=Board::getTotalRecords();?> <br>
-                <strong>Total boards discovered:</strong> <?=count($data);?>
+                <div class="mb-3">
+                    <p class="small mb-0 text-secondary">Total tracking logs</p>
+                    <?= Board::getTotalRecords(); ?> logs
+                </div>
+                <div class="mb-0">
+                    <p class="small mb-0 text-secondary">Total boards discovered:</p>
+                    <?= count($data); ?> boards
+                </div>
             </div>
         </div>
         <div class="card mt-3">
@@ -25,10 +31,10 @@
     </div>
     <div class="col-lg-9">
 
-    <div class="input-group mb-3">
-        <span class="input-group-text" id="search"><i class='fas fa-search'></i></span>
-        <input type="text" class="form-control" placeholder="Search by ID" aria-label="Search by ID" aria-describedby="search" onkeyup="searchIds()" id="input-search-id">
-    </div>
+        <div class="input-group mb-3">
+            <span class="input-group-text" id="search"><i class='fas fa-search'></i></span>
+            <input type="text" class="form-control" placeholder="Search by ID" aria-label="Search by ID" aria-describedby="search" onkeyup="searchIds()" id="input-search-id">
+        </div>
 
         <table class="table table-striped">
             <thead>
@@ -37,15 +43,15 @@
                 </tr>
             </thead>
             <tbody id="ids-list">
-                <?php 
-                   echo $out;
+                <?php
+                echo $out;
                 ?>
-            </tbody> 
+            </tbody>
         </table>
     </div>
 </div>
 
 
 <?php
- require_once 'template/footer.php';
+require_once 'template/footer.php';
 ?>

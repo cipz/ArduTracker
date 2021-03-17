@@ -1,8 +1,8 @@
 <?php
 require_once 'controller/tracking-detail.php';
-$_TITLE_CURRENT_PAGE_NAME = 'Tracking detail - '.$id;
+$_TITLE_CURRENT_PAGE_NAME = 'Tracking detail - ' . $id;
 $_CURRENT_PAGE_NAME = '<a href="tracking-list.php" class="text-secondary">Tracking list</a>';
-$_EXTRA_CURRENT_PAGE_NAME = '&raquo; <span class="small text-secondary">'.$id.'</span>';
+$_EXTRA_CURRENT_PAGE_NAME = '&raquo; <span class="small text-secondary">' . $id . '</span>';
 require_once 'template/header.php';
 ?>
 
@@ -13,42 +13,43 @@ require_once 'template/header.php';
                 <h5 class="card-title text-muted mb-4"><i class="fas fa-filter"></i> Filters</h5>
                 <form action="?id=<?= $id; ?>&type=<?= $type; ?>" method="post">
 
-                    <strong> Date range: </strong>
+                    <div class="mb-3">
+                        <p class="small mb-0 text-secondary">Data Range</p>
 
-                    <div class="form-floating my-2">
-                        <input type="date" name="date_from" class="form-control" id="floatingDateFrom" value="<?= $date_from ?>">
-                        <label for="floatingDateFrom">FROM Date</label>
+                        <div class="form-floating my-2">
+                            <input type="date" name="date_from" class="form-control" id="floatingDateFrom" value="<?= $date_from ?>">
+                            <label for="floatingDateFrom">FROM Date</label>
+                        </div>
+                        <div class="form-floating my-2">
+                            <input type="date" name="date_to" class="form-control" id="floatingDateTo" value="<?= $date_to ?>">
+                            <label for="floatingDateTo">TO Date</label>
+                        </div>
                     </div>
-                    <div class="form-floating my-2">
-                        <input type="date" name="date_to" class="form-control" id="floatingDateTo" value="<?= $date_to ?>">
-                        <label for="floatingDateTo">TO Date</label>
-                    </div>
+                    <div class="mb-0">
+                        <p class="small mb-1 text-secondary">Exposure Level</p>
 
-                    <strong> Exposure level: </strong>
-
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="risk" id="inlineAll" value="all" <?= (!in_array($risk, array('low', 'mid', 'high'))) ? 'checked' : '' ?>>
-                        <label class="form-check-label text-primary" for="inlineAll">All</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="risk" id="inlineAll" value="all" <?= (!in_array($risk, array('low', 'mid', 'high'))) ? 'checked' : '' ?>>
+                            <label class="form-check-label text-primary fw-bold" for="inlineAll">All</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="risk" id="inlineLow" value="low" <?= ($risk == 'low') ? 'checked' : '' ?>>
+                            <label class="form-check-label text-<?= Tracking::printExposureRiskColor(1000 * 60 * LOW_RISK_MINUTES - 0.25); ?> fw-bold" for="inlineLow">Low <small>(< <?= LOW_RISK_MINUTES; ?> min)</small></label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="risk" id="inlineMid" value="mid" <?= ($risk == 'mid') ? 'checked' : '' ?>>
+                            <label class="form-check-label text-<?= Tracking::printExposureRiskColor(1000 * 60 * MID_RISK_MINUTES - 0.25); ?> fw-bold" for="inlineMid">Mid <small>(< <?= MID_RISK_MINUTES; ?> min)</small></label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="risk" id="inlineHigh" value="high" <?= ($risk == 'high') ? 'checked' : '' ?>>
+                            <label class="form-check-label text-<?= Tracking::printExposureRiskColor(1000 * 60 * MID_RISK_MINUTES + 0.25); ?> fw-bold" for="inlineHigh">High <small>(> <?= MID_RISK_MINUTES; ?> min)</small></label>
+                        </div>
+                        <br>
+                        <input type="submit" class="btn btn-success btn-sm" name="search" value="Search">
+                        <?php if ($activeFilters) { ?>
+                            <a href="?id=<?= $id; ?>&type=<?= $type; ?>" class="btn btn-outline-danger btn-sm">&times; Clear filters</a>
+                        <?php } ?>
                     </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="risk" id="inlineLow" value="low" <?= ($risk == 'low') ? 'checked' : '' ?>>
-                        <label class="form-check-label text-<?= Tracking::printExposureRiskColor(1000 * 60 * LOW_RISK_MINUTES - 0.25); ?>" for="inlineLow">Low (< <?= LOW_RISK_MINUTES; ?> min)</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="risk" id="inlineMid" value="mid" <?= ($risk == 'mid') ? 'checked' : '' ?>>
-                        <label class="form-check-label text-<?= Tracking::printExposureRiskColor(1000 * 60 * MID_RISK_MINUTES - 0.25); ?>" for="inlineMid">Mid (< <?= MID_RISK_MINUTES; ?> min)</label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="risk" id="inlineHigh" value="high" <?= ($risk == 'high') ? 'checked' : '' ?>>
-                        <label class="form-check-label text-<?= Tracking::printExposureRiskColor(1000 * 60 * MID_RISK_MINUTES + 0.25); ?>" for="inlineHigh">High (> <?= MID_RISK_MINUTES; ?> min)</label>
-                    </div>
-
-                    <br>
-
-                    <input type="submit" class="btn btn-success btn-sm" name="search" value="Search">
-                    <?php if ($activeFilters) { ?>
-                        <a href="?id=<?= $id; ?>&type=<?= $type; ?>" class="btn btn-outline-danger btn-sm">&times; Clear filters</a>
-                    <?php } ?>
                 </form>
             </div>
         </div>
@@ -56,22 +57,29 @@ require_once 'template/header.php';
         <div class="card mt-3">
             <div class="card-body">
 
-                <h5 class="card-title text-muted mb-4"><i class="fas fa-history"></i> Longest Exposure time</h5>
+                <h5 class="card-title text-muted h6 mb-4"><i class="fas fa-history"></i> Longest Exposure time</h5>
 
-                &raquo; <strong>Subject:</strong> <code><?= $id; ?></code>
+                <div class="mb-3">
+                    <p class="small mb-0 text-secondary">Subject</p>
+                    <code><?= $id; ?></code>
+                </div>
 
-                <ul class="list-group mt-3">
-                    <?php
-                    $friends = Tracking::calcultateLongestExposureTime($id, $data);
+                <div class="mb-0">
+                    <p class="small mb-2 text-secondary">Exposure</p>
 
-                    foreach ($friends as $friend => $ftime) {
-                        echo ' <li class="list-group-item text-' . Tracking::printExposureRiskColor($ftime) . ' d-flex justify-content-between align-items-center">
+                    <ul class="list-group">
+                        <?php
+                        $friends = Tracking::calcultateLongestExposureTime($id, $data);
+
+                        foreach ($friends as $friend => $ftime) {
+                            echo ' <li class="list-group-item text-' . Tracking::printExposureRiskColor($ftime) . ' d-flex justify-content-between align-items-center">
                             ' . $friend . '
                             <span class="badge bg-' . Tracking::printExposureRiskColor($ftime) . ' rounded-pill">' . millis2string($ftime) . '</span>
                           </li>';
-                    }
-                    ?>
-                </ul>
+                        }
+                        ?>
+                    </ul>
+                </div>
             </div>
         </div>
 
@@ -79,9 +87,11 @@ require_once 'template/header.php';
             <div class="card-body">
 
                 <h5 class="card-title text-muted mb-4"><i class="fas fa-chart-bar"></i> Stats</h5>
-                Theres a total of <?= $num; ?> tracking logs.
 
-                </ul>
+                <div class="mb-0">
+                    <p class="small mb-0 text-secondary">Total tracking logs</p>
+                    <?= $num; ?> logs
+                </div>
             </div>
         </div>
     </div>
@@ -106,7 +116,7 @@ require_once 'template/header.php';
                     <th scope="col"><i class="fas fa-microchip text-secondary"></i> ID-B</th>
                     <th scope="col"><i class="fas fa-history text-danger"></i> Total exposure</th>
                     <th scope="col"><i class="fas fa-history text-secondary"></i> Date and time</th>
-                    <th scope="col"><i class="fas fa-plus-circle text-secondary"></i> Record Creation</th>
+                    <th scope="col"><i class="fas fa-plus-circle text-success"></i> Record Creation</th>
                 </tr>
             </thead>
             <tbody>
