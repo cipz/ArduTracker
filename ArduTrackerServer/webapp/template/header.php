@@ -6,7 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="ArduTracking WebApp - PoC for Wireless Networks for Mobile Applications">
   <link rel="icon" href="assets/images/logo.png">
-  <title><?php if(isset($_CURRENT_PAGE_NAME)) echo "$_CURRENT_PAGE_NAME | "; ?>ArduTracker - Webapp</title>
+  <title><?php if(isset($_TITLE_CURRENT_PAGE_NAME)) echo "$_TITLE_CURRENT_PAGE_NAME | ";
+               elseif(isset($_CURRENT_PAGE_NAME))  echo "$_CURRENT_PAGE_NAME | "; ?>ArduTracker - Webapp</title>
   <!-- Bootstrap core CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/style.css">
@@ -42,4 +43,4 @@
   </nav>
 
 <div class="container py-3 at-container">
-<?php if(isset($_CURRENT_PAGE_NAME)) echo "<h1 class='my-3 h2 at-title'>$_CURRENT_PAGE_NAME</h1>"; ?>
+<?php if(isset($_CURRENT_PAGE_NAME)) echo "<h1 class='fw-light mt-1 mb-3 h2 at-title'>$_CURRENT_PAGE_NAME ".(isset($_EXTRA_CURRENT_PAGE_NAME) ? $_EXTRA_CURRENT_PAGE_NAME : '')."</h1>"; ?>
