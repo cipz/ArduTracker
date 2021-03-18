@@ -23,6 +23,21 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+-- Struttura della tabella `tracking_boards`
+--
+
+CREATE TABLE `tracking_board` (
+  `id_mac` varchar(17) NOT NULL,
+  `id_board` varchar(64) NOT NULL,
+  `configuration` text NOT NULL,
+  `new_config_sent` tinyint(1) NOT NULL DEFAULT '0',
+  `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+-- --------------------------------------------------------
+
+--
 -- Struttura della tabella `tracking_log`
 --
 
@@ -48,3 +63,15 @@ INSERT INTO `tracking_log` (`my_id`, `friend_id`, `seen_millis`, `seen_time`, `c
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+
+--
+-- Indici per le tabelle scaricate
+--
+
+--
+-- Indici per le tabelle `tracking_boards`
+--
+ALTER TABLE `tracking_board`
+  ADD PRIMARY KEY (`id_mac`),
+  ADD UNIQUE KEY `id_board` (`id_board`);
+COMMIT;

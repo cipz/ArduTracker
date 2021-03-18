@@ -6,5 +6,6 @@
     "in_topic" : "in_topic",
     "out_topic" : "out_topic",
     "mqtt_server" : "192.168.0.13",
-    "endpoint" : "endpoint"
+    "endpoint" : "endpoint",
+    "radio_mode" : "BLE"
 }

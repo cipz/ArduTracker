@@ -1,5 +1,5 @@
 <?php
-require_once 'res/database.php';
+require_once 'res/resources.php';
 $db = new database();
 
 $db->query(
@@ -10,11 +10,11 @@ $db->query(
 $num = $db->num();
 $data = $db->get();
 
-for($i=0; $i<$num; ++$i) {
-    $id = $data[$i][0];
-    echo("<tr>");
-    echo("<td><a href='tracking-detail.php?id=$id'>$id</a></td>");
-    echo("</tr>");
-}
 
-?>
+
+$out = "";
+ foreach($data as $board) {
+    $out .= "<tr>";
+    $out .= "<td><i class='fas fa-microchip text-primary'></i> <a href='tracking-detail.php?id=".$board[0]."'>".$board[0]."</a></td>";
+    $out .= "</tr>";
+}

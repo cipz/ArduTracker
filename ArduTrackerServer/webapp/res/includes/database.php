@@ -73,7 +73,7 @@ class database
 
 
 
-    public function Clean($param, $striptags=1)
+    public function clean($param, $striptags=1)
     {   
         if($striptags) $param = strip_tags($param);
         return $this->mysqli->real_escape_string($param);
@@ -82,6 +82,11 @@ class database
     public function num()
     {
         return $this->result->num_rows;
+    }
+
+    public function exists()
+    {
+        return $this->num() > 0;
     }
 
     public function get($field = NULL)

@@ -6,6 +6,7 @@
 */
 
 #pragma once
+#include "abstract_radio.h"
 #include <nRF24L01.h>
 #include <RF24.h>
 
@@ -95,7 +96,7 @@ void printRxData(char * data) {
 
 // --------------------------------------- RF24 Controller
 
-class RadioController {
+class RadioController : public AbsRadioController{
     int randomRxTime = random(RANDOM_TX_MILLS_MIN, RANDOM_TX_MILLS_MAX);
     int randomTxTime = random(RANDOM_RX_MILLS_MIN, RANDOM_RX_MILLS_MAX);
 
@@ -115,7 +116,7 @@ class RadioController {
      * Receive messages from other devices
      * @returns tmpFriendList
     */  
-    LinkedList<Log>* receive() {
+    LinkedList<Log>* scan() {
         radio.startListening();
         LinkedList<Log>* tmpFriendList = new LinkedList<Log>();
         int rxCount = rx_data(randomRxTime, tmpFriendList);

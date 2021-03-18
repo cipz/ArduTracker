@@ -67,6 +67,11 @@ class SDCard {
             params.mqtt_server, 
             paramsJson["mqtt_server"], 
             sizeof(params.mqtt_server));
+            
+        strlcpy(
+            params.radio_mode, 
+            paramsJson["radio_mode"], 
+            sizeof(params.radio_mode));
         
         params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
 
@@ -79,8 +84,20 @@ class SDCard {
         return true;  
     }
 
-    void initFile(String filename) {
+    String getParams() {
+        File paramsFile = SD.open("/params.json", FILE_READ);
+        String paramsText = paramsFile.readString();
+        paramsFile.close();
+        return paramsText;
+    }
 
+    void updateParams(String paramsText) {
+        File paramsFile = SD.open("/params.json", FILE_WRITE);
+        paramsFile.print(paramsText);
+        paramsFile.close();
+    }
+
+    void initFile(String filename) {
         if(SD.exists(filename))
             SD.remove(filename);
 
@@ -227,6 +244,26 @@ class SDController {
         else {
             Serial.printf("\nERROR, rebooting in %d sec", RESTART_SECONDS);
             restart(RESTART_SECONDS);
+        }
+    }
+
+    /** 
+     * Write parameters to params.json
+     * @return true if params was updated
+    */
+    bool updateParams(String newParams) {
+        Serial.println("Updating params...");
+        
+        String oldParams = sd->getParams();
+
+        if(oldParams.equals(newParams)) {
+            Serial.println("Nothing to change in params.");
+            return false;
+        } else {
+            sd->updateParams(newParams);
+            Serial.println("Params updated!");
+            Serial.println(newParams);
+            return true;
         }
     }
 
