@@ -82,7 +82,7 @@ class BLEController : public AbsRadioController{
                 advertisedDevice.getRSSI());
 
             if(advertisedDevice.getName() == BLE_NAME){
-                newFriends->add(Log(advertisedDevice.getServiceData().c_str()));
+                newFriends->add(Log(advertisedDevice.getServiceData().c_str(), advertisedDevice.getRSSI()));
             }
         }
 

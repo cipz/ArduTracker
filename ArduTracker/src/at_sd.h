@@ -49,7 +49,7 @@ class SDCard {
             paramsJson["password"], 
             sizeof(params.password));
 
-        params.wifi_send_interval = paramsJson["wifi_send_interval"];
+        // params.wifi_send_interval = paramsJson["wifi_send_interval"];
 
         strlcpy(
             params.my_id, 
@@ -66,6 +66,7 @@ class SDCard {
         strlcpy(
             params.mqtt_server, 
             paramsJson["mqtt_server"], 
+
             sizeof(params.mqtt_server));
             
         strlcpy(
@@ -73,7 +74,9 @@ class SDCard {
             paramsJson["radio_mode"], 
             sizeof(params.radio_mode));
         
-        params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
+        params.send_data_cycles = paramsJson["send_data_cycles"] ? paramsJson["send_data_cycles"] : 5;
+
+        // params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
 
         int size = sizeof(params.broadcast_io_addr);
         char tmp[size];
@@ -175,17 +178,18 @@ class SDCard {
 
     void saveInLog(String msg) {
         cacheFile = SD.open(CACHE_FILE, FILE_WRITE);
-        if(cacheFile) {
+        permFile = SD.open(PERM_FILE, FILE_APPEND);
+
+        if(cacheFile && permFile) {
             cacheFile.println(msg);
             cacheFile.close();
+
+            permFile.println(msg);
+            permFile.close();
         }
         else {
-            Serial.println("ERROR opening cache");
+            Serial.println("ERROR opening files");
         }
-
-        permFile = SD.open(PERM_FILE, FILE_APPEND);
-        permFile.println(msg);
-        permFile.close();
     }
 
     void saveAndAppendInStats(String msg) {
