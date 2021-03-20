@@ -177,7 +177,7 @@ void loop() {
             inputChar = sessionLogFile.read();
         }
 
-        Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
+        Serial.printf("\nAll records have been sent to %s \n", params.mqtt_server);
         sessionLogFile.close();
         sdCrtl->clearFile(SESSION_FILE);
         sendDataCount = 0;
@@ -206,9 +206,8 @@ void loop() {
 
     String serializedMsg = "";
     for(int i = 0; i < friendList->size(); ++i){
-        if(time(nullptr) - friendList->get(i).last_exposure_time > params.friendly_freshness) { // FIXME: maybe dont work lmao
+        if(millis() - friendList->get(i).end_millis > params.friendly_freshness) { 
             String msg = friendList->get(i).serializeMqtt(params.my_id);
-        
             if(DEBUG_MODE)
                 Serial.println(msg);
 
@@ -217,7 +216,7 @@ void loop() {
             // Salvo in session e in perm
         }
         else {
-            serializedMsg += friendList->get(i).serializeLocal() + "\n"; // FIXME: maybe dont work lmao
+            serializedMsg += friendList->get(i).serializeLocal() + "\n"; 
         }
     }
     if(!serializedMsg.isEmpty())

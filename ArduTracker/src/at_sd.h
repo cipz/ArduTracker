@@ -246,7 +246,7 @@ class SDController {
         int strIndex = 0;
         char inputStr[1024];
 
-        Serial.println("\nSending:");
+        Serial.println("\nLoading old sessions:");
 
         while(inputChar != EOF) {
             if(inputChar != '\n') {
@@ -266,7 +266,12 @@ class SDController {
                     log.start_millis = jsonData["start_millis"];
                     log.end_millis = jsonData["end_millis"];
                     log.rssi = jsonData["rssi"];
-                    log.last_exposure_time = (time_t) atoll(jsonData["last_exposure_time"]);
+                    Serial.println("STEP 1");
+                    char tmpTime[32];
+                    strlcpy(tmpTime, jsonData["last_exposure_time"], sizeof(tmpTime));
+                    Serial.println("STEP 2");
+                    log.last_exposure_time = (time_t) strtol(tmpTime, nullptr, 10); //FIXME: not working
+                    Serial.println("STEP 3");
                     log.cycle_counter = jsonData["cycle_counter"];
                     friendList->add(log);
                     delay(50);

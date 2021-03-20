@@ -57,7 +57,7 @@ public:
         msg += "\"friend_id\": \""    + (String)this->friend_id + "\",";
         msg += "\"start_millis\": " + (String)this->start_millis + ",";
         msg += "\"end_millis\": "    + (String)this->end_millis + ",";
-        msg += "\"last_exposure_time\": " + (String)this->last_exposure_time + ",";
+        msg += "\"last_exposure_time\": \"" + (String)this->last_exposure_time + "\",";
         msg += "\"rssi\": "         + (String)this->rssi + ",";
         msg += "\"cycle_counter\": "   + (String)this->cycle_counter;
         msg += "}";
