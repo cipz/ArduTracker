@@ -26,18 +26,17 @@ class Utils {
             int j = 0;
             // Search for an existent exposure session 
             for(; j < friendList->size(); ++j) {
-                Serial.println(tmpFriendList->get(i).friend_id);
-                Serial.println(friendList->get(j).friend_id);
                 if(strcmp(tmpFriendList->get(i).friend_id, friendList->get(j).friend_id) == 0) {
-                    Serial.println("ahah TROVATO!!!!!!"); // TODO: Accesso alla risorsa non funzionante
-                    friendList->get(j).updateExposureSession(tmpFriendList->get(i).rssi);
+                    Log updatedLog = Log(friendList->get(j)); // creates a copy of the existing log
+                    updatedLog.updateExposureSession(tmpFriendList->get(i).rssi);
+                    friendList->remove(j); // removes the old one
+                    friendList->add(updatedLog); // insert the new one
                     break;
                 }
             }
             // Add a new friendList
             if(j == friendList->size()) {
                 friendList->add(tmpFriendList->get(i));
-                Serial.println("Add a new friendList");
             }
         }
 
@@ -67,8 +66,9 @@ class Utils {
         //         // intmax_t ref. https://en.cppreference.com/w/c/chrono/time_t
         // }
         
+        Serial.println(label);
         for (int i = 0; i < friendList->size(); ++i)
-            Serial.println(friendList->get(i).serialize());
+            Serial.println(friendList->get(i).serializeMqtt(params.my_id ));
         
     }
 };

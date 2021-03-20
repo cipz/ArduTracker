@@ -7,16 +7,18 @@
 #pragma once
 #include <SD.h>
 
-#define CS_PIN      22            // for SD card
-#define CACHE_FILE  "/cache.txt"
-#define PERM_FILE   "/perm.txt"
-#define STATS_FILE  "/stats.txt"
+#define CS_PIN       22            // for SD card
+#define CACHE_FILE   "/cache.txt"
+#define PERM_FILE    "/perm.txt"
+#define STATS_FILE   "/stats.txt"
+#define SESSION_FILE "/session.txt"
 
 // --------------------------------------- SD low-level operations
 
 class SDCard {
     File cacheFile;
     File permFile;
+    File sessionFile;
     File statsFile;
 
     public: 
@@ -76,7 +78,7 @@ class SDCard {
         
         params.send_data_cycles = paramsJson["send_data_cycles"] ? paramsJson["send_data_cycles"] : 5;
 
-        // params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
+        params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
 
         int size = sizeof(params.broadcast_io_addr);
         char tmp[size];
@@ -101,25 +103,46 @@ class SDCard {
     }
 
     void initFile(String filename) {
-        if(SD.exists(filename))
-            SD.remove(filename);
-
-        cacheFile = SD.open(filename, FILE_WRITE);
-        if(cacheFile)
-            cacheFile.close();
-        else {
-            Serial.println("ERROR creating "+ filename +" file");
-            restart(RESTART_SECONDS);
+        if(!SD.exists(filename)) {
+            SD.open(filename, FILE_WRITE).close();
         }
     }
 
     void initLogFiles() {
         initFile(CACHE_FILE);
-        if (!SD.exists(PERM_FILE)) {
-            initFile(PERM_FILE);
-        }
+        initFile(PERM_FILE);
+        initFile(SESSION_FILE);
         initFile(STATS_FILE);
     }
+
+    void clearFile(String filename) {
+        if(SD.exists(filename)) {
+            File f = SD.open(filename, FILE_WRITE);
+            f.print("");
+            f.close();
+        }
+    }
+
+    // void initFile(String filename) {
+    //     if(SD.exists(filename))
+    //         SD.remove(filename);
+
+    //     cacheFile = SD.open(filename, FILE_WRITE);
+    //     if(cacheFile)
+    //         cacheFile.close();
+    //     else {
+    //         Serial.println("ERROR creating "+ filename +" file");
+    //         restart(RESTART_SECONDS);
+    //     }
+    // }
+
+    // void initLogFiles() {
+    //     initFile(CACHE_FILE);
+    //     if (!SD.exists(PERM_FILE)) {
+    //         initFile(PERM_FILE);
+    //     }
+    //     initFile(STATS_FILE);
+    // }
 
     void printFile(String filename) {
         File dataFile = SD.open(filename);
@@ -176,19 +199,15 @@ class SDCard {
         }
     }
 
-    void saveInLog(String msg) {
-        cacheFile = SD.open(CACHE_FILE, FILE_WRITE);
-        permFile = SD.open(PERM_FILE, FILE_APPEND);
-
-        if(cacheFile && permFile) {
-            cacheFile.println(msg);
-            cacheFile.close();
-
-            permFile.println(msg);
-            permFile.close();
+    void saveInFile(String msg, const char* fileName, const char* mode) {
+        File dataFile = SD.open(fileName, mode);
+        
+        if(dataFile) {
+            dataFile.println(msg);
+            dataFile.close();
         }
         else {
-            Serial.println("ERROR opening files");
+            Serial.printf("ERROR opening files %s with mode %s \n", fileName, mode);
         }
     }
 
@@ -281,10 +300,15 @@ class SDController {
     }
 
     /**
-     * Save msg to cache (override) and perm (append)
+     * Save msg in different modes depending on the file
     */
-    void saveInLog(String msg) {
-        sd->saveInLog(msg);
+    void saveConcludedSession(String msg) {
+        sd->saveInFile(msg, SESSION_FILE, FILE_APPEND);
+        sd->saveInFile(msg, PERM_FILE, FILE_APPEND);
+    }
+
+    void saveCurrentSessions(String msg) {
+        sd->saveInFile(msg, CACHE_FILE, FILE_WRITE);
     }
 
     /**
@@ -295,6 +319,43 @@ class SDController {
                     tx + String("\t") + 
                     rx;
         sd->saveAndAppendInStats(msg);
+    }
+
+    void clearFile(String msg) {
+        sd->clearFile(msg);
+    }
+
+    void populateFromCache(LinkedList<Log>* friendList) {
+        File cacheFile = SD.open(CACHE_FILE, FILE_READ);
+        int inputChar = cacheFile.read();
+        int strIndex = 0;
+        char inputStr[1024];
+
+
+        Serial.println("\nSending:");
+
+        while(inputChar != EOF) {
+            if(inputChar != '\n') {
+                inputStr[strIndex] = inputChar;
+                strIndex++;
+                inputStr[strIndex] = '\0';
+            }
+            else { // Each line           
+                Serial.println(inputStr);
+                DynamicJsonDocument row = DynamicJsonDocument(1024);
+                DeserializationError error = deserializeJson(row, inputStr);
+                if(error == DeserializationError::Ok) {
+                    friendList->add(Log(row));
+                    delay(50);
+                }
+                strIndex = 0;
+            }
+            inputChar = cacheFile.read();
+        }
+
+        Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
+        cacheFile.close();
+        
     }
 
 };

@@ -77,8 +77,9 @@ MQTTController* mqttCtrl;
 
 LinkedList<Log>* friendList;
 
-void setup() {
 
+// --------------------------------------- Initial Setup
+void setup() {
     Serial.begin(SERIAL_BAUD_RATE);
     Serial.println("Booting device...");
 
@@ -97,6 +98,7 @@ void setup() {
     sdCrtl->listContent();
     sdCrtl->acquireParams();
     sdCrtl->initLog();
+    sdCtrl->populateFromCache(friendList);
     delay(100);
 
     // Mode switcher 
@@ -105,8 +107,9 @@ void setup() {
     else if(strcmp(params.radio_mode, "BLE") == 0)
         radioCtrl = new BLEController();
     else {
-        Serial.print("Radio mode not found! Rebooting");
-        restart(10); // FIXME: Restart
+        Serial.print("Radio mode not found! Using Radio NRF24 as default.."); //FIXME change to WIFI
+        strlcpy(params.radio_mode, "NRF24", sizeof(params.radio_mode));
+        radioCtrl = new RadioController();
     }
 
     radioCtrl->init();
@@ -151,13 +154,12 @@ void loop() {
             params.mqtt_server, 
             params.out_topic);
 
-        int strIndex = 0;
-        char inputStr[500]; //FIXME !!
-        int inputChar;
-
-        File cacheLogFile = SD.open(CACHE_FILE);
-        inputChar = cacheLogFile.read();
         
+        File sessionLogFile = SD.open(SESSION_FILE, FILE_READ);
+        int inputChar = sessionLogFile.read();
+        int strIndex = 0;
+        char inputStr[512];
+
         Serial.println("\nSending:");
 
         while(inputChar != EOF) {
@@ -166,18 +168,18 @@ void loop() {
                 strIndex++;
                 inputStr[strIndex] = '\0';
             }
-            else {
+            else { // Each line
                 Serial.println(inputStr);
                 mqttCtrl->publish(params.out_topic, inputStr);
-                sdCrtl->initLog(); // clear cache
                 delay(50);
                 strIndex = 0;
             }
-            inputChar = cacheLogFile.read();
+            inputChar = sessionLogFile.read();
         }
 
         Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
-        cacheLogFile.close();
+        sessionLogFile.close();
+        sdCrtl->clearFile(SESSION_FILE);
         sendDataCount = 0;
     }
     else {
@@ -197,18 +199,29 @@ void loop() {
     if(DEBUG_MODE)
         Utils::printList(friendList, "[DEBUG-AFTER]");
    
-    // -------------------- Save list to SD // FIXME:OK
+    // -------------------- Save list to SD 
 
-    Serial.print("Saving to SD . . . ");
+    Serial.print("Saving exposure sessions to SD . . . \n");
 
+
+    String serializedMsg = "";
     for(int i = 0; i < friendList->size(); ++i){
-        String msg = friendList->get(i).serialize();
+        if(time(nullptr) - friendList->get(i).last_exposure_time > params.friendly_freshness) { // FIXME: maybe dont work lmao
+            String msg = friendList->get(i).serializeMqtt(params.my_id);
+        
+            if(DEBUG_MODE)
+                Serial.println(msg);
 
-        if(DEBUG_MODE)
-            Serial.print(msg);
-
-        sdCrtl->saveInLog(msg);
+            sdCrtl->saveConcludedSession(msg);
+            friendList->remove(i);
+            // Salvo in session e in perm
+        }
+        else {
+            serializedMsg += friendList->get(i).serializeLocal() + "\n"; // FIXME: maybe dont work lmao
+        }
     }
+    if(!serializedMsg.isEmpty())
+        sdCrtl->saveCurrentSessions(serializedMsg);
     
     Serial.print("Saved!");
 
