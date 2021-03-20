@@ -33,7 +33,7 @@ class SDCard {
             return false;
         
         File paramsFile = SD.open("/params.json");
-        StaticJsonDocument<512> paramsJson;
+        StaticJsonDocument<1024> paramsJson;
         
         DeserializationError error = deserializeJson(paramsJson, paramsFile);
         if(error) 
@@ -232,11 +232,53 @@ class SDCard {
 // --------------------------------------- SD Controller class
 
 class SDController {
+
     SDCard* sd;
 
     public:
     SDController() {
         sd = new SDCard();
+    }
+
+    static void populateFromCache() {
+        File cacheFile = SD.open(CACHE_FILE, FILE_READ);
+        int inputChar = cacheFile.read();
+        int strIndex = 0;
+        char inputStr[1024];
+
+        Serial.println("\nSending:");
+
+        while(inputChar != EOF) {
+            if(inputChar != '\n') {
+                inputStr[strIndex] = inputChar;
+                strIndex++;
+                inputStr[strIndex] = '\0';
+            }
+            else { // Each line           
+                Serial.println(inputStr);
+                StaticJsonDocument<1024> jsonData;
+                DeserializationError error = deserializeJson(jsonData, inputStr);
+                // Serial.print(jsonData);
+    
+                if(error == DeserializationError::Ok) {
+                    Log log = Log();
+                    strlcpy(log.friend_id, jsonData["friend_id"], sizeof(log.friend_id));
+                    log.start_millis = jsonData["start_millis"];
+                    log.end_millis = jsonData["end_millis"];
+                    log.rssi = jsonData["rssi"];
+                    log.last_exposure_time = (time_t) atoll(jsonData["last_exposure_time"]);
+                    log.cycle_counter = jsonData["cycle_counter"];
+                    friendList->add(log);
+                    delay(50);
+                }
+                strIndex = 0;
+            }
+            inputChar = cacheFile.read();
+        }
+
+        Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
+        cacheFile.close();
+        
     }
 
     /**
@@ -325,37 +367,6 @@ class SDController {
         sd->clearFile(msg);
     }
 
-    void populateFromCache(LinkedList<Log>* friendList) {
-        File cacheFile = SD.open(CACHE_FILE, FILE_READ);
-        int inputChar = cacheFile.read();
-        int strIndex = 0;
-        char inputStr[1024];
-
-
-        Serial.println("\nSending:");
-
-        while(inputChar != EOF) {
-            if(inputChar != '\n') {
-                inputStr[strIndex] = inputChar;
-                strIndex++;
-                inputStr[strIndex] = '\0';
-            }
-            else { // Each line           
-                Serial.println(inputStr);
-                DynamicJsonDocument row = DynamicJsonDocument(1024);
-                DeserializationError error = deserializeJson(row, inputStr);
-                if(error == DeserializationError::Ok) {
-                    friendList->add(Log(row));
-                    delay(50);
-                }
-                strIndex = 0;
-            }
-            inputChar = cacheFile.read();
-        }
-
-        Serial.printf("\nAll records have been sent to %s", params.mqtt_server);
-        cacheFile.close();
-        
-    }
+    
 
 };

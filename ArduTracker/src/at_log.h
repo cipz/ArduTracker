@@ -9,11 +9,8 @@
 // --------------------------------------- Log class data structure
 
 class Log {
-private:
-    unsigned int cycle_counter;
-
 public:
-
+    unsigned int cycle_counter;
     char friend_id[15];
     int start_millis;
     int end_millis;
@@ -38,14 +35,14 @@ public:
     //     this->cycle_counter = old.cycle_counter + 1;
     // }
 
-    Log(const JsonDocument& jsonData) {
-        strlcpy(this->friend_id, jsonData["friend_id"], sizeof(this->friend_id));
-        this->start_millis = jsonData["start_millis"];
-        this->end_millis = jsonData["end_millis"];
-        this->rssi = jsonData["rssi"];
-        this->last_exposure_time = time(jsonData["last_exposure_time"]);
-        this->cycle_counter = jsonData["cycle_counter"];
-    }
+    // Log(StaticJsonDocument<1024> jsonData) {
+    //     strlcpy(this->friend_id, jsonData["friend_id"], sizeof(this->friend_id));
+    //     this->start_millis = jsonData["start_millis"];
+    //     this->end_millis = jsonData["end_millis"];
+    //     this->rssi = jsonData["rssi"];
+    //     this->last_exposure_time = time(jsonData["last_exposure_time"]);
+    //     this->cycle_counter = jsonData["cycle_counter"];
+    // }
 
     void updateExposureSession(double rssi = 0.0){
         this->end_millis = millis();

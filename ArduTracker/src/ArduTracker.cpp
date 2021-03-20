@@ -66,6 +66,8 @@ PubSubClient client(espClient);
 #include "at_nrf24l01.h"
 #include "at_ble.h"
 #include "at_wifi.h"
+
+LinkedList<Log>* friendList;
 #include "at_sd.h"
 
 SDController* sdCrtl;
@@ -74,8 +76,6 @@ SDController* sdCrtl;
 AbsRadioController* radioCtrl;
 WiFiContoller* wifiCtrl;
 MQTTController* mqttCtrl;
-
-LinkedList<Log>* friendList;
 
 
 // --------------------------------------- Initial Setup
@@ -98,7 +98,7 @@ void setup() {
     sdCrtl->listContent();
     sdCrtl->acquireParams();
     sdCrtl->initLog();
-    sdCtrl->populateFromCache(friendList);
+    SDController::populateFromCache();
     delay(100);
 
     // Mode switcher 
