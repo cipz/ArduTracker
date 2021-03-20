@@ -1,5 +1,6 @@
 <?php
 require_once 'res/resources.php';
+$pr = new protection(true);
 $_CURRENT_PAGE_NAME = 'Tracking list';
 require_once 'template/header.php';
 require_once 'controller/tracking-list.php';

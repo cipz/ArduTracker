@@ -1,5 +1,6 @@
 <?php
 require_once 'res/resources.php';
+
 $db = new database();
 
 $db->query(

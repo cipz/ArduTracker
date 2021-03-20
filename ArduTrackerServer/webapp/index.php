@@ -1,5 +1,7 @@
 <?php
 require_once 'res/resources.php';
+$pr = new protection(true);
+require_once 'res/resources.php';
 $_CURRENT_PAGE_NAME = 'Homepage';
 require_once 'template/header.php';
 ?>

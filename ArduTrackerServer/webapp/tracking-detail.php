@@ -1,4 +1,6 @@
 <?php
+require_once 'res/resources.php';
+$pr = new protection(true);
 require_once 'controller/tracking-detail.php';
 $_TITLE_CURRENT_PAGE_NAME = 'Tracking detail - ' . $id;
 $_CURRENT_PAGE_NAME = '<a href="tracking-list.php" class="text-secondary">Tracking list</a>';

@@ -1,4 +1,6 @@
 <?php
+require_once 'res/resources.php';
+$pr = new protection(true);
 require_once 'controller/boards.php';
 $_CURRENT_PAGE_NAME = 'Boards';
 require_once 'template/header.php';

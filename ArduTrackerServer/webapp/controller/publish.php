@@ -1,5 +1,6 @@
 <?php
 
+
 $cmd = escapeshellcmd("python ../res/python/mqtt_publisher.py");
 $out = shell_exec($cmd);
 echo $out;
