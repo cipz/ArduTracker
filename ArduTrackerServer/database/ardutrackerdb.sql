@@ -47,7 +47,7 @@ CREATE TABLE `tracking_log` (
   `seen_millis` bigint(20) NOT NULL,
   `seen_time` bigint(20) NOT NULL,
   `scan_count` int(11) NOT NULL DEFAULT '0',
-  `rssi` float NOT NULL DEFAULT '0'
+  `rssi` float NOT NULL DEFAULT '0',
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=ARCHIVE DEFAULT CHARSET=utf8;
 
