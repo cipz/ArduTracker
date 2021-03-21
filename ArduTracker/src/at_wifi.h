@@ -8,7 +8,7 @@
 
 // --------------------------------------- WIFI Controller class
 
-class WiFiContoller {
+class WiFiController {
     public:
     /** 
      * Initialize parameters
@@ -16,10 +16,8 @@ class WiFiContoller {
     void init() {
         Serial.println("Initializing WiFi");
         WiFi.mode(WIFI_STA);
-        // lastWifiSendTime = 1000000000;
         wifiTransmission = true;
-        // timezone is 2
-        configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov");
+        configTime(2 * 3600, 0, "pool.ntp.org", "time.nist.gov"); // timezone is 2
     }
 
     /**

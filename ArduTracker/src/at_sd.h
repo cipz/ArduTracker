@@ -261,24 +261,18 @@ class SDController {
                 // Serial.print(jsonData);
     
                 if(error == DeserializationError::Ok) {
-                    Log log = Log();
-                    strlcpy(log.friend_id, jsonData["friend_id"], sizeof(log.friend_id));
+                    Log log = Log(jsonData);
+                    // strlcpy(log.friend_id, jsonData["friend_id"], sizeof(log.friend_id));
+                    // log.rssi = jsonData["rssi"];
+                    // char tmpFet[32];
+                    // char tmpLet[32];
+                    // strlcpy(tmpFet, jsonData["first_exposure_time"], sizeof(tmpFet));
+                    // strlcpy(tmpLet, jsonData["last_exposure_time"], sizeof(tmpLet));
+            
+                    // log.first_exposure_time = (time_t) strtol(tmpFet, nullptr, 10); 
+                    // log.last_exposure_time = (time_t) strtol(tmpLet, nullptr, 10); 
                     
-                    // TODO: tenere la somma
-                    // log.start_millis = (jsonData["end_millis"] - jsonData["start_millis"]) * ( -1);
-                    // log.end_millis = millis(); // FIXME: !!!
-                    log.rssi = jsonData["rssi"];
-                    
-                    char tmpFet[32];
-                    
-                    char tmpLet[32];
-                    strlcpy(tmpFet, jsonData["first_exposure_time"], sizeof(tmpFet));
-                    strlcpy(tmpLet, jsonData["last_exposure_time"], sizeof(tmpLet));
-                    
-                    log.first_exposure_time = (time_t) strtol(tmpFet, nullptr, 10); //FIXME: not working (?)
-                    log.last_exposure_time = (time_t) strtol(tmpLet, nullptr, 10); //FIXME: not working (?)
-                    
-                    log.cycle_counter = jsonData["cycle_counter"];
+                    // log.cycle_counter = jsonData["cycle_counter"];
                     friendList->add(log);
                     delay(50);
                 }

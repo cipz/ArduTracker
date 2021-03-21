@@ -16,7 +16,7 @@
 #define SERIAL_BAUD_RATE 9600
 #define MAX_WIFI_RECON_COUNT 5
 #define RESTART_SECONDS 10
-#define ONBOARD_LED_PIN 2
+#define BLE_PREFIX "AT_"
 
 // Debug modes
 
@@ -74,7 +74,7 @@ SDController* sdCrtl;
 #include "at_mqtt.h"
 
 AbsRadioController* radioCtrl;
-WiFiContoller* wifiCtrl;
+WiFiController* wifiCtrl;
 MQTTController* mqttCtrl;
 
 
@@ -83,15 +83,13 @@ void setup() {
     Serial.begin(SERIAL_BAUD_RATE);
     Serial.println("Booting device...");
 
-    pinMode(ONBOARD_LED_PIN,OUTPUT);
-
     pinMode(CS_PIN, OUTPUT);
     pinMode(CE_PIN, OUTPUT);
 
     friendList = new LinkedList<Log>();
 
     sdCrtl = new SDController();
-    wifiCtrl = new WiFiContoller();
+    wifiCtrl = new WiFiController();
     mqttCtrl = new MQTTController();
 
     sdCrtl->init();
@@ -102,13 +100,13 @@ void setup() {
     delay(100);
 
     // Mode switcher 
-    if(strcmp(params.radio_mode, "NRF24") == 0)
+    if(strcmp(params.radio_mode, "WIFI") == 0)
         radioCtrl = new RadioController();
     else if(strcmp(params.radio_mode, "BLE") == 0)
         radioCtrl = new BLEController();
     else {
-        Serial.print("Radio mode not found! Using Radio NRF24 as default.."); //FIXME change to WIFI
-        strlcpy(params.radio_mode, "NRF24", sizeof(params.radio_mode));
+        Serial.print("Radio mode not found! Using Radio WIFI as default..");
+        strlcpy(params.radio_mode, "WIFI", sizeof(params.radio_mode));
         radioCtrl = new RadioController();
     }
 
@@ -186,16 +184,14 @@ void loop() {
         sendDataCount++;
     }
 
-    // lastWifiSendTime = millis();
+    // lastWifiSendTime = millis(); // unused
 
     // -------------------- Receive radio message
     LinkedList<Log>* tmpFriendList = radioCtrl->scan();
 
     if(DEBUG_MODE)
         Utils::printList(friendList, "[DEBUG-BEFORE]");
-    
     Utils::updateFriendList(friendList, tmpFriendList);
-
     if(DEBUG_MODE)
         Utils::printList(friendList, "[DEBUG-AFTER]");
    
@@ -203,10 +199,9 @@ void loop() {
 
     Serial.print("Saving exposure sessions to SD . . . \n");
 
-
     String serializedMsg = "";
     for(int i = 0; i < friendList->size(); ++i){
-        if(difftime(time(nullptr), friendList->get(i).last_exposure_time) * 1000 > params.friendly_freshness) { // FIXME: here
+        if(difftime(time(nullptr), friendList->get(i).last_exposure_time) * 1000 > params.friendly_freshness) {
             String msg = friendList->get(i).serializeMqtt(params.my_id);
             if(DEBUG_MODE)
                 Serial.println(msg);
@@ -233,5 +228,4 @@ void loop() {
     if(STATS_DEBUG_MODE)
         sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
 
-// Yee we reach the end without crashing, yet :D
 }

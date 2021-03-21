@@ -42,35 +42,11 @@ class Utils {
 
     }
 
-    // Pre: FriendList che contiene i contatti avvenuti precedentemente (non duplicati) e i contatti nuovi avvenuti nell'ultima scansione
-
-    // void compactList() {
-    //     for (int i = 0; i < friendList->size(); ++i) {
-    //         if (millis() - friendList->get(i).seen_millis > params.friendly_freshness) {
-    //             friendList->remove(i);
-    //         }
-    //     }
-    // }
-
-    // Post: friendList che contiene i contatti aggiornati se sotto la soglia "friendly_freshness" (ossia, un contatto ha concluso la sessione di esposizione), altrimenti rimossi friendList e salvati dentro la SD Card (cache.txt) e poi inviati al server mqtt
-
     void static printList(LinkedList<Log>* friendList, const char * label = "[DEBUG]") {
-        // DEBUG print
-        // for (int i = 0; i < friendList->size(); ++i) {
-        //     Serial.printf(
-        //         "\n%s {FriendID = %s, SeenMillis = %d, SeenTime = %jd}\n",
-        //         label,
-        //         friendList->get(i).friend_id,
-        //         friendList->get(i).start_millis,
-        //         (intmax_t) friendList->get(i).seen_time);
-        //         // intmax_t ref. https://en.cppreference.com/w/c/chrono/time_t
-        // }
-        
         if(friendList->size() > 0){
             Serial.println(label);
             for (int i = 0; i < friendList->size(); ++i)
                 Serial.println(friendList->get(i).serializeLocal());
-                // Serial.println(friendList->get(i).serializeMqtt(params.my_id));
         }
 
         
