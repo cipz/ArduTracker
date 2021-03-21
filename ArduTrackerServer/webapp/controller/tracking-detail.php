@@ -48,7 +48,7 @@ foreach($data as $record) {
     $out .= "<th scope='row' class='small'>".$record["friend_id"]."</th>";
     $out .= "<td class='small'>".Tracking::printExposureRisk($record['seen_millis'])." ".millis2string($record["seen_millis"])."</td>";
     $out .= "<td class='small'>".$record['rssi']." dBm / ".$record['scan_count']." scan</td>";
-    $out .= "<td class='small'>".date('Y-m-d H:i:s', $record["seen_time"]/1000)."</td>";
+    $out .= "<td class='small'>".date('Y-m-d H:i:s', $record["seen_time"])."</td>";
     $out .= "<td class='small'>".time2String($record["created_at"])."</td>";
     $out .= "</tr>";
 }
