@@ -1,5 +1,5 @@
 <?php
-require_once 'res/resources.php';
+require_once 'controller/login.php';
 $_CURRENT_PAGE_NAME = 'Login';
 require_once 'template/header.php';
 ?>
@@ -23,13 +23,13 @@ require_once 'template/header.php';
     <div class="col-lg-8">
         <div class="card">
             <div class="card-body">
-
                 <h5 class="card-title text-muted mb-4">Password protection</h5>
+                <?=$out;?>
                 <form action="?" method="post">
                     <div class="row g-2 my-2">
                         <div class="col-md">
                             <div class="form-floating">
-                                <input type="password" required class="form-control" id="passwordInput" name="id" placeholder="Insert password to continue">
+                                <input type="password" required class="form-control" id="passwordInput" autofocus name="password" placeholder="Insert password to continue">
                                 <label for="passwordInput">Password</label>
                             </div>
                         </div>

@@ -34,7 +34,7 @@ class Board {
         }
         else
         {
-            $this->idBoard = 'undefined';
+            $this->id = 'undefined';
         }
     }
 

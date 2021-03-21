@@ -1,6 +1,7 @@
 <?php
 
 require_once 'res/resources.php';
+$pr = new protection(true);
 $db = new database();
 
 if (isset($_POST["AddBoard"])) {
@@ -18,4 +19,8 @@ if (isset($_POST["AddBoard"])) {
 
 if (isset($_GET["Removed"])) {
     $out = successBox("The board <code>$id</code> has been <b>deleted</b> successfully!");
+}
+
+if (isset($_GET["NotFound"])) {
+    $out = errorBox("The board <code>$id</code> was not found. Consider to register it to edit the configuration.");
 }

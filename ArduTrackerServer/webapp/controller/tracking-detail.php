@@ -1,5 +1,6 @@
 <?php
 require_once 'res/resources.php';
+$pr = new protection(true);
 $db = new database();
 
 if(!isset($_GET["id"])) 

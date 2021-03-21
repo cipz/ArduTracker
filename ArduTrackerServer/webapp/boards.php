@@ -1,10 +1,10 @@
 <?php
-require_once 'res/resources.php';
-$pr = new protection(true);
 require_once 'controller/boards.php';
 $_CURRENT_PAGE_NAME = 'Boards';
 require_once 'template/header.php';
 ?>
+
+<script src="res/javascript/board-detail.js"></script>
 
 <div class="row">
     <div class="col-lg-12">
@@ -64,16 +64,6 @@ require_once 'template/header.php';
         </div>
     </div>
 </div>
-
-<script>
-    document.getElementById("macBoardInput").addEventListener('keyup', function() {
-        this.value =
-            (this.value.toUpperCase()
-                .replace(/[^\d|A-F]/g, '')
-                .match(/.{1,2}/g) || [])
-            .join(":")
-    });
-</script>
 
 <?php
 require_once 'template/footer.php';

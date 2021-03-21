@@ -1,6 +1,4 @@
 <?php
-require_once 'res/resources.php';
-$pr = new protection(true);
 require_once 'controller/board-detail.php';
 $_TITLE_CURRENT_PAGE_NAME = 'Board detail - ' . $id;
 $_CURRENT_PAGE_NAME = '<a href="boards.php" class="text-secondary">Boards</a>';

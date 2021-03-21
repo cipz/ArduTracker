@@ -1,9 +1,7 @@
 <?php
-require_once 'res/resources.php';
-$pr = new protection(true);
+require_once 'controller/tracking-list.php';
 $_CURRENT_PAGE_NAME = 'Tracking list';
 require_once 'template/header.php';
-require_once 'controller/tracking-list.php';
 ?>
 
 <script src="res/javascript/tracking-list.js"></script>
@@ -34,7 +32,7 @@ require_once 'controller/tracking-list.php';
 
         <div class="input-group mb-3">
             <span class="input-group-text" id="search"><i class='fas fa-search'></i></span>
-            <input type="text" class="form-control" placeholder="Search by ID" aria-label="Search by ID" aria-describedby="search" onkeyup="searchIds()" id="input-search-id">
+            <input type="text" autofocus class="form-control" placeholder="Search by ID" aria-label="Search by ID" aria-describedby="search" onkeyup="searchIds()" id="input-search-id">
         </div>
 
         <table class="table table-striped">

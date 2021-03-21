@@ -19,6 +19,14 @@ class protection
         $this->checkCredentials();
     }
 
+    public function isLoggedIn() {
+        return $this->status;
+    }
+
+    public function getSessionContent() {
+        return $this->status ? $_SESSION[self::SESSION_NAME] : '';
+    }
+
     public function getProtected() {
         return $this->protected;
     }
@@ -46,7 +54,7 @@ class protection
     }
 
     public function logout() {
-        session_unset($_SESSION[self::SESSION_NAME]);
+        session_unset();
         return true;
     }
 }
