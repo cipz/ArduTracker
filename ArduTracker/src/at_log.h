@@ -33,7 +33,8 @@ public:
     }
 
     void updateExposureSession(double rssi = 0.0){
-
+        
+        // FIXME: critical cases to fix
         /* Note: time without a proper config counts the seconds since the start of the board
          * Note 2: 1year = 31546000, aleatory value for sanity check
          *
