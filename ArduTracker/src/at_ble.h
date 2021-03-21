@@ -74,19 +74,17 @@ class BLEController : public AbsRadioController{
         for(int i=0; i<devices.getCount(); ++i){
             BLEAdvertisedDevice advertisedDevice = devices.getDevice(i);
 
-            Serial.printf(
-                "Found: %s >> %s [%s] RSSI:%d\n",
-                advertisedDevice.getName().c_str(),
-                advertisedDevice.getServiceData().c_str(),
-                advertisedDevice.getAddress().toString().c_str(),
-                advertisedDevice.getRSSI());
-
             if(advertisedDevice.getName() == BLE_NAME){
+                Serial.printf(
+                    "Found: %s >> %s [%s] RSSI:%d\n",
+                    advertisedDevice.getName().c_str(),
+                    advertisedDevice.getServiceData().c_str(),
+                    advertisedDevice.getAddress().toString().c_str(),
+                    advertisedDevice.getRSSI());
+
                 newFriends->add(Log(advertisedDevice.getServiceData().c_str(), advertisedDevice.getRSSI()));
             }
         }
-
-        Serial.printf("\nNum. of BLE devices in range: %d\n", devices.getCount());
         // pBLEScan->clearResults();
         // delay(2000);
         return newFriends;

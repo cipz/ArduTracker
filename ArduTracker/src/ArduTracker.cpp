@@ -206,7 +206,7 @@ void loop() {
 
     String serializedMsg = "";
     for(int i = 0; i < friendList->size(); ++i){
-        if(millis() - friendList->get(i).end_millis > params.friendly_freshness) { 
+        if(difftime(time(nullptr), friendList->get(i).last_exposure_time) * 1000 > params.friendly_freshness) { // FIXME: here
             String msg = friendList->get(i).serializeMqtt(params.my_id);
             if(DEBUG_MODE)
                 Serial.println(msg);

@@ -66,9 +66,13 @@ class Utils {
         //         // intmax_t ref. https://en.cppreference.com/w/c/chrono/time_t
         // }
         
-        Serial.println(label);
-        for (int i = 0; i < friendList->size(); ++i)
-            Serial.println(friendList->get(i).serializeMqtt(params.my_id ));
+        if(friendList->size() > 0){
+            Serial.println(label);
+            for (int i = 0; i < friendList->size(); ++i)
+                Serial.println(friendList->get(i).serializeLocal());
+                // Serial.println(friendList->get(i).serializeMqtt(params.my_id));
+        }
+
         
     }
 };

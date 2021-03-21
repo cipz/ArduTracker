@@ -12,16 +12,18 @@ class Log {
 public:
     unsigned int cycle_counter;
     char friend_id[15];
-    int start_millis;
-    int end_millis;
+    // int start_millis;
+    // int end_millis;
     double rssi;
+    time_t first_exposure_time;
     time_t last_exposure_time;
 
-    Log(const char * fi = "Default", double rssi = 0.0, int sm = millis()-1000, int em = millis(), time_t let = time(nullptr)) {
+    Log(const char * fi = "Default", double rssi = 0.0, /*int sm = millis()-1000, int em = millis()*/  time_t fet = time(nullptr)-1, time_t let = time(nullptr)) {
         strlcpy(this->friend_id, fi, sizeof(this->friend_id));
-        this->start_millis = sm;
-        this->end_millis = em;
+        // this->start_millis = sm;
+        // this->end_millis = em;
         this->rssi = rssi;
+        this->first_exposure_time = fet;
         this->last_exposure_time = let;
         this->cycle_counter = 1;
     }
@@ -44,8 +46,12 @@ public:
     //     this->cycle_counter = jsonData["cycle_counter"];
     // }
 
+    long getExposureMillis() const {
+        return (difftime(last_exposure_time, first_exposure_time)) * 1000; //FIXME: why not in seconds?
+    }
+
     void updateExposureSession(double rssi = 0.0){
-        this->end_millis = millis();
+        // this->end_millis = millis();
         this->last_exposure_time = time(nullptr);
         this->cycle_counter++;
         // rssi average calculation
@@ -55,8 +61,9 @@ public:
     String serializeLocal() const {
         String msg = "{";
         msg += "\"friend_id\": \""    + (String)this->friend_id + "\",";
-        msg += "\"start_millis\": " + (String)this->start_millis + ",";
-        msg += "\"end_millis\": "    + (String)this->end_millis + ",";
+        // msg += "\"start_millis\": " + (String)this->start_millis + ",";
+        // msg += "\"end_millis\": "    + (String)this->end_millis + ",";
+        msg += "\"first_exposure_time\": \"" + (String)this->first_exposure_time + "\",";
         msg += "\"last_exposure_time\": \"" + (String)this->last_exposure_time + "\",";
         msg += "\"rssi\": "         + (String)this->rssi + ",";
         msg += "\"cycle_counter\": "   + (String)this->cycle_counter;
@@ -69,7 +76,7 @@ public:
         String msg = "{";
         msg += "\"my_id\": \""        + (String)my_id + "\",";
         msg += "\"friend_id\": \""    + (String)this->friend_id + "\",";
-        msg += "\"seen_millis\": \""  + (String)(this->end_millis - this->start_millis) + "\",";
+        msg += "\"seen_millis\": \""  + (String)this->getExposureMillis() + "\",";
         msg += "\"seen_time\": \""    + (String)this->last_exposure_time + "\",";
         msg += "\"rssi\": \""         + (String)this->rssi + "\",";
         msg += "\"scan_count\": \""   + (String)this->cycle_counter + "\"";
