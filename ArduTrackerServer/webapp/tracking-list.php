@@ -4,7 +4,7 @@ $_CURRENT_PAGE_NAME = 'Tracking list';
 require_once 'template/header.php';
 ?>
 
-<script src="res/javascript/tracking-list.js"></script>
+<script src="res/javascript/utils.js"></script>
 
 <div class="row">
     <div class="col-lg-3">

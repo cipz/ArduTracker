@@ -4,6 +4,7 @@ $_CURRENT_PAGE_NAME = 'Boards';
 require_once 'template/header.php';
 ?>
 
+<script src="res/javascript/utils.js"></script>
 <script src="res/javascript/board-detail.js"></script>
 
 <div class="row">
@@ -18,7 +19,7 @@ require_once 'template/header.php';
                     <div class="row g-2 my-2">
                         <div class="col-md">
                             <div class="form-floating">
-                                <input type="text" required maxlength="64" class="form-control" id="idBoardInput" placeholder="Board ID" name="id">
+                                <input type="text" required maxlength="15" class="form-control" id="idBoardInput" placeholder="Board ID" name="id">
                                 <label for="idBoardInput">Board ID (custom name)</label>
                             </div>
                         </div>
@@ -36,9 +37,15 @@ require_once 'template/header.php';
 
         <div class="card my-4">
             <div class="card-header">
-                <i class="fas fa-microchip"></i> Registered Boards List
+                <i class="fas fa-microchip"></i> Registered Boards
             </div>
             <div class="card-body">
+                
+            <div class="input-group mb-3">
+                <span class="input-group-text" id="search"><i class='fas fa-search'></i></span>
+                <input type="text" class="form-control" placeholder="Search by ID" aria-label="Search by ID" aria-describedby="search" onkeyup="searchIds()" id="input-search-id">
+            </div>
+
                 <div class="table-responsive">
                     <table class="table table-striped">
                         <thead>

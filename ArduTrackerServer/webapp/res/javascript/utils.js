@@ -8,9 +8,9 @@ function searchIds() {
       a = td[i].getElementsByTagName("a")[0];
       txtValue = a.textContent || a.innerText;
       if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        td[i].style.display = "";
+        td[i].parentElement.style.display = "";
       } else {
-        td[i].style.display = "none";
+        td[i].parentElement.style.display = "none";
       }
     }
   }
