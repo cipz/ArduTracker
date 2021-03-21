@@ -4,9 +4,6 @@ $_CURRENT_PAGE_NAME = 'Boards';
 require_once 'template/header.php';
 ?>
 
-<script src="res/javascript/utils.js"></script>
-<script src="res/javascript/board-detail.js"></script>
-
 <div class="row">
     <div class="col-lg-12">
         <div class="card my-3">
@@ -71,6 +68,10 @@ require_once 'template/header.php';
         </div>
     </div>
 </div>
+
+<script src="res/javascript/utils.js"></script>
+<script src="res/javascript/boards.js"></script>
+
 
 <?php
 require_once 'template/footer.php';

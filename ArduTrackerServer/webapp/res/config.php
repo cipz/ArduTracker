@@ -14,7 +14,7 @@ define("PAGINATION_LIMIT", "20");
 define("LOW_RISK_MINUTES", "2");
 define("MID_RISK_MINUTES", "4");
 define("DEFAULT_MAX_PACKET_SIZE", "1024");
-define("BOARD_MODE_CONFIG_FIELD", "type");
+define("BOARD_MODE_CONFIG_FIELD", "radio_mode");
 define("BOARD_ID_CONFIG_FIELD", "my_id");
 
 // -----------------------------------
@@ -45,13 +45,16 @@ $id = isset($_GET['id']) ? $_GET['id'] : 0;
 // Default Board Configuration
 
 $_DEFAULT_BOARD_CONFIG = json_decode('{
-	"ssid" : "WIFI-ARDUTRACK",
-	"password" : "changeme",
-	"my_id" : "JohnDoe",
-	"broadcast_io_addr" : "RxTx0",
-	"in_topic" : "math/wnma/ardutrack",
-	"out_topic" : "math/wnma/ardutrack",
-	"mqtt_server" : "ardutracker.debug.ovh",
-    "friendly_freshness" : 5000
-}');
+    "ssid" : "WIFI-ARDUTRACK",
+    "password" : "changeme",
+    "my_id" : "DEFAULT",
+    "broadcast_io_addr" : "192.168.1.1",
+    "friendly_freshness" : "10000",
+    "in_topic" : "math/wnma/ardutrack/config/",
+    "out_topic" : "math/wnma/ardutrack",
+    "mqtt_server" : "ardutracker.debug.ovh",
+    "endpoint" : "endpoint",
+    "radio_mode" : "WIFI",
+    "send_data_cycles" : 3
+}', true);
 

@@ -89,13 +89,15 @@ class Board {
     }
 
 
-    static public function addNewBoard($id, $mac) {
+    static public function addNewBoard($idb, $mac) {
         global $_DEFAULT_BOARD_CONFIG;
         $db = new database();
-        $id = $db->clean($id);
+        $id = $db->clean($idb);
         $mac = $db->clean($mac);
-        $defaultConfig = json_encode($_DEFAULT_BOARD_CONFIG);
-        $db->query("INSERT INTO tracking_board (id_board, id_mac, configuration) VALUES ('$id', '$mac', '$defaultConfig')");
+        $defaultConfig = $_DEFAULT_BOARD_CONFIG;
+        $defaultConfig[BOARD_ID_CONFIG_FIELD] = $idb;
+        $defaultConfigEncoded = json_encode($defaultConfig);
+        $db->query("INSERT INTO tracking_board (id_board, id_mac, configuration) VALUES ('$id', '$mac', '$defaultConfigEncoded')");
         return $db->status();
     }
 
