@@ -6,8 +6,8 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
   <meta name="description" content="ArduTracking WebApp - PoC for Wireless Networks for Mobile Applications">
   <link rel="icon" href="assets/images/logo.png">
-  <title><?php if(isset($_TITLE_CURRENT_PAGE_NAME)) echo "$_TITLE_CURRENT_PAGE_NAME | ";
-               elseif(isset($_CURRENT_PAGE_NAME))  echo "$_CURRENT_PAGE_NAME | "; ?>ArduTracker - Webapp</title>
+  <title><?php if (isset($_TITLE_CURRENT_PAGE_NAME)) echo "$_TITLE_CURRENT_PAGE_NAME | ";
+          elseif (isset($_CURRENT_PAGE_NAME))  echo "$_CURRENT_PAGE_NAME | "; ?>ArduTracker - Webapp</title>
   <!-- Bootstrap core CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0-beta2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BmbxuPwQa2lc/FVzBcNJ7UAyJxM6wuqIj61tLrc4wSX0szH/Ev+nYRRuWlolflfl" crossorigin="anonymous">
   <link rel="stylesheet" href="assets/style.css">
@@ -27,20 +27,36 @@
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse" id="navbarResponsive">
-        <ul class="navbar-nav ml-auto">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+        <?php if (isset($pr) && $pr->isLoggedIn() || !isset($pr)) :?>
           <li class="nav-item">
-              <a class="nav-link" href="index.php"><i class='fas fa-home'></i> Homepage</a>
+            <a class="nav-link" href="index.php"><i class='fas fa-home'></i> Homepage</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="boards.php"><i class='fas fa-microchip'></i> Boards</a>
+            <a class="nav-link" href="boards.php"><i class='fas fa-microchip'></i> Boards</a>
           </li>
           <li class="nav-item">
-              <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
+            <a class="nav-link" href="tracking-list.php"><i class='fas fa-list'></i> Tracking List</a>
           </li>
+          <?php 
+              endif;
+              if (isset($pr) && !$pr->isLoggedIn())
+                echo '<li class="nav-item">
+                        <a class="nav-link text-warning" href="tracking-list.php"><i class="fas fa-sign-in-alt"></i> Login</a>
+                      </li>';
+          ?>
         </ul>
+        <?php 
+        if (isset($pr) && $pr->isLoggedIn())
+            echo '<span class="navbar-text small">
+                    <span class="text-light">Signed-in</span> ('.time2string(date('Y-m-d H:i:s', $pr->getSessionContent())).') &nbsp;<i class="fas fa-user text-warning"></i> &nbsp;
+                    <a class="text-warning" href="index.php?Logout">Logout</a>
+                  </span>';
+        ?>
       </div>
     </div>
   </nav>
 
-<div class="container py-3 at-container">
-<?php if(isset($_CURRENT_PAGE_NAME)) echo "<h1 class='fw-light mt-1 mb-3 h2 at-title'>$_CURRENT_PAGE_NAME ".(isset($_EXTRA_CURRENT_PAGE_NAME) ? $_EXTRA_CURRENT_PAGE_NAME : '')."</h1>"; ?>
+  <div class="container py-3 at-container">
+    <?php if (isset($_CURRENT_PAGE_NAME)) echo "<h1 class='fw-light mt-1 mb-3 h2 at-title'>$_CURRENT_PAGE_NAME " . (isset($_EXTRA_CURRENT_PAGE_NAME) ? $_EXTRA_CURRENT_PAGE_NAME : '') . "</h1>"; ?>

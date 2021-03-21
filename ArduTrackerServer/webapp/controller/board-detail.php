@@ -1,16 +1,17 @@
 <?php
 
 require_once 'res/resources.php';
+$pr = new protection(true);
 $db = new database();
 
 if (!isset($_GET["id"]))
-    goToLocation('boards.php');
+    goToLocation('boards.php?NotFound&id=%20');
 
 $board = new Board();
 $board->constructFromId($id);
 
 if ($board->id == 'undefined')
-    goToLocation('boards.php');
+    goToLocation('boards.php?NotFound&id='.$id);
 
 
 if (isset($_POST['Save']) || isset($_POST['Send']) || isset($_POST['SaveAndSend'])) {

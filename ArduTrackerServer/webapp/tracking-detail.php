@@ -57,7 +57,7 @@ require_once 'template/header.php';
         <div class="card mt-3">
             <div class="card-body">
 
-                <h5 class="card-title text-muted h6 mb-4"><i class="fas fa-history"></i> Longest Exposure time</h5>
+                <h5 class="card-title text-muted h6 mb-4"><i class="fas fa-history"></i> Longest Exposure session</h5>
 
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Subject</p>
@@ -83,7 +83,7 @@ require_once 'template/header.php';
             </div>
         </div>
 
-        <div class="card mt-3">
+        <div class="card my-3">
             <div class="card-body">
 
                 <h5 class="card-title text-muted mb-4"><i class="fas fa-chart-bar"></i> Stats</h5>
@@ -99,13 +99,13 @@ require_once 'template/header.php';
 
         <ul class="nav nav-tabs">
             <li class="nav-item">
-                <a class="nav-link <?= (!in_array($type, array('b2a', 'a2b'))) ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=all&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>">A <i class="fas fa-exchange-alt"></i> B</a>
+                <a class="nav-link <?= (!in_array($type, array('b2a', 'a2b'))) ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=all&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>"><i class="fas fa-exchange-alt"></i> All</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= ($type == 'b2a') ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=b2a&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>">A <i class="fas fa-long-arrow-alt-left"></i> B</a>
+                <a class="nav-link <?= ($type == 'b2a') ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=b2a&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>"><i class="fas fa-compress-arrows-alt"></i> ID-A as Receiver</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= ($type == 'a2b') ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=a2b&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>">A <i class="fas fa-long-arrow-alt-right"></i> B</a>
+                <a class="nav-link <?= ($type == 'a2b') ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=a2b&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>"> <i class="fas fa-expand-arrows-alt"></i> ID-A as Trasmitter</a>
             </li>
         </ul>
 
@@ -113,10 +113,11 @@ require_once 'template/header.php';
             <thead>
                 <tr class="bg-white">
                     <th scope="col"><i class="fas fa-microchip text-primary"></i> ID-A</th>
-                    <th scope="col"><i class="fas fa-microchip text-secondary"></i> ID-B</th>
-                    <th scope="col"><i class="fas fa-history text-danger"></i> Total exposure</th>
+                    <th scope="col"><i class="fas fa-microchip text-info"></i> ID-B</th>
+                    <th scope="col"><i class="fas fa-history text-danger"></i> Exposure session</th>
+                    <th scope="col" class="small"><i class="fas fa-satellite-dish text-warning"></i> RSSI / Scan count</th>
                     <th scope="col"><i class="fas fa-history text-secondary"></i> Date and time</th>
-                    <th scope="col"><i class="fas fa-plus-circle text-success"></i> Record Creation</th>
+                    <th scope="col"><i class="fas fa-plus-circle text-success"></i> Register date</th>
                 </tr>
             </thead>
             <tbody>

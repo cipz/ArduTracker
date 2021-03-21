@@ -8,3 +8,4 @@ require_once 'includes/database.php';
 require_once 'includes/pagination.php';
 require_once 'includes/tracking.php';
 require_once 'includes/board.php';
+require_once 'includes/protection.php';
