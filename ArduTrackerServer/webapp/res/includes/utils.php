@@ -37,7 +37,7 @@ function millis2string($millis)
 {
     $sec = $millis / 1000;
     if ($sec > 60)
-        return floor($sec / 60) . ' min, ' . $sec % 60 . ' seconds';
+        return floor($sec / 60) . ' min, ' . $sec % 60 . ' sec';
     else
         return $sec % 60 . ' seconds';
 }

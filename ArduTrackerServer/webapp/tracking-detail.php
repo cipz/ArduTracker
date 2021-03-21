@@ -113,10 +113,11 @@ require_once 'template/header.php';
             <thead>
                 <tr class="bg-white">
                     <th scope="col"><i class="fas fa-microchip text-primary"></i> ID-A</th>
-                    <th scope="col"><i class="fas fa-microchip text-secondary"></i> ID-B</th>
+                    <th scope="col"><i class="fas fa-microchip text-info"></i> ID-B</th>
                     <th scope="col"><i class="fas fa-history text-danger"></i> Exposure session</th>
+                    <th scope="col" class="small"><i class="fas fa-satellite-dish text-warning"></i> RSSI / Scan count</th>
                     <th scope="col"><i class="fas fa-history text-secondary"></i> Date and time</th>
-                    <th scope="col"><i class="fas fa-plus-circle text-success"></i> Record Creation</th>
+                    <th scope="col"><i class="fas fa-plus-circle text-success"></i> Register date</th>
                 </tr>
             </thead>
             <tbody>

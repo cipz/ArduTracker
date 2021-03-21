@@ -33,12 +33,14 @@ def mysql_write(data):
     # Insert
     print("[DB] Inserting into", db_database)
     cursor = mydb.cursor()
-    sql = "INSERT INTO tracking_log (my_id, friend_id, seen_millis, seen_time) VALUES (%s,%s,%s,%s);"
+    sql = "INSERT INTO tracking_log (my_id, friend_id, seen_millis, seen_time, scan_counter, rssi) VALUES (%s,%s,%s,%s);"
     val = (
         data["my_id"], 
         data["friend_id"], 
         data["seen_millis"], 
-        data["seen_time"])
+        data["seen_time"],
+        data["scan_count"],
+        data["rssi"])
     cursor.execute(sql, val)
     mydb.commit()
     print("[DB] ", cursor.rowcount, " record inserted.")

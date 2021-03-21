@@ -44,11 +44,12 @@ $data = $db->get(); // Get data for the current limited rows
 $out = "";
 foreach($data as $record) {
     $out .= "<tr>";
-    $out .= "<th scope='row'>".$record["my_id"]."</th>";
-    $out .= "<th scope='row'>".$record["friend_id"]."</th>";
-    $out .= "<td>".Tracking::printExposureRisk($record['seen_millis'])." ".millis2string($record["seen_millis"])."</td>";
-    $out .= "<td>".date('Y-m-d H:i:s', $record["seen_time"]/1000)."</td>";
-    $out .= "<td>".time2String($record["created_at"])."</td>";
+    $out .= "<th scope='row' class='small'>".$record["my_id"]."</th>";
+    $out .= "<th scope='row' class='small'>".$record["friend_id"]."</th>";
+    $out .= "<td class='small'>".Tracking::printExposureRisk($record['seen_millis'])." ".millis2string($record["seen_millis"])."</td>";
+    $out .= "<td class='small'>".$record['rssi']." dBm / ".$record['scan_count']." scan</td>";
+    $out .= "<td class='small'>".date('Y-m-d H:i:s', $record["seen_time"]/1000)."</td>";
+    $out .= "<td class='small'>".time2String($record["created_at"])."</td>";
     $out .= "</tr>";
 }
 

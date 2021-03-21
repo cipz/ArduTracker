@@ -42,10 +42,12 @@ CREATE TABLE `tracking_board` (
 --
 
 CREATE TABLE `tracking_log` (
-  `my_id` varchar(64) NOT NULL,
-  `friend_id` varchar(64) NOT NULL,
+  `my_id` varchar(16) NOT NULL,
+  `friend_id` varchar(16) NOT NULL,
   `seen_millis` bigint(20) NOT NULL,
   `seen_time` bigint(20) NOT NULL,
+  `scan_count` int(11) NOT NULL DEFAULT '0',
+  `rssi` float NOT NULL DEFAULT '0'
   `created_at` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=ARCHIVE DEFAULT CHARSET=utf8;
 
