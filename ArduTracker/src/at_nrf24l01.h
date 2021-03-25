@@ -26,7 +26,7 @@ void printRxData(char *);
 void init_radio() {
 
   radio.begin();
-  radio.setDataRate(RF24_250KBPS);
+  radio.setDataRate(RF24_2MBPS); // From 250kbps to 2MB, to reduce the signal length
 
   //this is a mesh so we don't want ACKs!
   // radio.setAutoAck(false);

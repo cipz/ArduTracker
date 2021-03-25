@@ -1,5 +1,5 @@
 /*
- *  nrf24l01 Module functions
+ *  BLE Module functions
  *  --------
  *  This file contains all the functions relative to the radio controls in order to
  *  send and receive messages between multiple prototypes
@@ -10,7 +10,7 @@
 #include <BLEDevice.h>
 #include <BLEServer.h>
 #include <BLEUtils.h>
-// --------------------------------------- RF24 Controller
+// --------------------------------------- BLE Controller
 
 #define BLE_NAME "ArduTracker_ESP32"
 #define SERV_UUID "e96bf93a-79b0-11eb-9439-0242ac130002" //random-generated
@@ -50,7 +50,9 @@ class BLEController : public AbsRadioController{
         // Setup Payload attached to the advertisement with my_id
         BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
         pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
-        pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), params.my_id);
+        char nameToSend[18] = BLE_PREFIX;
+        strcat(nameToSend, params.my_id);
+        pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), nameToSend);
 
         // Advertise BLE Server readiness
         BLEAdvertising *pAdvertising = pServer->getAdvertising();
@@ -74,21 +76,23 @@ class BLEController : public AbsRadioController{
         for(int i=0; i<devices.getCount(); ++i){
             BLEAdvertisedDevice advertisedDevice = devices.getDevice(i);
 
-            Serial.printf(
-                "Found: %s >> %s [%s] RSSI:%d\n",
-                advertisedDevice.getName().c_str(),
-                advertisedDevice.getServiceData().c_str(),
-                advertisedDevice.getAddress().toString().c_str(),
-                advertisedDevice.getRSSI());
+            if(DEBUG_MODE) {
+                Serial.printf(
+                    "Found: %s >> %s [%s] RSSI:%d\n",
+                    advertisedDevice.getName().c_str(),
+                    advertisedDevice.getServiceData().c_str(),
+                    advertisedDevice.getAddress().toString().c_str(),
+                    advertisedDevice.getRSSI());
+            }
+                            
+            String name = String(advertisedDevice.getServiceData().c_str());
+            String prefix = name.substring(0, 3);
+            String suffix = name.substring(3, name.length());
 
-            if(advertisedDevice.getName() == BLE_NAME){
-                newFriends->add(Log(advertisedDevice.getServiceData().c_str()));
+            if(prefix.equals(BLE_PREFIX)){
+                newFriends->add(Log(suffix.c_str(), advertisedDevice.getRSSI()));
             }
         }
-
-        Serial.printf("\nNum. of BLE devices in range: %d\n", devices.getCount());
-        // pBLEScan->clearResults();
-        // delay(2000);
         return newFriends;
     }
 

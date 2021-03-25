@@ -14,41 +14,42 @@ void restart(int delay_seconds) {
 }
 
 
-// --------------------------------------- List Manager
+// --------------------------------------- Utils class
 
-class ListUtils {
-    private:
-    LinkedList<Log>* friendList;
-    LinkedList<Log>* tmpFriendList;
-
+class Utils {
     public:
-    ListUtils(LinkedList<Log>* fl, LinkedList<Log>* tmpFl): friendList(fl), tmpFriendList(tmpFl) {}
 
-    void appendList() {
+    void static updateFriendList(LinkedList<Log>* friendList, LinkedList<Log>* tmpFriendList) {
+
+        // O(n²) 
         for (int i = 0; i < tmpFriendList->size(); ++i) {
-            friendList->add(tmpFriendList->get(i));
-        }
-    }
-
-    void compactList() {
-        for (int i = 0; i < friendList->size(); ++i) {
-            if (millis() - friendList->get(i).seen_millis > params.friendly_freshness) {
-                friendList->remove(i);
+            int j = 0;
+            // Search for an existent exposure session 
+            for(; j < friendList->size(); ++j) {
+                if(strcmp(tmpFriendList->get(i).friend_id, friendList->get(j).friend_id) == 0) {
+                    Log updatedLog = Log(friendList->get(j)); // creates a copy of the existing log
+                    updatedLog.updateExposureSession(tmpFriendList->get(i).rssi);
+                    friendList->remove(j); // removes the old one
+                    friendList->add(updatedLog); // insert the new one
+                    break;
+                }
+            }
+            // Add a new friendList
+            if(j == friendList->size()) {
+                friendList->add(tmpFriendList->get(i));
             }
         }
+
     }
 
-    void printList(const char * label = "[DEBUG]") {
-        // DEBUG print
-        for (int i = 0; i < friendList->size(); ++i) {
-            Serial.printf(
-                "\n%s {FriendID = %s, SeenMillis = %d, SeenTime = %jd}\n",
-                label,
-                friendList->get(i).friend_id,
-                friendList->get(i).seen_millis,
-                (intmax_t) friendList->get(i).seen_time);
-                // intmax_t ref. https://en.cppreference.com/w/c/chrono/time_t
+    void static printList(LinkedList<Log>* friendList, const char * label = "[DEBUG]") {
+        if(friendList->size() > 0){
+            Serial.println(label);
+            for (int i = 0; i < friendList->size(); ++i)
+                Serial.println(friendList->get(i).serializeLocal());
         }
+
+        
     }
 };
 
