@@ -137,9 +137,8 @@ void loop() {
         String configTopic = params.in_topic + WiFi.macAddress();
         mqttCtrl->subscribe(configTopic.c_str(), sdCrtl);
         Serial.printf(
-            "\nSubscribed to: %s [status:%d]", 
-            configTopic.c_str(), 
-            client.connected());
+            "\nSubscribed to: %s\n", 
+            configTopic.c_str());
     }
 
 
@@ -200,25 +199,30 @@ void loop() {
     Serial.print("Saving exposure sessions to SD . . . \n");
 
     String serializedMsg = "";
-    for(int i = 0; i < friendList->size(); ++i){
-        if(difftime(time(nullptr), friendList->get(i).last_exposure_time) * 1000 > params.friendly_freshness) {
-            String msg = friendList->get(i).serializeMqtt(params.my_id);
-            if(DEBUG_MODE)
-                Serial.println(msg);
-
-            sdCrtl->saveConcludedSession(msg);
-            friendList->remove(i);
-            // Salvo in session e in perm
-        }
-        else {
-            serializedMsg += friendList->get(i).serializeLocal() + "\n"; 
-        }
-    }
-    if(!serializedMsg.isEmpty())
-        sdCrtl->saveCurrentSessions(serializedMsg);
     
-    Serial.print("Saved!");
+    if(friendList->size() > 0) {
 
+        for(int i = 0; i < friendList->size(); ++i){
+            if(friendList->get(i).is_from_cache || difftime(time(nullptr), friendList->get(i).last_exposure_time) * 1000 > params.friendly_freshness) {
+                String msg = friendList->get(i).serializeMqtt(params.my_id);
+                if(DEBUG_MODE)
+                    Serial.println(msg);
+
+                sdCrtl->saveConcludedSession(msg);
+                friendList->remove(i);
+                // Salvo in session e in perm
+            }
+            else {
+                serializedMsg += friendList->get(i).serializeLocal() + "\n"; 
+            }
+        }
+
+        sdCrtl->saveCurrentSessions(serializedMsg);
+        Serial.print("Saved!");
+    }
+    else 
+        Serial.print("Nothing new to save.");
+    
     tmpFriendList->clear();
 
     //-------------------- Send radio message

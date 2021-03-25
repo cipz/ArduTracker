@@ -13,23 +13,29 @@ public:
     unsigned int cycle_counter;
     char friend_id[15];
     double rssi;
-    time_t first_exposure_time;
+    unsigned long start_millis;
+    unsigned long end_millis;
     time_t last_exposure_time;
+    bool is_from_cache;
 
-    Log(const char * fi = "Default", double rssi = 0.0, time_t fet = time(nullptr)-1, time_t let = time(nullptr)) {
+    Log(const char * fi = "Default", double rssi = 0.0, unsigned long sm = millis()-1000, unsigned long em = millis(), time_t let = time(nullptr), bool ifc = false) {
+
         strlcpy(this->friend_id, fi, sizeof(this->friend_id));
         this->rssi = rssi;
-        this->first_exposure_time = fet;
+        this->start_millis = sm;
+        this->end_millis = em;
         this->last_exposure_time = let;
         this->cycle_counter = 1;
+        this->is_from_cache = ifc;
     }
 
-    Log(StaticJsonDocument<1024> jsonData) {
+    Log(StaticJsonDocument<1024> jsonData, bool ifc = true) {
         this->unserializeLocal(jsonData);
+        this->is_from_cache = ifc;
     }
 
     long getExposureMillis() const {
-        return (difftime(last_exposure_time, first_exposure_time)) * 1000; 
+        return end_millis - start_millis;
     }
 
     void updateExposureSession(double rssi = 0.0){
@@ -54,9 +60,15 @@ public:
         //     this->first_exposure_time = this->first_exposure_time - time(nullptr);
         // }
         // else{
-            this->last_exposure_time = time(nullptr);
+        //   this->last_exposure_time = time(nullptr);
         // }
         
+        if(this->is_from_cache) {
+            return;
+        }
+
+        this->end_millis = millis();
+        this->last_exposure_time = time(nullptr);
         this->cycle_counter++;
         this->rssi = this->rssi + ((rssi - this->rssi) / this->cycle_counter); // rssi average calculation
     }
@@ -64,19 +76,23 @@ public:
     void unserializeLocal(StaticJsonDocument<1024> jsonData) {
         strlcpy(this->friend_id, jsonData["friend_id"], sizeof(this->friend_id));
         this->rssi = jsonData["rssi"];
-        char tmpFet[32];
-        char tmpLet[32];
-        strlcpy(tmpFet, jsonData["first_exposure_time"], sizeof(tmpFet));
-        strlcpy(tmpLet, jsonData["last_exposure_time"], sizeof(tmpLet));
-        this->first_exposure_time = (time_t) strtol(tmpFet, nullptr, 10); 
-        this->last_exposure_time = (time_t) strtol(tmpLet, nullptr, 10); 
+        char tmpSm[32];
+        char tmpEm[32];
+        char tmpLastExpTime[32];
+        strlcpy(tmpSm, jsonData["start_millis"], sizeof(tmpSm));
+        strlcpy(tmpEm, jsonData["end_millis"], sizeof(tmpEm));
+        strlcpy(tmpLastExpTime, jsonData["last_exposure_time"], sizeof(tmpLastExpTime));
+        this->start_millis = strtol(tmpSm, nullptr, 10);
+        this->end_millis = strtol(tmpEm, nullptr, 10); 
+        this->last_exposure_time = (time_t) strtol(tmpLastExpTime, nullptr, 10); 
         this->cycle_counter = jsonData["cycle_counter"];
     }
 
     String serializeLocal() const {
         String msg = "{";
         msg += "\"friend_id\": \""    + (String)this->friend_id + "\",";
-        msg += "\"first_exposure_time\": \"" + (String)this->first_exposure_time + "\",";
+        msg += "\"start_millis\": \"" + (String)this->start_millis + "\",";
+        msg += "\"end_millis\": \"" + (String)this->end_millis + "\",";
         msg += "\"last_exposure_time\": \"" + (String)this->last_exposure_time + "\",";
         msg += "\"rssi\": "         + (String)this->rssi + ",";
         msg += "\"cycle_counter\": "   + (String)this->cycle_counter;
