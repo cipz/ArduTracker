@@ -53,6 +53,7 @@ struct Params {
   int friendly_freshness;
   // Radio mode
   char radio_mode[15];
+  bool station_mode;
   int send_data_cycles;
 };
 Params params;
@@ -227,7 +228,10 @@ void loop() {
 
     //-------------------- Send radio message
 
-    radioCtrl->send();
+    Serial.println(params.station_mode);
+    if(!params.station_mode) {
+        radioCtrl->send();
+    }
 
     if(STATS_DEBUG_MODE)
         sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
