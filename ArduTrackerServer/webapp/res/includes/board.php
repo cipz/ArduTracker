@@ -56,7 +56,7 @@ class Board {
     public function updateNewConfigSent($val){
         $db = new database();
         $val = (int) $val;
-        $db->query('UPDATE tracking_board SET new_config_sent = "'.$val.'" WHERE id_board = "'.$this->id.'"');
+        $db->query('UPDATE tracking_board SET new_config_sent = "'.$val.'" WHERE id_board = "'.$this->id.'" LIMIT 1');
         $this->newConfigSent = $val;
         return $db->status();
     }
@@ -64,7 +64,7 @@ class Board {
     public function updateConfiguration($newconfig) {
         $db = new database();
         $newconfigEscaped = $db->clean($newconfig);
-        $db->query('UPDATE tracking_board SET configuration = "'.$newconfigEscaped.'", new_config_sent="0" WHERE id_board = "'.$this->id.'"');
+        $db->query('UPDATE tracking_board SET configuration = "'.$newconfigEscaped.'", new_config_sent="0" WHERE id_board = "'.$this->id.'" LIMIT 1');
         $this->config = $newconfig;
         $this->newConfigSent = 0;
         return $db->status();
