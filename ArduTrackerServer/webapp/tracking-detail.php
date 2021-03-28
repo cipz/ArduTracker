@@ -62,7 +62,7 @@ require_once 'template/header.php';
         <div class="card mt-3">
             <div class="card-body">
 
-                <h5 class="card-title text-muted h6 mb-4"><i class="fas fa-history"></i> Longest Exposure session</h5>
+                <h5 class="card-title text-muted h6 mb-4"><i class="fas fa-history"></i> Longest Exposure Session</h5>
 
                 <div class="mb-3">
                     <p class="small mb-0 text-secondary">Subject</p>
@@ -70,12 +70,14 @@ require_once 'template/header.php';
                 </div>
 
                 <div class="mb-0">
-                    <p class="small mb-2 text-secondary">Exposure</p>
+                    <p class="small mb-2 text-secondary">Exposures</p>
 
                     <ul class="list-group">
                         <?php
                         $friends = Tracking::calcultateLongestExposureTime($id, $data);
-
+                        if(empty($friends))
+                            echo "<li class='list-group-item small'>No contacts with the subject in the current selection <i class='far fa-smile'></i></li>";
+                        else
                         foreach ($friends as $friend => $ftime) {
                             echo ' <li class="list-group-item text-' . Tracking::printExposureRiskColor($ftime) . ' d-flex justify-content-between align-items-center">
                             ' . $friend . '

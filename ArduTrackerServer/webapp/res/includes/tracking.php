@@ -14,7 +14,7 @@ class Tracking {
                 if(!isset($friends[$exp['friend_id']])) 
                     $friends[$exp['friend_id']] = $exp['seen_millis'];
                 else
-                    $friends[$exp['friend_id']] = max($friends[$exp['my_friend']], $exp['seen_millis']);
+                    $friends[$exp['friend_id']] = max($friends[$exp['friend_id']], $exp['seen_millis']);
             }
         }
         arsort($friends);
