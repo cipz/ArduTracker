@@ -6,6 +6,11 @@ $_EXTRA_CURRENT_PAGE_NAME = '&raquo; <span class="small text-secondary">' . $id 
 require_once 'template/header.php';
 ?>
 
+<link rel="stylesheet" href="res/javascript/treant-graph/Treant.css" type="text/css">
+
+<script src="res/javascript/treant-graph/vendor/raphael.js"></script>
+<script src="res/javascript/treant-graph/Treant.js"></script>
+
 <div class="row">
     <div class="col-lg-3">
         <div class="card">
@@ -96,7 +101,6 @@ require_once 'template/header.php';
         </div>
     </div>
     <div class="col-lg-9">
-
         <ul class="nav nav-tabs">
             <li class="nav-item">
                 <a class="nav-link <?= (!in_array($type, array('b2a', 'a2b'))) ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=all&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>"><i class="fas fa-exchange-alt"></i> All</a>
@@ -108,6 +112,12 @@ require_once 'template/header.php';
                 <a class="nav-link <?= ($type == 'a2b') ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=a2b&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>"> <i class="fas fa-expand-arrows-alt"></i> ID-A as Trasmitter</a>
             </li>
         </ul>
+        
+        <div id="tree"> </div>
+        <script>
+            var jsonTree = <?= $jsonTreeJs; ?>; 
+            var my_chart = new Treant(jsonTree);
+        </script>
 
         <table class="table table-striped">
             <thead>
@@ -127,8 +137,12 @@ require_once 'template/header.php';
             </tbody>
         </table>
         <?= ($num > 0) ? Pagination::printMenu($num, '&id=' . $id . '&type=' . $type . '&date_from=' . $date_from . '&date_to=' . $date_to . '&risk=' . $risk) : 'No record found <i class="far fa-frown"></i>'; ?>
+
     </div>
 </div>
+
+
+
 
 <?php
 require_once 'template/footer.php';

@@ -16,6 +16,7 @@ define("MID_RISK_MINUTES", "4");
 define("DEFAULT_MAX_PACKET_SIZE", "1024");
 define("BOARD_MODE_CONFIG_FIELD", "radio_mode");
 define("BOARD_ID_CONFIG_FIELD", "my_id");
+define("GRAPH_MAX_DEPTH_CHILDREN", "3"); // change to 3
 
 // -----------------------------------
 // Debug mode
