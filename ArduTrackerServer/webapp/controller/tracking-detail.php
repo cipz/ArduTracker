@@ -18,8 +18,8 @@ if(isset($_POST['search'])) {
 }
 
 $add_filters = "";
-if(!empty($date_from)) $add_filters .= " AND seen_time >= ".strtotime($date_from)*1000;
-if(!empty($date_to)) $add_filters .= " AND seen_time <= ".strtotime($date_to)*1000;
+if(!empty($date_from)) $add_filters .= " AND seen_time >= ".strtotime($date_from);
+if(!empty($date_to)) $add_filters .= " AND seen_time <= ".strtotime($date_to);
 
 switch ($risk) {
     case 'high': $add_filters .= ' AND seen_millis > '.(1000*60*MID_RISK_MINUTES); break;

@@ -8,7 +8,7 @@ session_start();
 define("DEBUG", true);
 define("PASSWORD_PROTECTION", "ardutrack");
 define("LOGIN_PAGE_URL", "login.php");
-define("VERSION", "0.3.0");
+define("VERSION", "0.4.1");
 define("REPO", "https://github.com/cipz/ArduTracker");
 define("PAGINATION_LIMIT", "20");
 define("LOW_RISK_MINUTES", "2");
