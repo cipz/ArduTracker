@@ -49,10 +49,10 @@ require_once 'template/header.php';
                             <tr>
                                 <th scope="col">IDs</th>
                                 <th scope="col">MAC Address</th>
+                                <th scope="col">Type</th>
                                 <th scope="col">Mode</th>
                                 <th scope="col">Configuration</th>
                                 <th scope="col">Last update</th>
-                                <th scope="col">Creation date</th>
                                 <th scope="col">View logs</th>
                             </tr>
                         </thead>

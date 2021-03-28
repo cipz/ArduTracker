@@ -113,19 +113,27 @@ class Board {
             $online = (strtotime($board->created_at) > time()-60*10);
             $label = $board->new_config_sent ? "<span class='badge rounded-pill bg-success'><i class='fas fa-spin fa-sync-alt'></i> Synced</span>" : "<span class='badge rounded-pill bg-danger'><i class='fas fa-times'></i> Not synced</span>";
             $config = json_decode($board->configuration, true);
-            $type = (isset($config[BOARD_MODE_CONFIG_FIELD])) ? $config[BOARD_MODE_CONFIG_FIELD] : "undefined";
+            $mode = (isset($config[BOARD_MODE_CONFIG_FIELD])) ? $config[BOARD_MODE_CONFIG_FIELD] : "undefined";
+            $station_enabled = isset($config[BOARD_STATION_CONFIG_FIELD]) ? $config[BOARD_STATION_CONFIG_FIELD] : false;
+            $type_icon = $station_enabled ? "<i class='fas fa-broadcast-tower text-info'></i> Station (R)" : "<i class='fas fa-microchip text-secondary'></i> Device (R/T)";
+            if($mode == "WIFI")
+                $mode_icon = "<i class='fas fa-wifi text-secondary'></i> WIFI-RF24"; 
+            elseif($mode == "BLE")
+                $mode_icon = "<i class='fab fa-bluetooth text-primary'></i> BLE";
+            else 
+                $mode_icon = $mode;
 
             echo '<tr>
                     <td>
                         <i class="fas fa-edit text-muted"></i> <a class="text-success" href="board-detail.php?id='.$board->id_board.'">'.$board->id_board.'</a>
                     </td>
                     <td><code>'.$board->id_mac.'</code></td>
-                    <td>'.$type.'</td>
+                    <td class="small">'.$type_icon.'</td>
+                    <td class="small">'.$mode_icon.'</td>
                     <td>'.$label.'</td>
                     <td>
                         <small><i class="fas fa-history"></i> '.time2String($board->updated_at).'</small>
                     </td>
-                    <td><small><i class="fas fa-history"></i> '.$board->created_at.'</small></td>
                     <td class="small">
                         &raquo; <a href="tracking-detail.php?id='.$board->id_board.'">Go to tracking log</a>
                     </td>';        
