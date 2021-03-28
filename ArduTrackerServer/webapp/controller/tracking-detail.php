@@ -3,7 +3,7 @@ require_once 'res/resources.php';
 $pr = new protection(true);
 $db = new database();
 
-if(!isset($_GET["id"])) 
+if (!isset($_GET["id"]))
     goToLocation('tracking-list.php');
 
 
@@ -13,43 +13,56 @@ $date_from = isset($_GET['date_from']) ? $db->clean($_GET["date_from"]) : '';
 $date_to = isset($_GET['date_to']) ? $db->clean($_GET['date_to']) : '';
 $risk = isset($_GET['risk']) ? $db->clean($_GET['risk']) : '';
 
-if(isset($_POST['search'])) {
-    goToLocation('?id='.$id.'&type='.$type.'&risk='.$_POST['risk'].'&date_from='.$_POST['date_from'].'&date_to='.$_POST['date_to']);
+if (isset($_POST['search'])) {
+    goToLocation('?id=' . $id . '&type=' . $type . '&risk=' . $_POST['risk'] . '&date_from=' . $_POST['date_from'] . '&date_to=' . $_POST['date_to']);
 }
 
 $add_filters = "";
-if(!empty($date_from)) $add_filters .= " AND seen_time >= ".strtotime($date_from);
-if(!empty($date_to)) $add_filters .= " AND seen_time <= ".strtotime($date_to);
+if (!empty($date_from)) $add_filters .= " AND seen_time >= " . strtotime($date_from);
+if (!empty($date_to)) $add_filters .= " AND seen_time <= " . strtotime($date_to);
 
 switch ($risk) {
-    case 'high': $add_filters .= ' AND seen_millis > '.(1000*60*MID_RISK_MINUTES); break;
-    case 'mid': $add_filters .= ' AND seen_millis > '.(1000*60*LOW_RISK_MINUTES) . ' AND seen_millis <= '.(1000*60*MID_RISK_MINUTES); break;
-    case 'low': $add_filters .= ' AND seen_millis <= '.(1000*60*LOW_RISK_MINUTES); break;
-    default: break;
+    case 'high':
+        $add_filters .= ' AND seen_millis > ' . (1000 * 60 * MID_RISK_MINUTES);
+        break;
+    case 'mid':
+        $add_filters .= ' AND seen_millis > ' . (1000 * 60 * LOW_RISK_MINUTES) . ' AND seen_millis <= ' . (1000 * 60 * MID_RISK_MINUTES);
+        break;
+    case 'low':
+        $add_filters .= ' AND seen_millis <= ' . (1000 * 60 * LOW_RISK_MINUTES);
+        break;
+    default:
+        break;
 }
 
 switch ($type) {
-    case 'b2a': $sql = "SELECT * FROM tracking_log WHERE my_id='$id' $add_filters ORDER BY created_at DESC"; break;
-    case 'a2b': $sql = "SELECT * FROM tracking_log WHERE friend_id='$id' $add_filters ORDER BY created_at DESC";  break;
-    default: $sql = "SELECT * FROM tracking_log WHERE (my_id='$id' OR friend_id='$id') $add_filters ORDER BY created_at DESC"; break;
+    case 'b2a':
+        $sql = "SELECT * FROM tracking_log WHERE my_id='$id' $add_filters ORDER BY created_at DESC";
+        break;
+    case 'a2b':
+        $sql = "SELECT * FROM tracking_log WHERE friend_id='$id' $add_filters ORDER BY created_at DESC";
+        break;
+    default:
+        $sql = "SELECT * FROM tracking_log WHERE (my_id='$id' OR friend_id='$id') $add_filters ORDER BY created_at DESC";
+        break;
 }
 
 $activeFilters = !empty($add_filters);
 
 $db->query($sql);
 $num = $db->num(); // Total number of rows
-$db->query($sql.Pagination::limitQuery());
+$db->query($sql . Pagination::limitQuery());
 $data = $db->get(); // Get data for the current limited rows
 
 $out = "";
-foreach($data as $record) {
+foreach ($data as $record) {
     $out .= "<tr>";
-    $out .= "<th scope='row' class='small'>".$record["my_id"]."</th>";
-    $out .= "<th scope='row' class='small'>".$record["friend_id"]."</th>";
-    $out .= "<td class='small'>".Tracking::printExposureRisk($record['seen_millis'])." ".millis2string($record["seen_millis"])."</td>";
-    $out .= "<td class='small'>".$record['rssi']." dBm / ".$record['scan_count']." scan</td>";
-    $out .= "<td class='small'>".date('Y-m-d H:i:s', $record["seen_time"])."</td>";
-    $out .= "<td class='small'>".time2String($record["created_at"])."</td>";
+    $out .= "<th scope='row' class='small'>" . $record["my_id"] . "</th>";
+    $out .= "<th scope='row' class='small'>" . $record["friend_id"] . "</th>";
+    $out .= "<td class='small'>" . Tracking::printExposureRisk($record['seen_millis']) . " " . millis2string($record["seen_millis"]) . "</td>";
+    $out .= "<td class='small'>" . $record['rssi'] . " dBm / " . $record['scan_count'] . " scan</td>";
+    $out .= "<td class='small'>" . date('Y-m-d H:i:s', $record["seen_time"]) . "</td>";
+    $out .= "<td class='small'>" . time2String($record["created_at"]) . "</td>";
     $out .= "</tr>";
 }
 
@@ -57,30 +70,35 @@ foreach($data as $record) {
 // ----------- Graph ------------
 
 
-function childFinder(string $current, string $root, string $parent, int $depth) {
+function childFinder(string $current, string $root, string $parent, int $depth)
+{
 
     global $db, $add_filters;
 
-    if($depth > GRAPH_MAX_DEPTH_CHILDREN-1)
-        return array("text"=>array("name"=>$current));
-    
-    $gsql = "SELECT DISTINCT friend_id FROM tracking_log WHERE my_id='$current' AND friend_id NOT IN ('$root', '$parent') $add_filters ORDER BY friend_id ASC"; 
+    if ($depth > GRAPH_MAX_DEPTH_CHILDREN - 1)
+        return array("text" => array("name" => $current), "link" => array("href" => "tracking-detail.php?id=$current"));
+
+    $gsql = "SELECT DISTINCT friend_id FROM tracking_log WHERE my_id='$current' AND friend_id NOT IN ('$root', '$parent') $add_filters ORDER BY friend_id ASC";
     $db->query($gsql);
 
     $children_array = array();
-    if($db->num() == 0) {
-        return array("text"=>array("name"=>$current));
+    if ($db->num() == 0) {
+        return array("text" => array("name" => $current), "link" => array("href" => "tracking-detail.php?id=$current"));
     } else {
         $data = $db->get();
-        foreach($data as $node) {
-            array_push($children_array, childFinder($node['friend_id'], $root, $current, $depth+1));
+        foreach ($data as $node) {
+            array_push($children_array, childFinder($node['friend_id'], $root, $current, $depth + 1));
         }
-        return array("text"=>array("name"=>$current), "children"=>$children_array);
+        return array(
+            "text" => array("name" => $current),
+            "link" => array("href" => "tracking-detail.php?id=$current"),
+            "children" => $children_array
+        );
     }
 }
 
 $jsonTree = childFinder($id, $id, $id, 0);
-$jsonTreeJs = array("chart"=>array("container"=>"#tree"), "nodeStructure"=>$jsonTree);
+$jsonTreeJs = array("chart" => array("container" => "#tree", "connectors" => array("type" => "curve")), "nodeStructure" => $jsonTree);
 $jsonTreeJs = json_encode($jsonTreeJs);
 
 // lvl 0: PIPPO

@@ -103,7 +103,7 @@ require_once 'template/header.php';
         </div>
     </div>
     <div class="col-lg-9">
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-pills">
             <li class="nav-item">
                 <a class="nav-link <?= (!in_array($type, array('b2a', 'a2b'))) ? 'active' : ''; ?>" href="?id=<?= $id; ?>&type=all&date_from=<?= $date_from ?>&date_to=<?= $date_to ?>&risk=<?= $risk ?>"><i class="fas fa-exchange-alt"></i> All</a>
             </li>
@@ -115,11 +115,15 @@ require_once 'template/header.php';
             </li>
         </ul>
         
-        <div id="tree"> </div>
-        <script>
-            var jsonTree = <?= $jsonTreeJs; ?>; 
-            var my_chart = new Treant(jsonTree);
-        </script>
+        <div class="card my-3 ">
+            <div class="card-body">
+                <div id="tree"> </div>
+                <script>
+                    var jsonTree = <?= $jsonTreeJs; ?>; 
+                    var my_chart = new Treant(jsonTree);
+                </script>
+            </div>
+        </div>
 
         <table class="table table-striped">
             <thead>
