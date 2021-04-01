@@ -84,6 +84,7 @@ class BLEController : public AbsRadioController{
                     advertisedDevice.getAddress().toString().c_str(),
                     advertisedDevice.getRSSI());
             }
+
                             
             String name = String(advertisedDevice.getServiceData().c_str());
             String prefix = name.substring(0, 3);
@@ -91,6 +92,7 @@ class BLEController : public AbsRadioController{
 
             if(prefix.equals(BLE_PREFIX)){
                 newFriends->add(Log(suffix.c_str(), advertisedDevice.getRSSI()));
+                this->statsRx = advertisedDevice.getRSSI(); //FIXME: in case of multiple defices, it saves just the last rssi
             }
         }
         return newFriends;

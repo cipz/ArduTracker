@@ -230,6 +230,8 @@ void loop() {
     radioCtrl->send();
 
     if(STATS_DEBUG_MODE)
-        sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
-
+        if(params.radio_mode == "WIFI")
+            sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
+        else if(params.radio_mode == "BLE" && radioCtrl->getStatsRx() != 0)
+            sdCrtl->saveInStats(radioCtrl->getStatsRx());
 }
