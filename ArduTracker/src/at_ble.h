@@ -70,7 +70,7 @@ class BLEController : public AbsRadioController{
     LinkedList<Log>* scan() override {
         LinkedList<Log>* newFriends = new LinkedList<Log>();
 
-        int scanDuration = 5;
+        int scanDuration = params.scan_duration/1000;
         BLEScanResults devices = pBLEScan->start(scanDuration); 
 
         for(int i=0; i<devices.getCount(); ++i){
@@ -91,8 +91,12 @@ class BLEController : public AbsRadioController{
             String suffix = name.substring(3, name.length());
 
             if(prefix.equals(BLE_PREFIX)){
-                newFriends->add(Log(suffix.c_str(), advertisedDevice.getRSSI()));
-                this->statsRx = advertisedDevice.getRSSI(); //FIXME: in case of multiple defices, it saves just the last rssi
+                int rssi = advertisedDevice.getRSSI();
+
+                if(rssi > params.ble_threshold) {
+                    newFriends->add(Log(suffix.c_str(), rssi));
+                    this->statsRx = rssi; //FIXME: in case of multiple defices, it saves just the last rssi
+                }
             }
         }
         return newFriends;

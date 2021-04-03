@@ -76,7 +76,13 @@ class SDCard {
         
         params.send_data_cycles = paramsJson["send_data_cycles"] ? paramsJson["send_data_cycles"] : 5;
 
+        params.ble_threshold = paramsJson["ble_threshold"] ? paramsJson["ble_threshold"] : -100;
+
+        params.wifi_kbps = paramsJson["wifi_kbps"] ? paramsJson["wifi_kbps"] : 2000;
+
         params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
+
+        params.scan_duration = paramsJson["scan_duration"] ? paramsJson["scan_duration"] : 5000;
 
         int size = sizeof(params.broadcast_io_addr);
         char tmp[size];

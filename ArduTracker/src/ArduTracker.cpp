@@ -54,6 +54,9 @@ struct Params {
   // Radio mode
   char radio_mode[15];
   int send_data_cycles;
+  int ble_threshold;
+  int wifi_kbps;
+  int scan_duration;
 };
 Params params;
 
@@ -229,9 +232,12 @@ void loop() {
 
     radioCtrl->send();
 
-    if(STATS_DEBUG_MODE)
-        if(params.radio_mode == "WIFI")
+    if(STATS_DEBUG_MODE) {
+        Serial.printf("STATS: %d ---> %d \n", strcmp(params.radio_mode, "BLE"), radioCtrl->getStatsRx());
+
+        if(strcmp(params.radio_mode,"WIFI") == 0)
             sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
-        else if(params.radio_mode == "BLE" && radioCtrl->getStatsRx() != 0)
+        else if(strcmp(params.radio_mode, "BLE") == 0 && radioCtrl->getStatsRx() != 0)
             sdCrtl->saveInStats(radioCtrl->getStatsRx());
+    }
 }

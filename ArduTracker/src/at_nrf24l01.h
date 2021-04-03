@@ -26,7 +26,21 @@ void printRxData(char *);
 void init_radio() {
 
   radio.begin();
-  radio.setDataRate(RF24_2MBPS); // From 250kbps to 2MB, to reduce the signal length
+  switch (params.wifi_kbps) {
+  case 250:
+    radio.setDataRate(RF24_250KBPS);
+    break;
+  case 1000:
+    radio.setDataRate(RF24_1MBPS);
+    break;
+  case 2000:
+    radio.setDataRate(RF24_2MBPS);
+    break;  
+  default:
+    radio.setDataRate(RF24_250KBPS);
+    break;
+  }
+   // From 250kbps to 2MB, to reduce the signal length
 
   //this is a mesh so we don't want ACKs!
   // radio.setAutoAck(false);
@@ -45,7 +59,7 @@ int tx_data(int tx_time) {
     radio.write(&params.my_id, sizeof(params.my_id));
     msg_count++;
 
-    delay(random(50, 200));
+    delay(random(50, params.scan_duration));
   }
   return msg_count;
 }
