@@ -4,7 +4,7 @@
 
 
 <div class="container text-secondary text-center my-4 small">
-    ArduTracker webapp v<?=VERSION;?> <?=($_DEBUG?"(<code>DEBUG ON</code>)":"")?> - Project on <a href="<?=REPO;?>">Github</a>    
+    ArduTracker webapp v<?=VERSION;?> <?=($_DEBUG?"(<code>DEBUG ON</code>)":"")?> - Project on <a href="<?=REPO;?>" class="text-warning">Github</a> <i class="fab fa-github text-warning"></i>    
 </div>
 
 

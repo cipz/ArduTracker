@@ -47,17 +47,20 @@ class BLEController : public AbsRadioController{
         BLEDevice::init(BLE_NAME);
         BLEServer *pServer = BLEDevice::createServer();
 
-        // Setup Payload attached to the advertisement with my_id
-        BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
-        pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
-        char nameToSend[18] = BLE_PREFIX;
-        strcat(nameToSend, params.my_id);
-        pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), nameToSend);
+        if(!params.station_mode) {
+            // Setup Payload attached to the advertisement with my_id
+            BLEAdvertisementData pAdvertisementData = BLEAdvertisementData();
+            pAdvertisementData.setFlags(0x04); // BR_EDR_NOT_SUPPORTED (to hide Standard Bluetooth Connection)
+            char nameToSend[18] = BLE_PREFIX;
+            strcat(nameToSend, params.my_id);
+            pAdvertisementData.setServiceData(BLEUUID(SERV_UUID), nameToSend);
 
-        // Advertise BLE Server readiness
-        BLEAdvertising *pAdvertising = pServer->getAdvertising();
-        pAdvertising->setAdvertisementData(pAdvertisementData);
-        pAdvertising->start();
+            // Advertise BLE Server readiness
+            BLEAdvertising *pAdvertising = pServer->getAdvertising();
+            pAdvertising->setAdvertisementData(pAdvertisementData);
+            pAdvertising->start();
+        }
+        
         // Initialize BLE scanning
         pBLEScan = BLEDevice::getScan();
         pBLEScan->setActiveScan(true);

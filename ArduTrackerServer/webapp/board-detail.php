@@ -33,7 +33,7 @@ require_once 'template/header.php';
                     <p class="small mb-0 text-secondary">Updated at</p>
                     <?= time2string($board->updatedAt); ?>
                 </div>
-                <div class="mb-3">
+                <div class="mb-0">
                     <p class="small mb-0 text-secondary">Created at</p>
                     <?= $board->createdAt; ?>
                 </div>
@@ -41,16 +41,12 @@ require_once 'template/header.php';
         </div>
 
         <div class="card my-3">
-            <div class="card-body">
-                <form action="?id=<?= $board->id; ?>" method="post">
-                    <button type="submit" name="Send" class="btn btn-primary btn-sm"><i class="fas fa-sync-alt"></i> Sync config now</button>
+            <div class="card-body d-grid gap-3 ">
+                <form action="?id=<?= $board->id; ?>" method="post" class="d-grid">
+                    <button type="submit" name="Send" class="btn btn-success btn-sm"><i class="fas fa-sync-alt"></i> Sync config now</button>
                 </form>
-            </div>
-        </div>
-
-        <div class="card my-3">
-            <div class="card-body">
-                <form action="?id=<?= $board->id; ?>" method="post">
+                <a href="tracking-detail.php?id=<?= $board->id; ?>" class="btn btn-primary btn-sm"><i class="fas fa-list-ul"></i> Tracking logs</a>
+                <form action="?id=<?= $board->id; ?>" method="post"  class="d-grid">
                     <button type="submit" name="Remove" onclick="return confirm('Are you really sure to delete this board?')" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i> Remove this board</button>
                 </form>
             </div>
@@ -103,12 +99,12 @@ require_once 'template/header.php';
                             ?>
                             <div id="addRow" class="my-4"></div>
 
-                            <button class="btn btn-sm btn-secondary" type='button' onclick="addRow();"><span class="fas fa-plus-square"></span> Add a new variable</button>
+                            <a class="btn btn-sm btn-dark" href="javascript:void(0)" onclick="addRow();"><span class="fas fa-plus-square"></span> Add a new variable</a>
 
                             <div class="card mt-3">
                                 <div class="card-body">
-                                    <button type="submit" name="SaveAndSend" class="btn btn-primary mr-2"><i class="fas fa-file-export"></i> Save and sync</button> &nbsp;
-                                    <button type="submit" name="Save" class="btn btn-warning mr-2"><i class="fas fa-check"></i> Save without synching</button>
+                                    <button type="submit" name="SaveAndSend" class="btn btn-success mr-2"><i class="fas fa-file-export"></i> Save and sync</button> &nbsp;
+                                    <button type="submit" name="Save" class="btn btn-secondary mr-2"><i class="fas fa-check"></i> Save without synching</button>
                                 </div>
                             </div>
 
@@ -121,14 +117,14 @@ require_once 'template/header.php';
                                 echo "The configuration file is empty! Delete and recreate this board to reset to the default configuration. ";
                             else {
                             ?>
-                                <textarea required class="form-control" id="rawConfigInput" name="rawconfig" onkeyup="updateJsonStatus(isValidJson(this.value));" rows="10"><?= $board->config; ?></textarea>
+                                <textarea required class="form-control" id="rawConfigInput" name="rawconfig" onkeyup="updateJsonStatus(isValidJson(this.value));" rows="15"><?= $board->config; ?></textarea>
                                 <div class="p small my-2">The JSON is <span id="jsonValid"></span></div>
                             <?php } ?>
 
                             <div class="card mt-3">
                                 <div class="card-body">
-                                    <button type="submit" id="saveRaw" name="SaveAndSend" class="btn btn-primary mr-2"><i class="fas fa-file-export"></i> Save and sync</button> &nbsp;
-                                    <button type="submit" id="saveAndSendRaw" name="Save" class="btn btn-warning mr-2"><i class="fas fa-check"></i> Save without synching</button>
+                                    <button type="submit" id="saveRaw" name="SaveAndSend" class="btn btn-success mr-2"><i class="fas fa-file-export"></i> Save and sync</button> &nbsp;
+                                    <button type="submit" id="saveAndSendRaw" name="Save" class="btn btn-secondary mr-2"><i class="fas fa-check"></i> Save without synching</button>
                                 </div>
                             </div>
                         </form>

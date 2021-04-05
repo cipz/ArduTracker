@@ -18,3 +18,11 @@ body {
 .at-title {
     color: #404040;
 }
+
+.bg-warning {
+    background-color: #e8af01!important;
+}
+
+.text-warning {
+    color: #e0ab0a!important;
+}
