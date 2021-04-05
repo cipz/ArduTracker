@@ -74,6 +74,8 @@ class SDCard {
             paramsJson["radio_mode"], 
             sizeof(params.radio_mode));
         
+        params.station_mode = paramsJson["station_mode"] ? paramsJson["station_mode"] : 0;
+        
         params.send_data_cycles = paramsJson["send_data_cycles"] ? paramsJson["send_data_cycles"] : 5;
 
         params.friendly_freshness = paramsJson["friendly_freshness"] ? paramsJson["friendly_freshness"] : 20000;
