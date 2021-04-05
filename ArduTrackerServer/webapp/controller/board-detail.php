@@ -21,7 +21,7 @@ if (isset($_POST['Save']) || isset($_POST['Send']) || isset($_POST['SaveAndSend'
     if (isset($_POST['Save']) || isset($_POST['SaveAndSend'])) {
 
 
-        // JSON readble form
+        // JSON readable form
 
         if (isset($_POST['tkey'], $_POST['tval'])) {
 
@@ -38,7 +38,7 @@ if (isset($_POST['Save']) || isset($_POST['Send']) || isset($_POST['SaveAndSend'
 
                 $json = json_encode($arr);
 
-                if (!$board->updateConfiguration($rawconfig))
+                if (!$board->updateConfiguration($json))
                     $out = errorBox("The configuration could not be saved, due to an internal error with the database, check the syntax.");
                 else {
 

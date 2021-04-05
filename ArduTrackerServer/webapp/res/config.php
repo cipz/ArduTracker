@@ -8,14 +8,16 @@ session_start();
 define("DEBUG", true);
 define("PASSWORD_PROTECTION", "ardutrack");
 define("LOGIN_PAGE_URL", "login.php");
-define("VERSION", "0.3.0");
+define("VERSION", "0.4.1");
 define("REPO", "https://github.com/cipz/ArduTracker");
 define("PAGINATION_LIMIT", "20");
 define("LOW_RISK_MINUTES", "2");
 define("MID_RISK_MINUTES", "4");
 define("DEFAULT_MAX_PACKET_SIZE", "1024");
-define("BOARD_MODE_CONFIG_FIELD", "radio_mode");
 define("BOARD_ID_CONFIG_FIELD", "my_id");
+define("BOARD_MODE_CONFIG_FIELD", "radio_mode");
+define("BOARD_STATION_CONFIG_FIELD", "station_mode");
+define("GRAPH_MAX_DEPTH_CHILDREN", "3"); // change to 3
 
 // -----------------------------------
 // Debug mode
@@ -55,6 +57,9 @@ $_DEFAULT_BOARD_CONFIG = json_decode('{
     "mqtt_server" : "ardutracker.debug.ovh",
     "endpoint" : "endpoint",
     "radio_mode" : "WIFI",
-    "send_data_cycles" : 3
+    "send_data_cycles" : 3,
+    "ble_threshold" : -80,
+    "wifi_kbps" : 2000,
+    "scan_duration" : 1000
 }', true);
 
