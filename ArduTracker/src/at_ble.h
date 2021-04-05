@@ -73,6 +73,8 @@ class BLEController : public AbsRadioController{
         int scanDuration = params.scan_duration/1000;
         BLEScanResults devices = pBLEScan->start(scanDuration); 
 
+        this->statsRx = 0;
+
         for(int i=0; i<devices.getCount(); ++i){
             BLEAdvertisedDevice advertisedDevice = devices.getDevice(i);
 
