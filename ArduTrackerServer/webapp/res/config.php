@@ -57,6 +57,9 @@ $_DEFAULT_BOARD_CONFIG = json_decode('{
     "mqtt_server" : "ardutracker.debug.ovh",
     "endpoint" : "endpoint",
     "radio_mode" : "WIFI",
-    "send_data_cycles" : 3
+    "send_data_cycles" : 3,
+    "ble_threshold" : -80,
+    "wifi_kbps" : 2000,
+    "scan_duration" : 1000
 }', true);
 
