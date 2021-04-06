@@ -71,6 +71,7 @@ require_once 'template/header.php';
                     <div class="nav nav-tabs" id="nav-tab" role="tablist">
                         <button class="nav-link active" id="nav-main-tab" data-bs-toggle="tab" data-bs-target="#nav-main" type="button" role="tab" aria-controls="nav-main" aria-selected="true"><i class="fas fa-list-ul"></i> JSON Readable config</button>
                         <button class="nav-link" id="nav-raw-tab" data-bs-toggle="tab" data-bs-target="#nav-raw" type="button" role="tab" aria-controls="nav-raw" aria-selected="false" onclick="updateJsonStatus(isValidJson(document.getElementById('rawConfigInput').value));"><i class="fas fa-code"></i> Raw JSON config</button>
+                        <button class="nav-link" id="nav-docs-tab" data-bs-toggle="tab" data-bs-target="#nav-docs" type="button" role="tab" aria-controls="nav-docs" aria-selected="false"><i class="fas fa-info-circle"></i> Documentation</button>
                     </div>
                 </nav>
                 <div class="tab-content mt-4">
@@ -91,7 +92,15 @@ require_once 'template/header.php';
                                         echo '    <small>(<a href="javascript:void(0)" onclick="deleteDefault(' . $i . ')" class="text-danger"><i class="fas fa-times"></i></a>)</small>';
                                     echo '  </label>';
                                     echo '   <div class="col-sm-9"> <input type="hidden" name="tkey[]" value="' . $k . '" />';
-                                    echo '  <textarea required ' . ($k == BOARD_ID_CONFIG_FIELD ? 'readonly' : '') . ' class="form-control" name="tval[]" rows="' . (strlen($v) > 32 ? 6 : 1) . '">' . $v . '</textarea>';
+                                    if (isset($_BOARD_CONFIG_EXTRA[$k]['select']))
+                                        echo '  <select required class="form-select" name="tval[]"><option value="'.$v.'">' . $v . ' (CURRENT)</option>'.arrayToOptionForm($_BOARD_CONFIG_EXTRA[$k]['select']).'</select>';
+                                    else if(isset($_BOARD_CONFIG_EXTRA[$k]['range']))
+                                        echo '  <input type="number" min="'.$_BOARD_CONFIG_EXTRA[$k]['min_range'].'" max="'.$_BOARD_CONFIG_EXTRA[$k]['max_range'].'" value="'.$v.'" required class="form-control" name="tval[]">';
+                                    else
+                                        echo '  <textarea required ' . ($k == BOARD_ID_CONFIG_FIELD ? 'readonly' : '') . ' class="form-control" name="tval[]" rows="' . (strlen($v) > 32 ? 6 : 1) . '" placeholder="'.(isset($_DEFAULT_BOARD_CONFIG[$k]) ? "es. ".$_DEFAULT_BOARD_CONFIG[$k] : "").'">' . $v . '</textarea>';
+                                    echo ' <p class="mb-0 small text-muted">'.($_BOARD_CONFIG_EXTRA[$k]['info']).'</p>';
+                                    if(isset(($_BOARD_CONFIG_EXTRA[$k]['unit'])))
+                                        echo ' <p class="mb-0 small text-warning"><strong>Unit of measurement:</strong> '.($_BOARD_CONFIG_EXTRA[$k]['unit']).'</p>';
                                     echo '</div></div>';
                                     $i++;
                                 }
@@ -128,6 +137,31 @@ require_once 'template/header.php';
                                 </div>
                             </div>
                         </form>
+                    </div>
+                    <div class="tab-pane fade" id="nav-docs" role="tabpanel" aria-labelledby="nav-docs-tab">
+
+                    <h4 class="mb-4 h5">Variables documentation</h4>
+                    <?php
+
+                        $_bce = $_BOARD_CONFIG_EXTRA;
+
+                        if (empty($_BOARD_CONFIG_EXTRA))
+                            echo "No documentation found.";
+                        else {
+                            
+                            foreach ($_BOARD_CONFIG_EXTRA as $_kbce => $_bce) {
+                                echo '<div class="row mb-3">';
+                                echo '  <div class="col-sm-3">';
+                                echo '      <p class="mb-0 small"><code>'.($_kbce).'</code></p>';
+                                echo '  </div>';
+                                echo '  <div class="col-sm-9">';
+                                echo '      <p class="mb-0 small text-muted">'.($_bce['info']).'</p>';
+                                if(isset(($_bce['unit'])))
+                                    echo ' <p class="mb-0 small text-warning"><strong>Unit of measurement:</strong> '.($_bce['unit']).'</p>';
+                                echo '</div></div>';
+                            }
+                        }
+                    ?>
                     </div>
                 </div>
             </div>
