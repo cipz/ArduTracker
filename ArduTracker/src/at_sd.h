@@ -86,6 +86,8 @@ class SDCard {
 
         params.scan_duration = paramsJson["scan_duration"] ? paramsJson["scan_duration"] : 5000;
 
+        params.cycles_delay = paramsJson["cycles_delay"] ? paramsJson["cycles_delay"] : 0;
+
         int size = sizeof(params.broadcast_io_addr);
         char tmp[size];
         strlcpy(tmp, paramsJson["broadcast_io_addr"], size);

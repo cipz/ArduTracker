@@ -58,6 +58,7 @@ struct Params {
   int ble_threshold;
   int wifi_kbps;
   int scan_duration;
+  int cycles_delay;
 };
 Params params;
 
@@ -244,4 +245,8 @@ void loop() {
         else if(strcmp(params.radio_mode, "BLE") == 0 && radioCtrl->getStatsRx() != 0)
             sdCrtl->saveInStats(radioCtrl->getStatsRx());
     }
+    
+    if(DEBUG_MODE)
+        Serial.printf("Cycles delay: %d \n", params.cycles_delay);
+    delay(params.cycles_delay);
 }
