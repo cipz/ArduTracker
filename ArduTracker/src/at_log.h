@@ -6,17 +6,22 @@
 #pragma once
 #include <time.h>
 
+#define RSSI_ERROR_TOLERANCE 20 //[bD]
+
 // --------------------------------------- Log class data structure
 
 class Log {
 public:
-    unsigned int cycle_counter;
     char friend_id[15];
     double rssi;
     unsigned long start_millis;
     unsigned long end_millis;
     time_t last_exposure_time;
+    
+    unsigned int cycle_counter;
     bool is_from_cache;
+    double prev[2];
+    double prev_mean[2];
 
     Log(const char * fi = "Default", double rssi = 0.0, unsigned long sm = millis()-1000, unsigned long em = millis(), time_t let = time(nullptr), bool ifc = false) {
 
@@ -40,7 +45,7 @@ public:
 
     void updateExposureSession(double rssi = 0.0){
         
-        // FIXME: critical cases to fix
+        // OLD: critical cases to fix
         /* Note: time without a proper config counts the seconds since the start of the board
          * Note 2: 1year = 31546000, aleatory value for sanity check
          *
@@ -53,16 +58,6 @@ public:
          * newFirstExposureTime = firstExposureTime - time(nullptr)
         */
 
-        // if(this->last_exposure_time < time(nullptr) - 31546000) { 
-        //     this->last_exposure_time = this->last_exposure_time + time(nullptr);
-        // }
-        // else if(this->first_exposure_time + 31546000 < time(nullptr)) {
-        //     this->first_exposure_time = this->first_exposure_time - time(nullptr);
-        // }
-        // else{
-        //   this->last_exposure_time = time(nullptr);
-        // }
-        
         if(this->is_from_cache) {
             return;
         }
@@ -70,7 +65,30 @@ public:
         this->end_millis = millis();
         this->last_exposure_time = time(nullptr);
         this->cycle_counter++;
+
+        if(DEBUG_MODE) { 
+            Serial.println("\nMEAN:");
+            Serial.printf("OLD:%f RSSIs:%f\t%f\t%f \n", this->rssi, prev[0], prev[1], rssi);
+        }
+
+        // Error control
+        if(prev[0] && prev[1]) {
+            if(prev[0] && prev[1] && abs(prev[1] - rssi) > RSSI_ERROR_TOLERANCE) {
+                //restore the previous mean
+                this->rssi = prev_mean[0];
+            }
+        }
+        
         this->rssi = this->rssi + ((rssi - this->rssi) / this->cycle_counter); // rssi average calculation
+
+        if(DEBUG_MODE)
+            Serial.printf("NEW:%f \n\n",this->rssi);
+
+        //update prevs
+        prev[0] = prev[1];
+        prev[1] = rssi;
+        prev_mean[0] = prev_mean[1];
+        prev_mean[1] = this->rssi;
     }
 
     void unserializeLocal(StaticJsonDocument<1024> jsonData) {
