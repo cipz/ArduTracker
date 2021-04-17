@@ -20,8 +20,8 @@ public:
     
     unsigned int cycle_counter;
     bool is_from_cache;
-    double prev[2];
-    double prev_mean[2];
+    double prev[2] = {0, 0};
+    double prev_mean[2] = {0, 0};
 
     Log(const char * fi = "Default", double rssi = 0.0, unsigned long sm = millis()-1000, unsigned long em = millis(), time_t let = time(nullptr), bool ifc = false) {
 
@@ -73,9 +73,16 @@ public:
 
         // Error control
         if(prev[0] && prev[1]) {
-            if(prev[0] && prev[1] && abs(prev[1] - rssi) > RSSI_ERROR_TOLERANCE) {
+            double new_value = (prev[0] + rssi) / 2;
+
+            if(abs(prev[1] - new_value) > RSSI_ERROR_TOLERANCE) {
+                prev[1] = new_value;
+
                 //restore the previous mean
                 this->rssi = prev_mean[0];
+
+                //add the re-calculated value
+                this->rssi = this->rssi + ((new_value - this->rssi) / (this->cycle_counter - 1)); 
             }
         }
         
@@ -83,6 +90,11 @@ public:
 
         if(DEBUG_MODE)
             Serial.printf("NEW:%f \n\n",this->rssi);
+
+        if(STATS_DEBUG_MODE && prev[1]){
+            stats[0] = rssi;
+            stats[1] = prev[1];
+        }
 
         //update prevs
         prev[0] = prev[1];

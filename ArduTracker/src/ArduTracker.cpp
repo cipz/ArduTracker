@@ -61,6 +61,7 @@ struct Params {
   int cycles_delay;
 };
 Params params;
+double stats[2] = {0, 0};
 
 WiFiClient espClient;
 PubSubClient client(espClient);
@@ -126,6 +127,8 @@ void setup() {
 
 // --------------------------------------- Loop operations
 void loop() {
+
+    stats[0]=0, stats[1]=0;
 
     Serial.println("\n\n-- -- -- NEW LOOP CYCLE -- -- --\n");
 
@@ -242,8 +245,9 @@ void loop() {
 
         if(strcmp(params.radio_mode,"WIFI") == 0)
             sdCrtl->saveInStats(radioCtrl->getStatsTx(), radioCtrl->getStatsRx());
-        else if(strcmp(params.radio_mode, "BLE") == 0 && radioCtrl->getStatsRx() != 0)
-            sdCrtl->saveInStats(radioCtrl->getStatsRx());
+        else if(strcmp(params.radio_mode, "BLE") == 0 && stats[0] && stats[1])
+            sdCrtl->saveInStats(stats[0], stats[1]);
+        //     sdCrtl->saveInStats(radioCtrl->getStatsRx());
     }
     
     if(DEBUG_MODE)

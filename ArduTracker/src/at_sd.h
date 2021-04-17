@@ -358,10 +358,11 @@ class SDController {
     /**
      * Save statistics
     */
-    void saveInStats(int v1, int v2 = -1) {
-        String msg = millis() + String("\t") +
-                    v1 + String("\t");
-        if(v2 != -1)
+    void saveInStats(int v1, int v2 = 0) {
+        String msg = millis() + String("\t");
+        if(v1 != 0)
+            msg += v1 + String("\t");
+        if(v2 != 0)
             msg += v2;
         sd->saveAndAppendInStats(msg);
     }
