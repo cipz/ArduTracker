@@ -1,38 +1,43 @@
 # ArduTracker
 
-## TODOs
-- check/fix appendList function
-- string is not saved in SD card, probably because of communication error between ESP32 / nRF24L01 / sd module in SPI
+[![Server Update](https://github.com/cipz/ArduTracker/actions/workflows/server-update.yml/badge.svg)](https://github.com/cipz/ArduTracker/actions/workflows/server-update.yml)
 
-WHAT IT IS
-WHY IT IS
+- **Development server**: https://ardutracker.debug.ovh 
+  - password: `ardutrack`
 
-THE ESP32 BOARD
+#### Developers
 
-<p align="center">
-  <img src="./essay/img/esp32-pinout.png" height="" alt="nRF24L01 Module" align="center">
-</p>
+- Ciprian Voinea
+- Federico Carboni
+- Mariano Sciacco
+- Prof. Palazzi
 
-## Software
 
-Arduino IDE
+# Board
 
-### Additional libraries
+### Esp32 Circuit board
+
+![nRF24L01 Module](./essay/img/esp32-pinout.png)
+
+### Firmware
+
+Arduino IDE + Platformio
+
+#### Additional libraries
 - [ArduinoJSON v6](https://arduinojson.org/v6/)
 
-## Circuit
 
-<p align="center">
-  <img src="./essay/img/ardutracker.png" height="" align="center">
-</p>
+### Circuit
+
+![circuit](./essay/img/ardutracker.png)
+
 
 ### SPI devices
 
-<p align="center">
-  <img src="./essay/img/spi.png" height="250px" alt="" align="center">
-</p>
+![spi](./essay/img/spi.png)
 
-### Connecting the nRF24L01 with ESP32
+
+### Connecting nRF24L01 to the ESP32
 
 <p align="center">
   <table align="center">
@@ -83,9 +88,9 @@ Arduino IDE
 </p>
 
 
-### Connecting the MicroSD Module with ESP32
+### Connecting MicroSD Module to the ESP32
 
-To connect the SD Module I have adapted a simple Arduino example
+To connect the SD Module I have adapted a simple Arduino example:
 
 <p align="center">
   <table align="center">
@@ -131,22 +136,28 @@ To connect the SD Module I have adapted a simple Arduino example
   </table>
 </p>
 
-<p align="center">
-  <img src="./img/microsd_hack.jpg" height="250px" alt="" align="center">
-</p>
+![Microsd-hack](./img/microsd_hack.jpg)
 
-Explain why the sd card adapter does not play well with others
+
+# Server
 
 ## Raspberry Pi and MQTT server
 The Mosquitto MQTT server can be set on a Raspberry Pi in the network and it uses IBM's Node-Red.
 To configure it I have followed [this](https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/) tutorial.
 
-## Useful links:
+## Docker
 
-### Tutorials
+To setup the entire server part of the ardutracker project, you need to have installed Docker with docker-compose in a x86_64 capable machine with at least 1GB of ram a single core CPU. 
+
+Move to the `/ArduTrackerServer/` directory and type in a terminal `docker-compose up -d`.
+After that, you can stop all the services using `docker-compose down`, always in the same directory.
+
+### Useful links:
+
+#### Tutorials
 - [Communication nRF24L01 avec cartes ESP32 et ESP8266 ](http://electroniqueamateur.blogspot.com/2019/12/communication-nrf24l01-avec-cartes.html?m=0)
 - [Interfacing Micro SD Card Module with Arduino](https://lastminuteengineers.com/arduino-micro-sd-card-module-tutorial/)
 - [ESP32 MQTT – Publish and Subscribe with Arduino IDE](https://randomnerdtutorials.com/esp32-mqtt-publish-subscribe-arduino-ide/)
 
-### Circuit
+#### Circuit
 - [ESP32 Fritzing file](https://forum.fritzing.org/t/esp32s-hiletgo-dev-boad-with-pinout-template/5357?u=steelgoose)
