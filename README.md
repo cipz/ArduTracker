@@ -1,5 +1,10 @@
 # ArduTracker
 
+[![Server Update](https://github.com/cipz/ArduTracker/actions/workflows/server-update.yml/badge.svg)](https://github.com/cipz/ArduTracker/actions/workflows/server-update.yml)
+
+- **Development server**: https://ardutracker.debug.ovh 
+  - password: `ardutrack`
+
 #### Developers
 
 - Ciprian Voinea
