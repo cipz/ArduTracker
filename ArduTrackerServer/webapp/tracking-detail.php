@@ -19,6 +19,13 @@ require_once 'template/header.php';
                 <form action="?id=<?= $id; ?>&type=<?= $type; ?>" method="post">
 
                     <div class="mb-3">
+                        <p class="small mb-0 text-secondary">Graph settings</p>
+                        <div class="form-floating my-2">
+                            <input type="number" name="gdepth" class="form-control" id="graphDepthForm" value="<?= $gdepth; ?>">
+                            <label for="graphDepthForm">Graph nodes depth</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
                         <p class="small mb-0 text-secondary">Data Range</p>
 
                         <div class="form-floating my-2">
@@ -117,6 +124,7 @@ require_once 'template/header.php';
         
         <div class="card my-3 ">
             <div class="card-body">
+                
                 <div id="tree"> </div>
                 <script>
                     var jsonTree = <?= $jsonTreeJs; ?>; 
@@ -142,7 +150,7 @@ require_once 'template/header.php';
                 ?>
             </tbody>
         </table>
-        <?= ($num > 0) ? Pagination::printMenu($num, '&id=' . $id . '&type=' . $type . '&date_from=' . $date_from . '&date_to=' . $date_to . '&risk=' . $risk) : 'No record found <i class="far fa-frown"></i>'; ?>
+        <?= ($num > 0) ? Pagination::printMenu($num, '&id=' . $id . '&type=' . $type . '&date_from=' . $date_from . '&date_to=' . $date_to . '&risk=' . $risk . '&gdepth=' . $gdepth) : 'No record found <i class="far fa-frown"></i>'; ?>
 
     </div>
 </div>

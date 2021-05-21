@@ -12,9 +12,10 @@ $type = isset($_GET['type']) ? $_GET['type'] : '';
 $date_from = isset($_GET['date_from']) ? $db->clean($_GET["date_from"]) : '';
 $date_to = isset($_GET['date_to']) ? $db->clean($_GET['date_to']) : '';
 $risk = isset($_GET['risk']) ? $db->clean($_GET['risk']) : '';
+$gdepth = isset($_GET["gdepth"]) ? ((int) $_GET["gdepth"]) : GRAPH_MAX_DEPTH_CHILDREN;
 
 if (isset($_POST['search'])) {
-    goToLocation('?id=' . $id . '&type=' . $type . '&risk=' . $_POST['risk'] . '&date_from=' . $_POST['date_from'] . '&date_to=' . $_POST['date_to']);
+    goToLocation('?id=' . $id . '&type=' . $type . '&risk=' . $_POST['risk'] . '&date_from=' . $_POST['date_from'] . '&date_to=' . $_POST['date_to'] . '&gdepth=' . $_POST['gdepth']);
 }
 
 $add_filters = "";
@@ -73,9 +74,9 @@ foreach ($data as $record) {
 function childFinder(string $current, string $root, string $parent, int $depth)
 {
 
-    global $db, $add_filters;
+    global $db, $add_filters, $gdepth;
 
-    if ($depth > GRAPH_MAX_DEPTH_CHILDREN - 1)
+    if ($depth > $gdepth - 1)
         return array("text" => array("name" => $current), "link" => array("href" => "tracking-detail.php?id=$current"));
 
     $gsql = "SELECT DISTINCT friend_id FROM tracking_log WHERE my_id='$current' AND friend_id NOT IN ('$root', '$parent') $add_filters ORDER BY friend_id ASC";
@@ -97,7 +98,7 @@ function childFinder(string $current, string $root, string $parent, int $depth)
     }
 }
 
-$jsonTree = childFinder($id, $id, $id, 0);
+$jsonTree = childFinder($id, $id, $id, 0, $gdepth);
 $jsonTreeJs = array("chart" => array("container" => "#tree", "connectors" => array("type" => "curve")), "nodeStructure" => $jsonTree);
 $jsonTreeJs = json_encode($jsonTreeJs);
 

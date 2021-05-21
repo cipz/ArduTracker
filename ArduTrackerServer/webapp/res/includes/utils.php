@@ -63,3 +63,10 @@ function isValidJson($string)
     json_decode($string);
     return (json_last_error() == JSON_ERROR_NONE);
 }
+
+function arrayToOptionForm($array) {
+    $o = "";
+    foreach($array as $val)
+        $o .= "<option>" . $val . "</option>";
+    return $o;
+}
